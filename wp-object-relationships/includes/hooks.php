@@ -18,9 +18,6 @@ add_filter( 'map_meta_cap', 'wp_object_relationships_map_meta_cap', 10, 4 );
 // Site delete
 add_action( 'delete_blog', 'wp_object_relationships_clear_on_delete' );
 
-// Columns
-add_action( 'manage_sites_custom_column', 'wp_object_relationships_output_site_list_column', 10, 2 );
-
 // Navigation
 add_action( 'admin_menu', 'wp_object_relationships_add_menu_item', 30 );
 

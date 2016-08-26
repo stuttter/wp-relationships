@@ -18,8 +18,8 @@ defined( 'ABSPATH' ) || exit;
 
 // Define the table variables
 if ( empty( $GLOBALS['wpdb']->relationships ) ) {
-	$GLOBALS['wpdb']->relationships    = "{$GLOBALS['wpdb']->base_prefix}relationships";
-	$GLOBALS['wpdb']->relationshipmeta = "{$GLOBALS['wpdb']->base_prefix}relationshipmeta";
+	$GLOBALS['wpdb']->relationships    = "{$GLOBALS['wpdb']->get_blog_prefix()}relationships";
+	$GLOBALS['wpdb']->relationshipmeta = "{$GLOBALS['wpdb']->get_blog_prefix()}relationshipmeta";
 	$GLOBALS['wpdb']->tables[]         = 'relationships';
 	$GLOBALS['wpdb']->tables[]         = 'relationshipmeta';
 }

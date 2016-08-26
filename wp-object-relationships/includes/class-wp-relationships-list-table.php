@@ -27,39 +27,18 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		}
 
 		// Searching?
-		$search = isset( $_GET['s'] ) ? $_GET['s'] : '';
+		$search = isset( $_GET['s'] )
+			? $_GET['s']
+			: '';
 
-		// Network list
-		if ( wp_object_relationships_is_network_list() ) {
+		// Get aliases
+		$relationships = new WP_Object_Relationship_Query( array(
+			'search'  => $search
+		) );
 
-			// Get site IDs
-			$sites    = wp_object_relationships_get_sites();
-			$site_ids = wp_list_pluck( $sites, 'blog_id' );
-
-			// Get aliases
-			$relationships = new WP_Object_Relationship_Query( array(
-				'site__in' => $site_ids,
-				'search'   => $search
-			) );
-
-			// Bail if no aliases
-			if ( empty( $relationships->found_site_aliases ) ) {
-				return null;
-			}
-
-		// Site list
-		} else {
-
-			// Get aliases
-			$relationships = new WP_Object_Relationship_Query( array(
-				'site_id' => (int) $this->_args['site_id'],
-				'search'  => $search
-			) );
-
-			// Bail if no aliases
-			if ( empty( $relationships->found_site_aliases ) ) {
-				return null;
-			}
+		// Bail if no aliases
+		if ( empty( $relationships->found_site_aliases ) ) {
+			return null;
 		}
 
 		if ( ! empty( $relationships ) && ! is_wp_error( $relationships ) ) {
@@ -79,15 +58,10 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		// Universal columns
 		$columns = array(
 			'cb'      => '<input type="checkbox" />',
-			'domain'  => _x( 'Domain',  'site aliases', 'wp-object-relationships' ),
-			'status'  => _x( 'Status',  'site aliases', 'wp-object-relationships' ),
-			'created' => _x( 'Created', 'site aliases', 'wp-object-relationships' )
+			'domain'  => _x( 'Domain',  'object relationship', 'wp-object-relationships' ),
+			'status'  => _x( 'Status',  'object relationship', 'wp-object-relationships' ),
+			'created' => _x( 'Created', 'object relationship', 'wp-object-relationships' )
 		);
-
-		// Add "Site" column for network admin
-		if ( is_network_admin() && wp_object_relationships_is_network_list() ) {
-			$columns['site'] = _x( 'Site', 'site aliases', 'wp-object-relationships' );
-		}
 
 		// Return columns
 		return $columns;
@@ -213,27 +187,22 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$actions = array();
 
 		// Strip www.
-		$relationship_id = $relationship->id;
-		$site_id  = $relationship->site_id;
+		$relationship_id = $relationship->relationship_id;
 		$domain   = $relationship->domain;
-		$status   = $relationship->status;
+		$status   = $relationship->relationship_status;
 
 		// Edit
 		$edit_link = wp_object_relationships_admin_url( array(
-			'id'        => $site_id,
 			'relationship_ids' => array( $relationship_id ),
-			'page'      => 'alias_edit_site',
-			'referrer'  => wp_object_relationships_is_network_list()
-				? 'network'
-				: 'site'
+			'page'             => 'alias_edit_site',
 		) );
 
 		// Active/Deactive
 		if ( 'active' === $status ) {
-			$text   = _x( 'Deactivate', 'site aliases', 'wp-object-relationships' );
+			$text   = _x( 'Deactivate', 'object relationship', 'wp-object-relationships' );
 			$action = 'deactivate';
 		} else {
-			$text   = _x( 'Activate', 'site aliases', 'wp-object-relationships' );
+			$text   = _x( 'Activate', 'object relationship', 'wp-object-relationships' );
 			$action = 'activate';
 		}
 
@@ -283,9 +252,9 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_status( $relationship ) {
-		return ( 'active' === $relationship->status )
-			? esc_html_x( 'Active',   'site aliases', 'wp-object-relationships' )
-			: esc_html_x( 'Inactive', 'site aliases', 'wp-object-relationships' );
+		return ( 'active' === $relationship->relationship_status )
+			? esc_html_x( 'Active',   'object relationship', 'wp-object-relationships' )
+			: esc_html_x( 'Inactive', 'object relationship', 'wp-object-relationships' );
 	}
 
 	/**

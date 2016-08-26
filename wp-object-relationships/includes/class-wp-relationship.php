@@ -23,43 +23,97 @@ final class WP_Object_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $id;
+	public $relationship_id;
 
 	/**
-	 * The ID of the alias's site.
+	 * Type of relationship.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $blog_id = 0;
+	public $relationship_type = '';
 
 	/**
-	 * Domain of the alias.
+	 * Status of relationship.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $domain = '';
+	public $relationship_status = '';
 
 	/**
-	 * The date on which the alias was created.
+	 * The date on which the relationship was created.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string Date in MySQL's datetime format.
 	 */
-	public $created = '0000-00-00 00:00:00';
+	public $relationship_created = '0000-00-00 00:00:00';
 
 	/**
-	 * Status of the alias.
+	 * The date on which the relationship was modified.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string Date in MySQL's datetime format.
+	 */
+	public $relationship_modified = '0000-00-00 00:00:00';
+
+	/**
+	 * Parent relationship.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var int
+	 */
+	public $relationship_parent = 0;
+
+	/**
+	 * Relationship order.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var int
+	 */
+	public $relationship_order = 0;
+
+	/**
+	 * Primary ID.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var int
+	 */
+	public $primary_id = 0;
+
+	/**
+	 * Type of primary object.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $status = '';
+	public $primary_type = '';
+
+	/**
+	 * Primary ID.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var int
+	 */
+	public $secondary_id = 0;
+
+	/**
+	 * Type of secondary object.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $secondary_type = '';
 
 	/**
 	 * Creates a new WP_Object_Relationship object.
@@ -105,11 +159,10 @@ final class WP_Object_Relationship {
 	public function __get( $key = '' ) {
 		switch ( $key ) {
 			case 'id':
-			case 'alias_id':
-				return (int) $this->id;
-			case 'blog_id':
-			case 'site_id':
-				return (int) $this->blog_id;
+			case 'relationship_id':
+				return (int) $this->relationship_id;
+			default :
+				return $this->{$key};
 		}
 
 		return null;
@@ -130,10 +183,10 @@ final class WP_Object_Relationship {
 	public function __isset( $key = '' ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'alias_id' :
-			case 'blog_id' :
-			case 'site_id' :
+			case 'relationship_id' :
 				return true;
+			default :
+				return isset( $this->{$key} );
 		}
 
 		return false;
@@ -153,12 +206,8 @@ final class WP_Object_Relationship {
 	public function __set( $key, $value ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'alias_id' :
-				$this->id = (int) $value;
-				break;
-			case 'blog_id' :
-			case 'site_id' :
-				$this->blog_id = (int) $value;
+			case 'relationship_id' :
+				$this->relationship_id = (int) $value;
 				break;
 			default:
 				$this->{$key} = $value;
@@ -176,22 +225,7 @@ final class WP_Object_Relationship {
 	 */
 	public function set_status( $status = 'active' ) {
 		return $this->update( array(
-			'status' => $status,
-		) );
-	}
-
-	/**
-	 * Set the domain for the alias
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string $domain Domain name
-	 *
-	 * @return bool|WP_Error True if we updated, false if we didn't need to, or WP_Error if an error occurred
-	 */
-	public function set_domain( $domain ) {
-		return $this->update( array(
-			'domain' => $domain,
+			'relationship_status' => $status,
 		) );
 	}
 
@@ -213,35 +247,10 @@ final class WP_Object_Relationship {
 		$fields  = array();
 		$formats = array();
 
-		// Were we given a domain (and is it not the current one?)
-		if ( ! empty( $data['domain'] ) && ( $this->domain !== $data['domain'] ) ) {
-
-			// Does this domain exist already?
-			$existing = static::get_by_domain( $data['domain'] );
-			if ( is_wp_error( $existing ) ) {
-				return $existing;
-			}
-
-			// Domain exists already and points to another site
-			if ( ! empty( $existing ) ) {
-				return new WP_Error( 'wp_object_relationships_alias_domain_exists' );
-			}
-
-			// No uppercase letters in domains
-			$fields['domain'] = strtolower( $data['domain'] );
-			$formats[]        = '%s';
-		}
-
 		// Were we given a status (and is it not the current one?)
-		if ( ! empty( $data['status'] ) && ( $this->status !== $data['status'] ) ) {
+		if ( ! empty( $data['status'] ) && ( $this->relationship_status !== $data['status'] ) ) {
 			$fields['status'] = sanitize_key( $data['status'] );
 			$formats[]        = '%s';
-		}
-
-		// Were we given a site ID (and is it not the current one?)
-		if ( ! empty( $data['site_id'] ) && ( $this->site_id !== $data['site_id'] ) ) {
-			$fields['blog_id'] = (int) $data['site_id'];
-			$formats[]         = '%d';
 		}
 
 		// Do we have things to update?
@@ -255,7 +264,7 @@ final class WP_Object_Relationship {
 		$result       = $wpdb->update( $wpdb->relationships, $fields, $where, $formats, $where_format );
 
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
-			return new WP_Error( 'wp_object_relationships_alias_update_failed' );
+			return new WP_Error( 'wp_object_relationships_update_failed' );
 		}
 
 		// Clone this object
@@ -292,14 +301,14 @@ final class WP_Object_Relationship {
 		global $wpdb;
 
 		// Try to delete the alias
-		$relationship_id     = $this->id;
-		$where        = array( 'id' => $relationship_id );
-		$where_format = array( '%d' );
-		$result       = $wpdb->delete( $wpdb->relationships, $where, $where_format );
+		$relationship_id = $this->id;
+		$where           = array( 'id' => $relationship_id );
+		$where_format    = array( '%d' );
+		$result          = $wpdb->delete( $wpdb->relationships, $where, $where_format );
 
 		// Bail if no alias to delete
 		if ( empty( $result ) ) {
-			return new WP_Error( 'wp_object_relationships_alias_delete_failed' );
+			return new WP_Error( 'wp_object_relationships_delete_failed' );
 		}
 
 		// Update the cache
@@ -376,13 +385,11 @@ final class WP_Object_Relationship {
 		}
 
 		if ( ! is_numeric( $site ) ) {
-			return new WP_Error( 'wp_object_relationships_alias_invalid_id' );
+			return new WP_Error( 'wp_object_relationships_invalid_id' );
 		}
 
 		// Get aliases
-		$relationships = new WP_Object_Relationship_Query( array(
-			'site_id' => (int) $site
-		) );
+		$relationships = new WP_Object_Relationship_Query();
 
 		// Bail if no aliases
 		if ( empty( $relationships->found_site_aliases ) ) {
@@ -434,7 +441,7 @@ final class WP_Object_Relationship {
 
 		// Bail if no site
 		if ( ! is_numeric( $site ) ) {
-			return new WP_Error( 'wp_object_relationships_alias_invalid_id' );
+			return new WP_Error( 'wp_object_relationships_invalid_id' );
 		}
 
 		$site   = (int) $site;
@@ -452,7 +459,7 @@ final class WP_Object_Relationship {
 
 		// Domain exists already...
 		} elseif ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_object_relationships_alias_domain_exists', esc_html__( 'That alias is already in use.', 'wp-object-relationships' ) );
+			return new WP_Error( 'wp_object_relationships_domain_exists', esc_html__( 'That alias is already in use.', 'wp-object-relationships' ) );
 		}
 
 		// Create the alias!
@@ -481,7 +488,7 @@ final class WP_Object_Relationship {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_object_relationships_alias_insert_failed' );
+			return new WP_Error( 'wp_object_relationships_insert_failed' );
 		}
 
 		// Ensure the cache is flushed

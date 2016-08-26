@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201608260001;
+	public $db_version = 201608260007;
 
 	/**
 	 * @var string Database version key
@@ -67,7 +67,7 @@ final class WP_Relationships_DB {
 	 * @since 0.1.0
 	 */
 	public function admin_init() {
-		$this->maybe_upgrade_database();
+		$this->upgrade_database();
 	}
 
 	/**
@@ -79,10 +79,10 @@ final class WP_Relationships_DB {
 	 * @since 0.1.0
 	 */
 	public function add_table_to_db_object() {
-		$this->db->relationships     = "{$this->db->base_prefix}relationships";
-		$this->db->relationshipmeta = "{$this->db->base_prefix}relationshipmeta";
-		$this->db->tables[]          = "relationships";
-		$this->db->tables[]          = "relationshipmeta";
+		$this->db->relationships    = "{$this->db->get_blog_prefix()}relationships";
+		$this->db->relationshipmeta = "{$this->db->get_blog_prefix()}relationshipmeta";
+		$this->db->tables[]         = "relationships";
+		$this->db->tables[]         = "relationshipmeta";
 	}
 
 	/**
@@ -110,31 +110,14 @@ final class WP_Relationships_DB {
 	}
 
 	/**
-	 * Should a database update occur
-	 *
-	 * Runs on `admin_init`
-	 *
-	 * @since 0.1.0
-	 */
-	private function maybe_upgrade_database() {
-
-		// Check DB for version
-		$db_version = get_option( $this->db_version_key );
-
-		// Needs
-		if ( (int) $db_version < $this->db_version ) {
-			$this->upgrade_database( $db_version );
-		}
-	}
-
-	/**
 	 * Create the database table
 	 *
 	 * @since 0.1.0
-	 *
-	 * @param  int $old_version
 	 */
-	private function upgrade_database( $old_version = 0 ) {
+	private function upgrade_database() {
+
+		// Old version
+		$old_version = get_option( $this->db_version_key );
 
 		// The main column alter
 		if ( version_compare( (int) $old_version, $this->db_version, '>=' ) ) {
@@ -155,7 +138,11 @@ final class WP_Relationships_DB {
 	 */
 	private function create_tables() {
 
-		$charset_collate = '';
+		// Vars
+		$sql              = array();
+		$max_index_length = 191;
+		$charset_collate  = '';
+
 		if ( ! empty( $this->db->charset ) ) {
 			$charset_collate = "DEFAULT CHARACTER SET {$this->db->charset}";
 		}
@@ -169,8 +156,6 @@ final class WP_Relationships_DB {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		}
 
-		$max_index_length = 191;
-
 		// Relationships
 		$sql[] = "CREATE TABLE {$this->db->relationships} (
 			relationship_id bigint(20) NOT NULL auto_increment,
@@ -179,14 +164,16 @@ final class WP_Relationships_DB {
 			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_parent bigint(20) NOT NULL default '0',
+			relationship_order bigint(20) NOT NULL default '0',
 			primary_id bigint(20) NOT NULL,
 			primary_type varchar(20) NOT NULL,
 			secondary_id bigint(20) NOT NULL,
 			secondary_type varchar(20) NOT NULL,
 			PRIMARY KEY (relationship_id),
-			KEY relationship_id (relationship_id,object_id,object_type(50),relationship_status),
-			KEY relationship_status (relationship_status({$max_index_length}))
-			KEY object_type (object_type({$max_index_length}))
+			KEY relationship_id (relationship_id,primary_id,primary_type(20),relationship_status(20)),
+			KEY relationship_status (relationship_status(20)),
+			KEY primary_id (primary_type),
+			KEY primary_type (primary_type(20))
 		) {$charset_collate};";
 
 		// Relationship meta
@@ -214,4 +201,4 @@ final class WP_Relationships_DB {
 function wp_object_relationships_db() {
 	new WP_Relationships_DB();
 }
-add_action( 'muplugins_loaded', 'wp_object_relationships_db', -PHP_INT_MAX );
+add_action( 'plugins_loaded', 'wp_object_relationships_db', -PHP_INT_MAX );

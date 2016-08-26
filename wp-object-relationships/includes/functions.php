@@ -10,53 +10,6 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Return the site ID being modified
- *
- * @since 0.1.0
- *
- * @return int
- */
-function wp_object_relationships_get_site_id() {
-
-	// Set the default
-	$default_id = is_blog_admin()
-		? get_current_blog_id()
-		: 0;
-
-	// Get site ID being requested
-	$site_id = isset( $_REQUEST['id'] )
-		? intval( $_REQUEST['id'] )
-		: $default_id;
-
-	// Look for alias ID requests
-	if ( empty( $site_id ) ) {
-		$relationship_id = wp_object_relationships_sanitize_relationship_ids( true );
-
-		// Found an alias ID
-		if ( ! empty( $relationship_id ) ) {
-			$relationship   = WP_Object_Relationship::get_instance( $relationship_id );
-			$site_id = $relationship->site_id;
-		}
-	}
-
-	// No site ID
-	if ( empty( $site_id ) && ! wp_object_relationships_is_network_list() ) {
-		wp_die( esc_html__( 'Invalid site ID.', 'wp-object-relationships' ) );
-	}
-
-	// Get the blog details
-	$details = get_blog_details( $site_id );
-
-	// No blog details
-	if ( empty( $details ) ) {
-		wp_die( esc_html__( 'Invalid site ID.', 'wp-object-relationships' ) );
-	}
-
-	// Return the blog ID
-	return (int) $details->blog_id;
-}
-
-/**
  * Validate alias parameters
  *
  * @since 0.1.0
@@ -65,7 +18,7 @@ function wp_object_relationships_get_site_id() {
  *
  * @return array|WP_Error Validated parameters on success, WP_Error otherwise
  */
-function wp_object_relationships_validate_alias_parameters( $args = array() ) {
+function wp_object_relationships_validate_relationship_parameters( $args = array() ) {
 
 	// Parse the args
 	$r = wp_parse_args( $args, array(
@@ -88,7 +41,7 @@ function wp_object_relationships_validate_alias_parameters( $args = array() ) {
 
 	// Bail if site ID is not valid
 	if ( empty( $r['site_id'] ) ) {
-		return new WP_Error( 'wp_object_relationships_alias_invalid_id', esc_html__( 'Invalid site ID', 'wp-object-relationships' ) );
+		return new WP_Error( 'wp_object_relationships_invalid_id', esc_html__( 'Invalid site ID', 'wp-object-relationships' ) );
 	}
 
 	// Prevent debug notices
