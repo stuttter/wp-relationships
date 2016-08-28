@@ -122,7 +122,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		}
 
 		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . __( 'Select bulk action' ) . "</label>";
-		echo "<select name='bulk_action$two' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
+		echo "<select name='bulk_action{$two}' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
 		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
 
 		foreach ( $this->_actions as $name => $title ) {
@@ -166,10 +166,10 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $relationship ) {
-		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $relationship->id ) . '">'
-			. sprintf( __( 'Select %s' ), esc_html( $relationship->domain ) ) . '</label>'
-			. '<input type="checkbox" name="alias_ids[]" value="' . esc_attr( $relationship->id )
-			. '" id="cb-select-' . esc_attr( $relationship->id ) . '" />';
+		return '<label class="screen-reader-text" for="cb-select-' . esc_attr( $relationship->relationship_id ) . '">'
+			. esc_html__( 'Select Relationship' ) . '</label>'
+			. '<input type="checkbox" name="relationship_ids[]" value="' . esc_attr( $relationship->relationship_id )
+			. '" id="cb-select-' . esc_attr( $relationship->relationship_id ) . '" />';
 	}
 
 	/**
@@ -188,13 +188,13 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Strip www.
 		$relationship_id = $relationship->relationship_id;
-		$domain   = $relationship->domain;
-		$status   = $relationship->relationship_status;
+		$domain          = $relationship->domain;
+		$status          = $relationship->relationship_status;
 
 		// Edit
 		$edit_link = wp_object_relationships_admin_url( array(
 			'relationship_ids' => array( $relationship_id ),
-			'page'             => 'alias_edit_site',
+			'page'             => 'object_relationships_edit',
 		) );
 
 		// Active/Deactive
@@ -208,7 +208,6 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Default args
 		$args = array(
-			'id'        => $site_id,
 			'action'    => $action,
 			'relationship_ids' => array( $relationship_id ),
 			'_wpnonce'  => wp_create_nonce( "site_aliases-bulk-{$this->_args['site_id']}" )

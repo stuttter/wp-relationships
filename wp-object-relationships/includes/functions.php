@@ -10,64 +10,6 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Validate alias parameters
- *
- * @since 0.1.0
- *
- * @param  array  $args  Raw input parameters
- *
- * @return array|WP_Error Validated parameters on success, WP_Error otherwise
- */
-function wp_object_relationships_validate_relationship_parameters( $args = array() ) {
-
-	// Parse the args
-	$r = wp_parse_args( $args, array(
-		'site_id' => 0,
-		'domain'  => '',
-		'status'  => '',
-	) );
-
-	// Cast site ID to int
-	$r['site_id'] = (int) $r['site_id'];
-
-	// Remove all whitespace from domain
-	$r['domain'] = preg_replace( '/\s+/', '', $r['domain'] );
-
-	// Strip schemes from domain
-	$r['domain'] = preg_replace( '#^https?://#', '', rtrim( $r['domain'], '/' ) );
-
-	// Make domain lowercase
-	$r['domain'] = strtolower( $r['domain'] );
-
-	// Bail if site ID is not valid
-	if ( empty( $r['site_id'] ) ) {
-		return new WP_Error( 'wp_object_relationships_invalid_id', esc_html__( 'Invalid site ID', 'wp-object-relationships' ) );
-	}
-
-	// Prevent debug notices
-	if ( empty( $r['domain'] ) ) {
-		return new WP_Error( 'wp_object_relationships_domain_empty', esc_html__( 'Aliases require a domain name', 'wp-object-relationships' ) );
-	}
-
-	// Bail if no domain name
-	if ( ! strpos( $r['domain'], '.' ) ) {
-		return new WP_Error( 'wp_object_relationships_domain_requires_tld', esc_html__( 'Aliases require a top-level domain', 'wp-object-relationships' ) );
-	}
-
-	// Bail if domain name using invalid characters
-	if ( ! preg_match( '#^[a-z0-9\-.]+$#i', $r['domain'] ) ) {
-		return new WP_Error( 'wp_object_relationships_domain_invalid_chars', esc_html__( 'Aliases can only contain alphanumeric characters, dashes (-) and periods (.)', 'wp-object-relationships' ) );
-	}
-
-	// Validate status
-	if ( ! in_array( $r['status'], array( 'active', 'inactive' ), true ) ) {
-		return new WP_Error( 'wp_object_relationships_domain_invalid_status', esc_html__( 'Status must be active or inactive', 'wp-object-relationships' ) );
-	}
-
-	return $r;
-}
-
-/**
  * Wrapper for admin URLs
  *
  * @since 0.1.0
@@ -79,7 +21,7 @@ function wp_object_relationships_admin_url( $args = array() ) {
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
-		'page' => 'object_relationships',
+		'page' => 'manage_relationships',
 	) );
 
 	// Location
@@ -127,6 +69,26 @@ function wp_object_relationships_clear_on_delete( $site_id = 0 ) {
  *
  * @return array
  */
+function wp_object_relationships_get_types() {
+	return apply_filters( 'wp_object_relationships_get_types', array(
+		(object) array(
+			'id'   => 'post_taxonomy_term',
+			'name' => _x( 'Taxonomy Terms to Posts', 'object relationships', 'wp-object-relationships' )
+		),
+		(object) array(
+			'id'   => 'post_post',
+			'name' => _x( 'Posts to Posts', 'object relationships', 'wp-object-relationships' )
+		)
+	) );
+}
+
+/**
+ * Get all available site alias statuses
+ *
+ * @since 0.1.0
+ *
+ * @return array
+ */
 function wp_object_relationships_get_statuses() {
 	return apply_filters( 'wp_object_relationships_get_statuses', array(
 		(object) array(
@@ -164,7 +126,7 @@ function wp_object_relationships_sanitize_relationship_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return apply_filters( 'wp_object_relationships_sanitize_alias_ids', $retval );
+	return apply_filters( 'wp_object_relationships_sanitize_relationship_ids', $retval );
 }
 
 /**
@@ -183,14 +145,14 @@ function get_object_relationship( $relationship = null ) {
 	}
 
 	if ( $relationship instanceof WP_Object_Relationship ) {
-		$_alias = $relationship;
+		$_relationship = $relationship;
 	} elseif ( is_object( $relationship ) ) {
-		$_alias = new WP_Object_Relationship( $relationship );
+		$_relationship = new WP_Object_Relationship( $relationship );
 	} else {
-		$_alias = WP_Object_Relationship::get_instance( $relationship );
+		$_relationship = WP_Object_Relationship::get_instance( $relationship );
 	}
 
-	if ( ! $_alias ) {
+	if ( ! $_relationship ) {
 		return null;
 	}
 
@@ -199,11 +161,11 @@ function get_object_relationship( $relationship = null ) {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param WP_Object_Relationship $_alias Site alias data.
+	 * @param WP_Object_Relationship $_relationship Site alias data.
 	 */
-	$_alias = apply_filters( 'get_object_relationship', $_alias );
+	$_relationship = apply_filters( 'get_object_relationship', $_relationship );
 
-	return $_alias;
+	return $_relationship;
 }
 
 /**

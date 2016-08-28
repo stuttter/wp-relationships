@@ -285,11 +285,11 @@ class WP_Object_Relationship_Query {
 		}
 
 		// Fetch full site alias objects from the primed cache.
-		$_aliases = array();
+		$_relationshipes = array();
 		foreach ( $relationship_ids as $relationship_id ) {
-			$_alias = get_object_relationship( $relationship_id );
-			if ( ! empty( $_alias ) ) {
-				$_aliases[] = $_alias;
+			$_relationship = get_object_relationship( $relationship_id );
+			if ( ! empty( $_relationship ) ) {
+				$_relationshipes[] = $_relationship;
 			}
 		}
 
@@ -301,10 +301,10 @@ class WP_Object_Relationship_Query {
 		 * @param array         $results An array of aliases.
 		 * @param WP_Object_Relationship_Query &$this   Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
-		$_aliases = apply_filters_ref_array( 'the_site_aliases', array( $_aliases, &$this ) );
+		$_relationshipes = apply_filters_ref_array( 'the_site_aliases', array( $_relationshipes, &$this ) );
 
 		// Convert to WP_Object_Relationship_ instances.
-		$this->aliases = array_map( 'get_site_alias', $_aliases );
+		$this->aliases = array_map( 'get_site_alias', $_relationshipes );
 
 		return $this->aliases;
 	}
@@ -464,7 +464,7 @@ class WP_Object_Relationship_Query {
 			 * @param string        $search         Text being searched.
 			 * @param WP_Object_Relationship_Query $this           The current WP_Object_Relationship_Query instance.
 			 */
-			$search_columns = apply_filters( 'site_alias_search_columns', $search_columns, $this->query_vars['search'], $this );
+			$search_columns = apply_filters( 'relationship_search_columns', $search_columns, $this->query_vars['search'], $this );
 
 			$this->sql_clauses['where']['search'] = $this->get_search_sql( $this->query_vars['search'], $search_columns );
 		}
@@ -487,7 +487,7 @@ class WP_Object_Relationship_Query {
 		 * @param array $pieces A compacted array of site alias query clauses.
 		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
-		$clauses = apply_filters_ref_array( 'site_alias_clauses', array( compact( $pieces ), &$this ) );
+		$clauses = apply_filters_ref_array( 'relationship_clauses', array( compact( $pieces ), &$this ) );
 
 		$fields  = isset( $clauses['fields']  ) ? $clauses['fields']  : '';
 		$join    = isset( $clauses['join']    ) ? $clauses['join']    : '';
@@ -550,7 +550,7 @@ class WP_Object_Relationship_Query {
 			 * @since 2.0.0
 			 *
 			 * @param string              $found_object_relationships_query SQL query. Default 'SELECT FOUND_ROWS()'.
-			 * @param WP_Object_Relationship_Query $site_alias_query         The `WP_Object_Relationship_Query` instance.
+			 * @param WP_Object_Relationship_Query $relationship_query         The `WP_Object_Relationship_Query` instance.
 			 */
 			$found_object_relationships_query = apply_filters( 'found_object_relationships_query', 'SELECT FOUND_ROWS()', $this );
 

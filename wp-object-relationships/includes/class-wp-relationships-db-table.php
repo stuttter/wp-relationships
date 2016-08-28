@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class facilitates the following functionality:
  *
- * - Creates & maintains the `wp_blog_aliases` table
+ * - Creates & maintains the `wp_relationship_typees` table
  * - Deletes all aliases for sites when sites are deleted
- * - Adds `wp_blog_aliases` to the main database object when appropriate
+ * - Adds `wp_relationship_typees` to the main database object when appropriate
  *
  * @since 0.1.0
  */
@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201608260007;
+	public $db_version = 201608270005;
 
 	/**
 	 * @var string Database version key
@@ -159,12 +159,15 @@ final class WP_Relationships_DB {
 		// Relationships
 		$sql[] = "CREATE TABLE {$this->db->relationships} (
 			relationship_id bigint(20) NOT NULL auto_increment,
+			relationship_author bigint(20) NOT NULL default '0',
+			relationship_name varchar(200) NOT NULL default '',
+			relationship_content longtext NOT NULL,
 			relationship_type varchar(20) NOT NULL default 'active',
 			relationship_status varchar(20) NOT NULL default 'active',
-			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
-			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_parent bigint(20) NOT NULL default '0',
 			relationship_order bigint(20) NOT NULL default '0',
+			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
+			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
 			primary_id bigint(20) NOT NULL,
 			primary_type varchar(20) NOT NULL,
 			secondary_id bigint(20) NOT NULL,

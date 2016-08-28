@@ -79,13 +79,11 @@ function wp_object_relationships_load_site_list_table() {
  * Output the admin page header
  *
  * @since 0.1.0
- *
- * @param  int  $site_id  Site ID
  */
 function wp_object_relationships_output_page_header() {
 
 	?><div class="wrap">
-		<h1 id="edit-site"><?php esc_html_e( 'Object Relationships', 'wp-object-relationships' ); ?></h1><?php
+		<h1 id="edit-relationship"><?php esc_html_e( 'Object Relationships', 'wp-object-relationships' ); ?></h1><?php
 
 	// Admin notices
 	do_action( 'wp_object_relationships_admin_notices' );
@@ -122,7 +120,6 @@ function wp_object_relationships_handle_actions() {
 
 	// Get action
 	$action      = sanitize_key( $action );
-	$site_id     = 0;
 	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'relationship_ids', 'referrer', '_wpnonce' ), wp_get_referer() );
 
 	// Maybe fallback redirect
@@ -131,14 +128,14 @@ function wp_object_relationships_handle_actions() {
 	}
 
 	// Get aliases being bulk actioned
-	$processed = array();
+	$processed        = array();
 	$relationship_ids = wp_object_relationships_sanitize_relationship_ids();
 
 	// Redirect args
 	$args = array(
-		'id'         => $site_id,
-		'did_action' => $action,
-		'page'       => 'site_aliases'
+		'relationship_ids' => $relationship_ids,
+		'did_action'       => $action,
+		'page'             => 'manage_relationships'
 	);
 
 	// What's the action?
@@ -146,6 +143,8 @@ function wp_object_relationships_handle_actions() {
 
 		// Bulk activate
 		case 'activate':
+			check_admin_referer( 'relationship_activate' );
+
 			foreach ( $relationship_ids as $relationship_id ) {
 				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
 
@@ -164,6 +163,8 @@ function wp_object_relationships_handle_actions() {
 
 		// Bulk deactivate
 		case 'deactivate':
+			check_admin_referer( 'relationship_deactivate' );
+
 			foreach ( $relationship_ids as $relationship_id ) {
 				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
 
@@ -182,6 +183,8 @@ function wp_object_relationships_handle_actions() {
 
 		// Single/Bulk Delete
 		case 'delete':
+			check_admin_referer( 'relationship_delete' );
+
 			$args['domains'] = array();
 
 			foreach ( $relationship_ids as $relationship_id ) {
@@ -196,8 +199,7 @@ function wp_object_relationships_handle_actions() {
 				// Aliases don't exist after we delete them, so pass the
 				// domain for messages and such
 				if ( $relationship->delete() ) {
-					$args['domains'][] = $relationship->domain;
-					$processed[]       = $relationship_id;
+					$processed[] = $relationship_id;
 				}
 			}
 
@@ -205,10 +207,10 @@ function wp_object_relationships_handle_actions() {
 
 		// Single Add
 		case 'add' :
-			check_admin_referer( "site_alias_add-{$site_id}" );
+			check_admin_referer( 'relationship_add' );
 
 			// Check that the parameters are correct first
-			$params = wp_object_relationships_validate_relationship_parameters( wp_unslash( $_POST ) );
+			$params = WP_Object_Relationship::sanitize( wp_unslash( $_POST ) );
 
 			// Error
 			if ( is_wp_error( $params ) ) {
@@ -217,11 +219,7 @@ function wp_object_relationships_handle_actions() {
 			}
 
 			// Add
-			$relationship = WP_Object_Relationship::create(
-				$params['site_id'],
-				$params['domain'],
-				$params['status']
-			);
+			$relationship = WP_Object_Relationship::create( $params );
 
 			// Bail if an error occurred
 			if ( is_wp_error( $relationship ) ) {
@@ -235,10 +233,10 @@ function wp_object_relationships_handle_actions() {
 
 		// Single Edit
 		case 'edit' :
-			check_admin_referer( "site_alias_edit-{$site_id}" );
+			check_admin_referer( 'relationship_edit' );
 
 			// Check that the parameters are correct first
-			$params = wp_object_relationships_validate_relationship_parameters( wp_unslash( $_POST ) );
+			$params = WP_Object_Relationship::sanitize( wp_unslash( $_POST ) );
 
 			// Error messages
 			if ( is_wp_error( $params ) ) {
@@ -270,8 +268,8 @@ function wp_object_relationships_handle_actions() {
 
 		// Any other bingos
 		default:
-			check_admin_referer( "site_aliases-bulk-{$site_id}" );
-			do_action_ref_array( "aliases_bulk_action-{$action}", array( $relationship_ids, &$processed, $action ) );
+			check_admin_referer( 'relationships-bulk' );
+			do_action_ref_array( "relationships_bulk_action-{$action}", array( $relationship_ids, &$processed, $action ) );
 
 			break;
 	}
@@ -293,7 +291,6 @@ function wp_object_relationships_handle_actions() {
 function wp_object_relationships_output_edit_page() {
 
 	// Vars
-	$site_id         = 0;
 	$relationship_id = wp_object_relationships_sanitize_relationship_ids( true );
 	$relationship    = WP_Object_Relationship::get_instance( $relationship_id );
 	$action          = ! empty( $relationship ) ? 'edit' : 'add';
@@ -306,27 +303,23 @@ function wp_object_relationships_output_edit_page() {
 	// Add
 	if ( empty( $relationship ) || ! empty( $_POST['_wpnonce'] ) ) {
 		$active = ! empty( $_POST['active'] );
-		$domain = ! empty( $_POST['domain'] )
-			? wp_unslash( $_POST['domain'] )
-			: '';
 
 	// Edit
 	} else {
 		$active = ( 'active' === $relationship->relationship_status );
-		$domain = $relationship->domain;
 	}
 
 	// Output the header, maybe with network site tabs
-	wp_object_relationships_output_page_header( $site_id );
+	wp_object_relationships_output_page_header();
 
 	?><form method="post" action="<?php echo esc_url( $action_url ); ?>">
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="blog_alias"><?php echo esc_html_x( 'Domain Name', 'field name', 'wp-object-relationships' ); ?></label>
+					<label for="relationship_type"><?php echo esc_html_x( 'Relationship Type', 'field name', 'wp-object-relationships' ); ?></label>
 				</th>
 				<td>
-					<input type="text" class="regular-text code" name="domain" id="blog_alias" value="<?php echo esc_attr( $domain ); ?>">
+					<input type="text" class="regular-text code" name="domain" id="relationship_type" value="<?php echo esc_attr( '' ); ?>">
 				</td>
 			</tr>
 			<tr>
@@ -351,19 +344,18 @@ function wp_object_relationships_output_edit_page() {
 			</tr>
 		</table>
 
-		<input type="hidden" name="action"    value="<?php echo esc_attr( $action   ); ?>">
-		<input type="hidden" name="site_id"   value="<?php echo esc_attr( $site_id  ); ?>">
-		<input type="hidden" name="alias_ids" value="<?php echo esc_attr( $relationship_id ); ?>"><?php
+		<input type="hidden" name="action"           value="<?php echo esc_attr( $action          ); ?>">
+		<input type="hidden" name="relationship_ids" value="<?php echo esc_attr( $relationship_id ); ?>"><?php
 
 		// Add
 		if ( 'add' === $action ) {
-			wp_nonce_field( "site_alias_add-{$site_id}" );
-			$submit_text = esc_html__( 'Add Alias', 'wp-object-relationships' );
+			wp_nonce_field( 'relationship_add' );
+			$submit_text = esc_html__( 'Add Relationship', 'wp-object-relationships' );
 
 		// Edit
 		} else {
-			wp_nonce_field( "site_alias_edit-{$site_id}" );
-			$submit_text = esc_html__( 'Save Alias', 'wp-object-relationships' );
+			wp_nonce_field( "relationship_edit-{$relationship_id}" );
+			$submit_text = esc_html__( 'Save Relationship', 'wp-object-relationships' );
 		}
 
 		// Submit button
@@ -375,7 +367,6 @@ function wp_object_relationships_output_edit_page() {
 	wp_object_relationships_output_page_footer();
 }
 
-
 /**
  * Output alias editing page
  *
@@ -385,27 +376,25 @@ function wp_object_relationships_output_list_page() {
 	global $wp_list_table;
 
 	// Get site ID being requested
-	$site_id = 0;
 	$search  = isset( $_GET['s']    ) ? $_GET['s']                    : '';
-	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'aliases_site';
+	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'manage_relationships';
 
 	// Action URLs
 	$form_url = $action_url = wp_object_relationships_admin_url();
 
 	// Output header, maybe with tabs
-	wp_object_relationships_output_page_header( $site_id ); ?>
+	wp_object_relationships_output_page_header(); ?>
 
 	<div id="col-container" style="margin-top: 20px;">
 		<div id="col-right">
 			<div class="col-wrap">
-
 				<form class="search-form wp-clearfix" method="get" action="<?php echo esc_url( $form_url ); ?>">
 					<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
-					<input type="hidden" name="id" value="<?php echo esc_attr( $site_id ); ?>" />
+					<input type="hidden" name="relationship_id" value="<?php echo esc_attr( '' ); ?>" />
 					<p class="search-box">
-						<label class="screen-reader-text" for="alias-search-input"><?php esc_html_e( 'Search Aliases:', 'wp-object-relationships' ); ?></label>
-						<input type="search" id="alias-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
-						<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Aliases', 'wp-object-relationships' ); ?>">
+						<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-object-relationships' ); ?></label>
+						<input type="search" id="relationship-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
+						<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Relationships', 'wp-object-relationships' ); ?>">
 					</p>
 				</form>
 
@@ -419,16 +408,28 @@ function wp_object_relationships_output_list_page() {
 		<div id="col-left">
 			<div class="col-wrap">
 				<div class="form-wrap">
-					<h2><?php esc_html_e( 'Add New Alias', 'wp-object-relationships' ); ?></h2>
+					<h2><?php esc_html_e( 'Add New Relationship', 'wp-object-relationships' ); ?></h2>
 					<form method="post" action="<?php echo esc_url( $action_url ); ?>">
-						<div class="form-field form-required domain-wrap">
-							<label for="blog_alias"><?php echo esc_html_x( 'Domain Name', 'field name', 'wp-object-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="domain" id="blog_alias" value="">
-							<p><?php esc_html_e( 'The fully qualified domain name that this site should load for.', 'wp-object-relationships' ); ?></p>
+						<div class="form-field form-required type-wrap">
+							<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-object-relationships' ); ?></label>
+							<select name="relationship_type" id="relationship_type"><?php
+
+								$types = wp_object_relationships_get_types();
+
+								// Loop throug sites
+								foreach ( $types as $type ) :
+
+									// Loop through sites
+									?><option value="<?php echo esc_attr( $type->id ); ?>"><?php echo esc_html( $type->name ); ?></option><?php
+
+								endforeach;
+
+							?></select>
+							<p><?php esc_html_e( 'What types of objects are related to each other.', 'wp-object-relationships' ); ?></p>
 						</div>
 						<div class="form-field form-required status-wrap">
-							<label for="status"><?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?></label>
-							<select name="status" id="status"><?php
+							<label for="relationship_status"><?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?></label>
+							<select name="relationship_status" id="relationship_status"><?php
 
 								$statuses = wp_object_relationships_get_statuses();
 
@@ -441,15 +442,41 @@ function wp_object_relationships_output_list_page() {
 								endforeach;
 
 							?></select>
-							<p><?php esc_html_e( 'Whether this domain is ready to accept incoming requests.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Whether this relationship is currently active.', 'wp-object-relationships' ); ?></p>
 						</div>
 
-						<input type="hidden" name="action"  value="add">
-						<input type="hidden" name="site_id" value="<?php echo esc_attr( $site_id ); ?>"><?php
+						<div class="form-field form-required parent-wrap">
+							<label for="relationship_parent"><?php echo esc_html_x( 'Relationship Parent', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="text" class="regular-text code" name="relationship_parent" id="relationship_parent" value="0">
+							<p><?php esc_html_e( 'Relationships can have a hierarchy. You might have a Post relationship, and under that have child relationships for other objects. Totally optional..', 'wp-object-relationships' ); ?></p>
+						</div>
 
-						wp_nonce_field( "site_alias_add-{$site_id}" );
+						<div class="form-field form-required order-wrap">
+							<label for="relationship_order"><?php echo esc_html_x( 'Relationship Order', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="number" class="regular-text code" name="relationship_order" id="relationship_order" value="0">
+							<p><?php esc_html_e( 'Relationships can have an order. You might want one relationship to appear before or after another. Totally optional..', 'wp-object-relationships' ); ?></p>
+						</div>
 
-						submit_button( esc_html__( 'Add New Alias', 'wp-object-relationships' ) );
+						<div class="form-field form-required primary-wrap">
+							<label for="primary_id"><?php echo esc_html_x( 'Primary', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="text" class="regular-text code" name="primary_id" id="primary_id" value="">
+							<input type="hidden" name="primary_type" id="primary_type" value="">
+							<p><?php esc_html_e( 'The primary object being related to.', 'wp-object-relationships' ); ?></p>
+						</div>
+
+						<div class="form-field form-required secondary-wrap">
+							<label for="secondary_id"><?php echo esc_html_x( 'Secondary', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="text" class="regular-text code" name="secondary_id" id="primary_id" value="">
+							<input type="hidden" name="secondary_type" id="secondary_type" value="">
+							<p><?php esc_html_e( 'The secondary object being related to.', 'wp-object-relationships' ); ?></p>
+						</div>
+
+						<input type="hidden" name="relationship_author" value="<?php echo get_current_user_id(); ?>">
+						<input type="hidden" name="action" value="add"><?php
+
+						wp_nonce_field( 'relationship_add' );
+
+						submit_button( esc_html__( 'Add New Relationship', 'wp-object-relationships' ) );
 
 					?></form>
 				</div>
@@ -484,21 +511,15 @@ function wp_object_relationships_output_admin_notices() {
 	$messages   = array(
 
 		// Success messages
-		'activate'   => _n( '%s alias activated.',   '%s aliases activated.',   $count, 'wp-object-relationships' ),
-		'deactivate' => _n( '%s alias deactivated.', '%s aliases deactivated.', $count, 'wp-object-relationships' ),
-		'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',     $count, 'wp-object-relationships' ),
-		'add'        => _n( '%s alias added.',       '%s aliases added.',       $count, 'wp-object-relationships' ),
-		'edit'       => _n( '%s alias updated.',     '%s aliases updated.',     $count, 'wp-object-relationships' ),
+		'activate'   => _n( '%s relationship activated.',   '%s relationships activated.',   $count, 'wp-object-relationships' ),
+		'deactivate' => _n( '%s relationship deactivated.', '%s relationships deactivated.', $count, 'wp-object-relationships' ),
+		'delete'     => _n( '%s relationship deleted.',     '%s relationships deleted.',     $count, 'wp-object-relationships' ),
+		'add'        => _n( '%s relationship added.',       '%s relationships added.',       $count, 'wp-object-relationships' ),
+		'edit'       => _n( '%s relationship updated.',     '%s relationships updated.',     $count, 'wp-object-relationships' ),
 
 		// Failure messages
-		'wp_object_relationships_domain_exists'         => _x( 'That domain is already registered.', 'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_update_failed'         => _x( 'Update failed.',                     'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_delete_failed'         => _x( 'Delete failed.',                     'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_invalid_id'            => _x( 'Invalid site ID.',                   'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_domain_empty'          => _x( 'Alias missing domain.',              'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_domain_requires_tld'   => _x( 'Alias missing a top-level domain.',  'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_domain_invalid_chars'  => _x( 'Alias contains invalid characters.', 'object relationship', 'wp-object-relationships' ),
-		'wp_object_relationships_domain_invalid_status' => _x( 'Status must be active or inactive',  'object relationship', 'wp-object-relationships' )
+		'update_failed' => _x( 'Update failed.', 'object relationship', 'wp-object-relationships' ),
+		'delete_failed' => _x( 'Delete failed.', 'object relationship', 'wp-object-relationships' ),
 	);
 
 	// Insert the placeholder

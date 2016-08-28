@@ -26,6 +26,33 @@ final class WP_Object_Relationship {
 	public $relationship_id;
 
 	/**
+	 * Relationship author.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var int
+	 */
+	public $relationship_author = 0;
+
+	/**
+	 * Name of relationship.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $relationship_name = '';
+
+	/**
+	 * Relationship content.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $relationship_content = '';
+
+	/**
 	 * Type of relationship.
 	 *
 	 * @since 0.1.0
@@ -124,10 +151,10 @@ final class WP_Object_Relationship {
 	 * @since 0.1.0
 	 * @access public
 	 *
-	 * @param WP_Object_Relationship|object $site A site object.
+	 * @param WP_Object_Relationship|object $relationship A relationship object.
 	 */
-	public function __construct( $site ) {
-		foreach( get_object_vars( $site ) as $key => $value ) {
+	public function __construct( $relationship ) {
+		foreach( get_object_vars( $relationship ) as $key => $value ) {
 			$this->{$key} = $value;
 		}
 	}
@@ -146,9 +173,6 @@ final class WP_Object_Relationship {
 
 	/**
 	 * Getter.
-	 *
-	 * Allows current multisite naming conventions when getting properties.
-	 * Allows access to extended site properties.
 	 *
 	 * @since 0.1.0
 	 * @access public
@@ -171,9 +195,6 @@ final class WP_Object_Relationship {
 	/**
 	 * Isset-er.
 	 *
-	 * Allows current multisite naming conventions when checking for properties.
-	 * Checks for extended site properties.
-	 *
 	 * @since 0.1.0
 	 * @access public
 	 *
@@ -194,8 +215,6 @@ final class WP_Object_Relationship {
 
 	/**
 	 * Setter.
-	 *
-	 * Allows current multisite naming conventions while setting properties.
 	 *
 	 * @since 0.1.0
 	 * @access public
@@ -236,35 +255,23 @@ final class WP_Object_Relationship {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array|stdClass $data Alias fields (associative array or object properties)
+	 * @param array|stdClass $args Relationship fields (associative array or object properties)
 	 *
 	 * @return bool|WP_Error True if we updated, false if we didn't need to, or WP_Error if an error occurred
 	 */
-	public function update( $data = array() ) {
+	public function update( $args = array() ) {
 		global $wpdb;
 
-		$data    = (array) $data;
-		$fields  = array();
-		$formats = array();
+		$fields  = self::sanitize( $args );
+		$formats = self::format();
 
-		// Were we given a status (and is it not the current one?)
-		if ( ! empty( $data['status'] ) && ( $this->relationship_status !== $data['status'] ) ) {
-			$fields['status'] = sanitize_key( $data['status'] );
-			$formats[]        = '%s';
-		}
-
-		// Do we have things to update?
-		if ( empty( $fields ) ) {
-			return false;
-		}
-
-		$relationship_id     = $this->id;
+		$relationship_id = $this->id;
 		$where        = array( 'id' => $relationship_id );
 		$where_format = array( '%d' );
 		$result       = $wpdb->update( $wpdb->relationships, $fields, $where, $formats, $where_format );
 
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
-			return new WP_Error( 'wp_object_relationships_update_failed' );
+			return new WP_Error( 'update_failed' );
 		}
 
 		// Clone this object
@@ -308,7 +315,7 @@ final class WP_Object_Relationship {
 
 		// Bail if no alias to delete
 		if ( empty( $result ) ) {
-			return new WP_Error( 'wp_object_relationships_delete_failed' );
+			return new WP_Error( 'delete_failed' );
 		}
 
 		// Update the cache
@@ -348,133 +355,74 @@ final class WP_Object_Relationship {
 		}
 
 		// Check cache first
-		$_alias = wp_cache_get( $relationship_id, 'object-relationships' );
+		$_relationship = wp_cache_get( $relationship_id, 'object-relationships' );
 
 		// No cached alias
-		if ( false === $_alias ) {
-			$_alias = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE id = %d LIMIT 1", $relationship_id ) );
+		if ( false === $_relationship ) {
+			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE id = %d LIMIT 1", $relationship_id ) );
 
 			// Bail if no alias found
-			if ( empty( $_alias ) || is_wp_error( $_alias ) ) {
+			if ( empty( $_relationship ) || is_wp_error( $_relationship ) ) {
 				return false;
 			}
 
 			// Add alias to cache
-			wp_cache_add( $relationship_id, $_alias, 'object-relationships' );
+			wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
 			wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 		}
 
 		// Return alias object
-		return new WP_Object_Relationship( $_alias );
+		return new WP_Object_Relationship( $_relationship );
 	}
 
 	/**
-	 * Get alias by site ID
+	 * Get alias by relationship ID
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param int|stdClass $site Site ID, or site object from {@see get_blog_details}
+	 * @param int|stdClass $relationship Relationship
 	 *
 	 * @return WP_Object_Relationship|WP_Error|null Alias on success, WP_Error if error occurred, or null if no alias found
 	 */
-	public static function get_by_site( $site = null ) {
+	public static function get_by_id( $relationship = null ) {
 
 		// Allow passing a site object in
-		if ( is_object( $site ) && isset( $site->blog_id ) ) {
-			$site = $site->blog_id;
+		if ( is_object( $relationship ) && isset( $relationship->relationship_id ) ) {
+			$relationship = $relationship->relationship_id;
 		}
 
-		if ( ! is_numeric( $site ) ) {
-			return new WP_Error( 'wp_object_relationships_invalid_id' );
+		if ( ! is_numeric( $relationship ) ) {
+			return new WP_Error( 'invalid_id' );
 		}
 
 		// Get aliases
 		$relationships = new WP_Object_Relationship_Query();
 
 		// Bail if no aliases
-		if ( empty( $relationships->found_site_aliases ) ) {
+		if ( empty( $relationships->found_relationships ) ) {
 			return null;
 		}
 
-		return $relationships->aliases;
+		return $relationships->relationships;
 	}
 
 	/**
-	 * Get alias by domain(s)
+	 * Create a new relationship
 	 *
-	 * @since 0.1.0
-	 *
-	 * @param string|array $domains Domain(s) to match against
-	 * @return WP_Object_Relationship|WP_Error|null Alias on success, WP_Error if error occurred, or null if no alias found
-	 */
-	public static function get_by_domain( $domains = array() ) {
-
-		// Get aliases
-		$relationships = new WP_Object_Relationship_Query( array(
-			'domain__in' => (array) $domains
-		) );
-
-		// Bail if no aliases
-		if ( empty( $relationships->found_site_aliases ) ) {
-			return null;
-		}
-
-		return reset( $relationships->aliases );
-	}
-
-	/**
-	 * Create a new domain alias
-	 *
-	 * @param mixed  $site   Site ID, or site object from {@see get_blog_details}
-	 * @param string $domain Domain
-	 * @param status $status Status of alias
+	 * @param array  $args
 	 *
 	 * @return WP_Object_Relationship|WP_Error
 	 */
-	public static function create( $site = 0, $domain = '', $status = 'active' ) {
+	public static function create( $args = array() ) {
 		global $wpdb;
 
-		// Allow passing a site object in
-		if ( is_object( $site ) && isset( $site->blog_id ) ) {
-			$site = $site->blog_id;
-		}
-
-		// Bail if no site
-		if ( ! is_numeric( $site ) ) {
-			return new WP_Error( 'wp_object_relationships_invalid_id' );
-		}
-
-		$site   = (int) $site;
-		$status = sanitize_key( $status );
-
-		// Did we get a full URL?
-		if ( strpos( $domain, '://' ) !== false ) {
-			$domain = parse_url( $domain, PHP_URL_HOST );
-		}
-
-		// Does this domain exist already?
-		$existing = static::get_by_domain( $domain );
-		if ( is_wp_error( $existing ) ) {
-			return $existing;
-
-		// Domain exists already...
-		} elseif ( ! empty( $existing ) ) {
-			return new WP_Error( 'wp_object_relationships_domain_exists', esc_html__( 'That alias is already in use.', 'wp-object-relationships' ) );
-		}
+		// Parse the args
+		$r = self::sanitize( $args );
 
 		// Create the alias!
 		$prev_errors = ! empty( $GLOBALS['EZSQL_ERROR'] ) ? $GLOBALS['EZSQL_ERROR'] : array();
 		$suppress    = $wpdb->suppress_errors( true );
-		$result      = $wpdb->insert(
-			$wpdb->relationships,
-			array(
-				'blog_id' => $site,
-				'domain'  => $domain,
-				'created' => current_time( 'mysql' ),
-				'status'  => $status
-			),
-			array( '%d', '%s', '%s', '%s' )
-		);
+		$result      = $wpdb->insert( $wpdb->relationships, $r, self::format() );
 
 		$wpdb->suppress_errors( $suppress );
 
@@ -505,5 +453,94 @@ final class WP_Object_Relationship {
 		do_action( 'wp_object_relationships_created', $relationship );
 
 		return $relationship;
+	}
+
+	/**
+	 * Sanitize values for saving
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $args
+	 *
+	 * @return \WP_Error
+	 */
+	public static function sanitize( $args = array() ) {
+
+		// We're at now, now
+		$now = time();
+
+		// Parse the arguments
+		$r = wp_parse_args( $args, array(
+			'relationship_id'       => 0,
+			'relationship_author'   => get_current_user_id(),
+			'relationship_name'     => '',
+			'relationship_content'  => '',
+			'relationship_type'     => '',
+			'relationship_status'   => 'active',
+			'relationship_created'  => $now,
+			'relationship_modified' => $now,
+			'relationship_parent'   => 0,
+			'relationship_order'    => 0,
+			'primary_id'            => 0,
+			'primary_type'          => '',
+			'secondary_id'          => 0,
+			'secondary_type'        => ''
+		) );
+
+		// Sanitize
+		$r['relationship_id']       = (int) $r['relationship_id'];
+		$r['relationship_author']   = (int) $r['relationship_author'];
+		$r['relationship_name']     = wp_kses_data( $r['relationship_name'] );
+		$r['relationship_content']  = wp_kses_data( $r['relationship_content'] );
+		$r['relationship_type']     = sanitize_key( $r['relationship_type'] );
+		$r['relationship_status']   = sanitize_key( $r['relationship_status'] );
+		$r['relationship_created']  = gmdate( 'Y-m-d H:i:s', (int) $r['relationship_created'] );
+		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', (int) $r['relationship_modified'] );
+		$r['relationship_parent']   = (int) $r['relationship_parent'];
+		$r['relationship_order']    = (int) $r['relationship_order'];
+
+		// Primary
+		$r['primary_id']   = (int) $r['primary_id'];
+		$r['primary_type'] = sanitize_key( $r['primary_type'] );
+
+		// Secondary
+		$r['secondary_id']   = (int) $r['secondary_id'];
+		$r['secondary_type'] = sanitize_key( $r['secondary_type'] );
+
+		// Validate status
+		if ( ! in_array( $r['relationship_status'], array( 'active', 'inactive' ), true ) ) {
+			return new WP_Error( 'wp_object_relationships_domain_invalid_status', esc_html__( 'Status must be active or inactive', 'wp-object-relationships' ) );
+		}
+
+		// Remove keys that definitely don't belong, but might be part of submissions
+		unset( $r['action'], $r['_wpnonce'], $r['_wp_http_referer'], $r['submit'] );
+
+		return $r;
+	}
+
+	/**
+	 * Return an array of keys used to define database columns
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return array
+	 */
+	public static function format() {
+		return array(
+			'%d', // ID
+			'%d', // Author
+			'%s', // Name
+			'%s', // Description
+			'%s', // Type
+			'%s', // Status
+			'%d', // Parent
+			'%d', // Order
+			'%s', // Created
+			'%s', // Modified
+			'%d', // Primary ID
+			'%s', // Primary Type
+			'%d', // Secondary ID
+			'%s'  // Secondary Type
+		);
 	}
 }
