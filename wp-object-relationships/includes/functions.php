@@ -204,7 +204,7 @@ function update_object_relationship_cache( $relationships = array() ) {
 	}
 
 	foreach ( $relationships as $relationship ) {
-		wp_cache_add( $relationship->id, $relationship, 'object-relationships' );
+		wp_cache_add( $relationship->relationship_id, $relationship, 'object-relationships' );
 	}
 }
 
@@ -217,7 +217,7 @@ function update_object_relationship_cache( $relationships = array() ) {
  */
 function clean_object_relationship_cache( WP_Object_Relationship $relationship ) {
 
-	wp_cache_delete( $relationship->id , 'object-relationships' );
+	wp_cache_delete( $relationship->relationship_id, 'object-relationships' );
 
 	/**
 	 * Fires immediately after a site alias has been removed from the object cache.
@@ -227,7 +227,7 @@ function clean_object_relationship_cache( WP_Object_Relationship $relationship )
 	 * @param int     $relationship_id Alias ID.
 	 * @param WP_Site $relationship    Alias object.
 	 */
-	do_action( 'clean_object_relationship_cache', $relationship->id, $relationship );
+	do_action( 'clean_object_relationship_cache', $relationship->relationship_id, $relationship );
 
 	wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 }

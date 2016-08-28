@@ -3,13 +3,13 @@
  * Site API: WP_Object_Relationship_Query class
  *
  * @package Plugins/Sites/Aliases/Queries
- * @since 2.0.0
+ * @since 0.1.0
  */
 
 /**
- * Core class used for querying aliases.
+ * Core class used for querying relationships.
  *
- * @since 2.0.0
+ * @since 0.1.0
  *
  * @see WP_Object_Relationship_Query::__construct() for accepted arguments.
  */
@@ -18,16 +18,23 @@ class WP_Object_Relationship_Query {
 	/**
 	 * SQL for database query.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
 	public $request;
 
 	/**
+	 * Stash the database class
+	 *
+	 * @since 0.1.0
+	 */
+	private $db;
+
+	/**
 	 * SQL query clauses.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access protected
 	 * @var array
 	 */
@@ -43,16 +50,25 @@ class WP_Object_Relationship_Query {
 	/**
 	 * Date query container.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var object WP_Date_Query
 	 */
 	public $date_query = false;
 
 	/**
+	 * Meta query container.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var object WP_Date_Query
+	 */
+	public $meta_query = false;
+
+	/**
 	 * Query vars set by the user.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var array
 	 */
@@ -61,108 +77,126 @@ class WP_Object_Relationship_Query {
 	/**
 	 * Default values for query vars.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var array
 	 */
 	public $query_var_defaults;
 
 	/**
-	 * List of aliases located by the query.
+	 * List of relationships located by the query.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var array
 	 */
 	public $relationships;
 
 	/**
-	 * The amount of found aliases for the current query.
+	 * The amount of found relationships for the current query.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var int
 	 */
-	public $found_site_aliases = 0;
+	public $found_relationships = 0;
 
 	/**
 	 * The number of pages.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 * @var int
 	 */
 	public $max_num_pages = 0;
 
 	/**
-	 * Sets up the site alias query, based on the query vars passed.
+	 * Sets up the relationship query, based on the query vars passed.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 *
 	 * @param string|array $query {
-	 *     Optional. Array or query string of site alias query parameters. Default empty.
+	 *     Optional. Array or query string of relationship query parameters. Default empty.
 	 *
-	 *     @type int          $ID                An alias ID to only return that alias. Default empty.
-	 *     @type array        $relationship__in         Array of alias IDs to include. Default empty.
-	 *     @type array        $relationship__not_in     Array of alias IDs to exclude. Default empty.
-	 *     @type int          $site_id           A site ID to only return that site. Default empty.
-	 *     @type array        $site__in          Array of site IDs to include. Default empty.
-	 *     @type array        $site__not_in      Array of site IDs to exclude. Default empty.
-	 *     @type bool         $count             Whether to return a site alias count (true) or array of site alias objects.
-	 *                                           Default false.
-	 *     @type array        $date_query        Date query clauses to limit aliases by. See WP_Date_Query.
-	 *                                           Default null.
-	 *     @type string       $fields            Site fields to return. Accepts 'ids' (returns an array of site alias IDs)
-	 *                                           or empty (returns an array of complete site alias objects). Default empty.
-	 *     @type int          $number            Maximum number of aliases to retrieve. Default null (no limit).
-	 *     @type int          $offset            Number of aliases to offset the query. Used to build LIMIT clause.
-	 *                                           Default 0.
-	 *     @type bool         $no_found_rows     Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
-	 *     @type string|array $orderby           Site status or array of statuses. Accepts 'id', 'domain', 'status',
-	 *                                           'created', 'domain_length', 'path_length', or 'site__in'. Also accepts false,
-	 *                                           an empty array, or 'none' to disable `ORDER BY` clause.
-	 *                                           Default 'id'.
-	 *     @type string       $order             How to order retrieved aliases. Accepts 'ASC', 'DESC'. Default 'ASC'.
-	 *     @type string       $domain            Limit results to those affiliated with a given domain.
-	 *                                           Default empty.
-	 *     @type array        $domain__in        Array of domains to include affiliated aliases for. Default empty.
-	 *     @type array        $domain__not_in    Array of domains to exclude affiliated aliases for. Default empty.
-	 *     @type string       $status            Limit results to those affiliated with a given path.
-	 *                                           Default empty.
-	 *     @type array        $status__in        Array of paths to include affiliated aliases for. Default empty.
-	 *     @type array        $status__not_in    Array of paths to exclude affiliated aliases for. Default empty.
-	 *     @type string       $search            Search term(s) to retrieve matching aliases for. Default empty.
-	 *     @type array        $search_columns    Array of column names to be searched. Accepts 'domain' and 'status'.
-	 *                                           Default empty array.
+	 *     @type int          $ID                   An alias ID to only return that alias. Default empty.
+	 *     @type array        $relationship__in     Array of alias IDs to include. Default empty.
+	 *     @type array        $relationship__not_in Array of alias IDs to exclude. Default empty.
+	 *     @type int          $site_id              A site ID to only return that site. Default empty.
+	 *     @type array        $site__in             Array of site IDs to include. Default empty.
+	 *     @type array        $site__not_in         Array of site IDs to exclude. Default empty.
+	 *     @type bool         $count                Whether to return a relationship count (true) or array of relationship objects.
+	 *                                              Default false.
+	 *     @type array        $date_query           Date query clauses to limit relationships by. See WP_Date_Query.
+	 *                                              Default null.
+	 *     @type string       $fields               Site fields to return. Accepts 'ids' (returns an array of relationship IDs)
+	 *                                              or empty (returns an array of complete relationship objects). Default empty.
+	 *     @type int          $number               Maximum number of relationships to retrieve. Default null (no limit).
+	 *     @type int          $offset               Number of relationships to offset the query. Used to build LIMIT clause.
+	 *                                              Default 0.
+	 *     @type bool         $no_found_rows        Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
+	 *     @type string|array $orderby              Site status or array of statuses. Accepts 'id', 'domain', 'status',
+	 *                                              'created', 'domain_length', 'path_length', or 'site__in'. Also accepts false,
+	 *                                              an empty array, or 'none' to disable `ORDER BY` clause.
+	 *                                              Default 'id'.
+	 *     @type string       $order                How to order retrieved relationships. Accepts 'ASC', 'DESC'. Default 'ASC'.
+	 *     @type string       $domain               Limit results to those affiliated with a given domain.
+	 *                                              Default empty.
+	 *     @type array        $domain__in           Array of domains to include affiliated relationships for. Default empty.
+	 *     @type array        $domain__not_in       Array of domains to exclude affiliated relationships for. Default empty.
+	 *     @type string       $status               Limit results to those affiliated with a given path.
+	 *                                              Default empty.
+	 *     @type array        $status__in           Array of paths to include affiliated relationships for. Default empty.
+	 *     @type array        $status__not_in       Array of paths to exclude affiliated relationships for. Default empty.
+	 *     @type string       $search               Search term(s) to retrieve matching relationships for. Default empty.
+	 *     @type array        $search_columns       Array of column names to be searched. Accepts 'domain' and 'status'.
+	 *                                              Default empty array.
 	 *
-	 *     @type bool         $update_object_relationship_cache Whether to prime the cache for found aliases. Default false.
+	 *     @type bool         $update_object_relationship_cache Whether to prime the cache for found relationships. Default false.
 	 * }
 	 */
 	public function __construct( $query = '' ) {
+		$this->db = $GLOBALS['wpdb'];
+
 		$this->query_var_defaults = array(
-			'fields'            => '',
-			'ID'                => '',
-			'alias__in'         => '',
-			'alias__not_in'     => '',
-			'site_id'           => '',
-			'site__in'          => '',
-			'site__not_in'      => '',
-			'domain'            => '',
-			'domain__in'        => '',
-			'domain__not_in'    => '',
-			'status'            => '',
-			'status__in'        => '',
-			'status__not_in'    => '',
-			'number'            => 100,
-			'offset'            => '',
-			'orderby'           => 'id',
-			'order'             => 'ASC',
-			'search'            => '',
-			'search_columns'    => array(),
-			'count'             => false,
-			'date_query'        => null, // See WP_Date_Query
-			'no_found_rows'     => true,
+			'fields'                 => '',
+			'ID'                     => '',
+			'relationship__in'       => '',
+			'relationship__not_in'   => '',
+			'author_id'              => '',
+			'author__in'             => '',
+			'author__not_in'         => '',
+			'type'                   => '',
+			'type__in'               => '',
+			'type__not_in'           => '',
+			'status'                 => '',
+			'status__in'             => '',
+			'status__not_in'         => '',
+			'parent'                 => '',
+			'parent__in'             => '',
+			'parent__not_in'         => '',
+			'primary_id'             => '',
+			'primary__in'            => '',
+			'primary__not_in'        => '',
+			'primary_type'           => '',
+			'primary_type__in'       => '',
+			'primary_type__not_in'   => '',
+			'secondary_id'           => '',
+			'secondary__in'          => '',
+			'secondary__not_in'      => '',
+			'secondary_type'         => '',
+			'secondary_type__in'     => '',
+			'secondary_type__not_in' => '',
+			'number'                 => 100,
+			'offset'                 => '',
+			'orderby'                => 'order, ID',
+			'order'                  => 'ASC',
+			'search'                 => '',
+			'search_columns'         => array(),
+			'count'                  => false,
+			'date_query'             => null, // See WP_Date_Query
+			'meta_query'             => null, // See WP_Meta_Query
+			'no_found_rows'          => true,
 			'update_object_relationship_cache' => true,
 		);
 
@@ -172,9 +206,9 @@ class WP_Object_Relationship_Query {
 	}
 
 	/**
-	 * Parses arguments passed to the site alias query with default query parameters.
+	 * Parses arguments passed to the relationship query with default query parameters.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 *
 	 * @see WP_Object_Relationship_Query::__construct()
@@ -189,9 +223,9 @@ class WP_Object_Relationship_Query {
 		$this->query_vars = wp_parse_args( $query, $this->query_var_defaults );
 
 		/**
-		 * Fires after the site alias query vars have been parsed.
+		 * Fires after the relationship query vars have been parsed.
 		 *
-		 * @since 2.0.0
+		 * @since 0.1.0
 		 *
 		 * @param WP_Object_Relationship_Query &$this The WP_Object_Relationship_Query instance (passed by reference).
 		 */
@@ -199,39 +233,39 @@ class WP_Object_Relationship_Query {
 	}
 
 	/**
-	 * Sets up the WordPress query for retrieving aliases.
+	 * Sets up the WordPress query for retrieving relationships.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 *
 	 * @param string|array $query Array or URL query string of parameters.
-	 * @return array|int List of aliases, or number of aliases when 'count' is passed as a query var.
+	 * @return array|int List of relationships, or number of relationships when 'count' is passed as a query var.
 	 */
 	public function query( $query ) {
 		$this->query_vars = wp_parse_args( $query );
 
-		return $this->get_site_aliases();
+		return $this->get_object_relationships();
 	}
 
 	/**
-	 * Retrieves a list of aliases matching the query vars.
+	 * Retrieves a list of relationships matching the query vars.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access public
 	 *
-	 * @return array|int List of aliases, or number of aliases when 'count' is passed as a query var.
+	 * @return array|int List of relationships, or number of relationships when 'count' is passed as a query var.
 	 */
-	public function get_site_aliases() {
+	public function get_object_relationships() {
 		$this->parse_query();
 
 		/**
-		 * Fires before site aliases are retrieved.
+		 * Fires before relationshipes are retrieved.
 		 *
-		 * @since 2.0.0
+		 * @since 0.1.0
 		 *
 		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
-		do_action_ref_array( 'pre_get_site_aliases', array( &$this ) );
+		do_action_ref_array( 'pre_get_object_relationships', array( &$this ) );
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
@@ -242,27 +276,27 @@ class WP_Object_Relationship_Query {
 			wp_cache_set( 'last_changed', $last_changed, 'object-relationships' );
 		}
 
-		$cache_key   = "get_site_aliases:{$key}:{$last_changed}";
+		$cache_key   = "get_object_relationships:{$key}:{$last_changed}";
 		$cache_value = wp_cache_get( $cache_key, 'object-relationships' );
 
 		if ( false === $cache_value ) {
 			$relationship_ids = $this->get_relationship_ids();
 			if ( $relationship_ids ) {
-				$this->set_found_site_aliases( $relationship_ids );
+				$this->set_found_relationships( $relationship_ids );
 			}
 
 			$cache_value = array(
-				'relationship_ids'          => $relationship_ids,
-				'found_site_aliases' => $this->found_site_aliases,
+				'relationship_ids'    => $relationship_ids,
+				'found_relationships' => $this->found_relationships,
 			);
 			wp_cache_add( $cache_key, $cache_value, 'object-relationships' );
 		} else {
 			$relationship_ids = $cache_value['relationship_ids'];
-			$this->found_site_aliases = $cache_value['found_site_aliases'];
+			$this->found_relationships = $cache_value['found_relationships'];
 		}
 
-		if ( $this->found_site_aliases && $this->query_vars['number'] ) {
-			$this->max_num_pages = ceil( $this->found_site_aliases / $this->query_vars['number'] );
+		if ( $this->found_relationships && $this->query_vars['number'] ) {
+			$this->max_num_pages = ceil( $this->found_relationships / $this->query_vars['number'] );
 		}
 
 		// If querying for a count only, there's nothing more to do.
@@ -274,9 +308,9 @@ class WP_Object_Relationship_Query {
 		$relationship_ids = array_map( 'intval', $relationship_ids );
 
 		if ( 'ids' == $this->query_vars['fields'] ) {
-			$this->aliases = $relationship_ids;
+			$this->relationships = $relationship_ids;
 
-			return $this->aliases;
+			return $this->relationships;
 		}
 
 		// Prime site network caches.
@@ -284,43 +318,40 @@ class WP_Object_Relationship_Query {
 			_prime_object_relationship_caches( $relationship_ids );
 		}
 
-		// Fetch full site alias objects from the primed cache.
-		$_relationshipes = array();
+		// Fetch full relationship objects from the primed cache.
+		$_relationships = array();
 		foreach ( $relationship_ids as $relationship_id ) {
 			$_relationship = get_object_relationship( $relationship_id );
 			if ( ! empty( $_relationship ) ) {
-				$_relationshipes[] = $_relationship;
+				$_relationships[] = $_relationship;
 			}
 		}
 
 		/**
 		 * Filters the site query results.
 		 *
-		 * @since 2.0.0
+		 * @since 0.1.0
 		 *
-		 * @param array         $results An array of aliases.
+		 * @param array         $results An array of relationships.
 		 * @param WP_Object_Relationship_Query &$this   Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
-		$_relationshipes = apply_filters_ref_array( 'the_site_aliases', array( $_relationshipes, &$this ) );
+		$_relationships = apply_filters_ref_array( 'the_relationships', array( $_relationships, &$this ) );
 
 		// Convert to WP_Object_Relationship_ instances.
-		$this->aliases = array_map( 'get_site_alias', $_relationshipes );
+		$this->relationships = array_map( 'get_object_relationship', $_relationships );
 
-		return $this->aliases;
+		return $this->relationships;
 	}
 
 	/**
-	 * Used internally to get a list of site alias IDs matching the query vars.
+	 * Used internally to get a list of relationship IDs matching the query vars.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
-	 *
-	 * @return int|array A single count of site alias IDs if a count query. An array of site alias IDs if a full query.
+	 * @return int|array A single count of relationship IDs if a count query. An array of relationship IDs if a full query.
 	 */
 	protected function get_relationship_ids() {
-		global $wpdb;
 
 		$order = $this->parse_order( $this->query_vars['order'] );
 
@@ -352,7 +383,7 @@ class WP_Object_Relationship_Query {
 					continue;
 				}
 
-				if ( 'alias__in' === $_orderby || 'site__in' === $_orderby ) {
+				if ( 'relationship__in' === $_orderby ) {
 					$orderby_array[] = $parsed;
 					continue;
 				}
@@ -379,66 +410,51 @@ class WP_Object_Relationship_Query {
 		if ( $this->query_vars['count'] ) {
 			$fields = 'COUNT(*)';
 		} else {
-			$fields = 'id';
+			$fields = 'relationship_id';
 		}
 
-		// Parse site alias IDs for an IN clause.
+		// Parse site relationship IDs for an IN clause.
 		$relationship_id = absint( $this->query_vars['ID'] );
 		if ( ! empty( $relationship_id ) ) {
-			$this->sql_clauses['where']['ID'] = $wpdb->prepare( 'id = %d', $relationship_id );
+			$this->sql_clauses['where']['ID'] = $this->db->prepare( 'relationship_id = %d', $relationship_id );
 		}
 
-		// Parse site alias IDs for an IN clause.
-		if ( ! empty( $this->query_vars['alias__in'] ) ) {
-			$this->sql_clauses['where']['alias__in'] = "id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
+		// Parse site relationship IDs for an IN clause.
+		if ( ! empty( $this->query_vars['relationship__in'] ) ) {
+			$this->sql_clauses['where']['relationship__in'] = "relationship_id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
 		}
 
-		// Parse site alias IDs for a NOT IN clause.
-		if ( ! empty( $this->query_vars['alias__not_in'] ) ) {
-			$this->sql_clauses['where']['alias__not_in'] = "id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
+		// Parse site relationship IDs for a NOT IN clause.
+		if ( ! empty( $this->query_vars['relationship__not_in'] ) ) {
+			$this->sql_clauses['where']['relationship__not_in'] = "relationship_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
 		}
 
-		$site_id = absint( $this->query_vars['site_id'] );
-		if ( ! empty( $site_id ) ) {
-			$this->sql_clauses['where']['site_id'] = $wpdb->prepare( 'blog_id = %d', $site_id );
+		if ( ! empty( $this->query_vars['type'] ) ) {
+			$this->sql_clauses['where']['type'] = $this->db->prepare( 'relationship_type = %s', $this->query_vars['type'] );
 		}
 
-		// Parse site IDs for an IN clause.
-		if ( ! empty( $this->query_vars['site__in'] ) ) {
-			$this->sql_clauses['where']['site__in'] = "blog_id IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__in'] ) ) . ' )';
+		// Parse relationship type for an IN clause.
+		if ( is_array( $this->query_vars['type__in'] ) ) {
+			$this->sql_clauses['where']['type__in'] = "relationship_type IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['type__in'] ) ) . "' )";
 		}
 
-		// Parse site IDs for a NOT IN clause.
-		if ( ! empty( $this->query_vars['site__not_in'] ) ) {
-			$this->sql_clauses['where']['site__not_in'] = "blog_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
-		}
-
-		if ( ! empty( $this->query_vars['domain'] ) ) {
-			$this->sql_clauses['where']['domain'] = $wpdb->prepare( 'domain = %s', $this->query_vars['domain'] );
-		}
-
-		// Parse site alias domain for an IN clause.
-		if ( is_array( $this->query_vars['domain__in'] ) ) {
-			$this->sql_clauses['where']['domain__in'] = "domain IN ( '" . implode( "', '", $wpdb->_escape( $this->query_vars['domain__in'] ) ) . "' )";
-		}
-
-		// Parse site alias domain for a NOT IN clause.
-		if ( is_array( $this->query_vars['domain__not_in'] ) ) {
-			$this->sql_clauses['where']['domain__not_in'] = "domain NOT IN ( '" . implode( "', '", $wpdb->_escape( $this->query_vars['domain__not_in'] ) ) . "' )";
+		// Parse relationship type for a NOT IN clause.
+		if ( is_array( $this->query_vars['type__not_in'] ) ) {
+			$this->sql_clauses['where']['type__not_in'] = "relationship_type NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['type__not_in'] ) ) . "' )";
 		}
 
 		if ( ! empty( $this->query_vars['status'] ) ) {
-			$this->sql_clauses['where']['status'] = $wpdb->prepare( 'path = %s', $this->query_vars['status'] );
+			$this->sql_clauses['where']['status'] = $this->db->prepare( 'relationship_status = %s', $this->query_vars['status'] );
 		}
 
-		// Parse site alias status for an IN clause.
+		// Parse relationship status for an IN clause.
 		if ( is_array( $this->query_vars['status__in'] ) ) {
-			$this->sql_clauses['where']['status__in'] = "status IN ( '" . implode( "', '", $wpdb->_escape( $this->query_vars['status__in'] ) ) . "' )";
+			$this->sql_clauses['where']['status__in'] = "relationship_status IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['status__in'] ) ) . "' )";
 		}
 
-		// Parse site alias status for a NOT IN clause.
+		// Parse relationship status for a NOT IN clause.
 		if ( is_array( $this->query_vars['status__not_in'] ) ) {
-			$this->sql_clauses['where']['status__not_in'] = "status NOT IN ( '" . implode( "', '", $wpdb->_escape( $this->query_vars['status__not_in'] ) ) . "' )";
+			$this->sql_clauses['where']['status__not_in'] = "relationship_status NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['status__not_in'] ) ) . "' )";
 		}
 
 		// Falsey search strings are ignored.
@@ -458,7 +474,7 @@ class WP_Object_Relationship_Query {
 			 *
 			 * The default columns include 'domain' and 'path.
 			 *
-			 * @since 2.0.0
+			 * @since 0.1.0
 			 *
 			 * @param array         $search_columns Array of column names to be searched.
 			 * @param string        $search         Text being searched.
@@ -480,11 +496,11 @@ class WP_Object_Relationship_Query {
 		$pieces = array( 'fields', 'join', 'where', 'orderby', 'limits', 'groupby' );
 
 		/**
-		 * Filters the site alias query clauses.
+		 * Filters the relationship query clauses.
 		 *
-		 * @since 2.0.0
+		 * @since 0.1.0
 		 *
-		 * @param array $pieces A compacted array of site alias query clauses.
+		 * @param array $pieces A compacted array of relationship query clauses.
 		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
 		$clauses = apply_filters_ref_array( 'relationship_clauses', array( compact( $pieces ), &$this ) );
@@ -514,7 +530,7 @@ class WP_Object_Relationship_Query {
 		}
 
 		$this->sql_clauses['select']  = "SELECT {$found_rows} {$fields}";
-		$this->sql_clauses['from']    = "FROM {$wpdb->relationships} {$join}";
+		$this->sql_clauses['from']    = "FROM {$this->db->relationships} {$join}";
 		$this->sql_clauses['groupby'] = $groupby;
 		$this->sql_clauses['orderby'] = $orderby;
 		$this->sql_clauses['limits']  = $limits;
@@ -522,111 +538,113 @@ class WP_Object_Relationship_Query {
 		$this->request = "{$this->sql_clauses['select']} {$this->sql_clauses['from']} {$where} {$this->sql_clauses['groupby']} {$this->sql_clauses['orderby']} {$this->sql_clauses['limits']}";
 
 		if ( $this->query_vars['count'] ) {
-			return intval( $wpdb->get_var( $this->request ) );
+			return intval( $this->db->get_var( $this->request ) );
 		}
 
-		$relationship_ids = $wpdb->get_col( $this->request );
+		$relationship_ids = $this->db->get_col( $this->request );
 
 		return array_map( 'intval', $relationship_ids );
 	}
 
 	/**
-	 * Populates found_site_aliases and max_num_pages properties for the current query
+	 * Populates found_relationships and max_num_pages properties for the current query
 	 * if the limit clause was used.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access private
 	 *
-	 * @global wpdb  $wpdb      WordPress database abstraction object.
+	 * @global wpdb  $this->db WordPress database abstraction object.
 	 * @param  array $relationship_ids Optional array of alias IDs
 	 */
-	private function set_found_site_aliases( $relationship_ids = array() ) {
-		global $wpdb;
-
+	private function set_found_relationships( $relationship_ids = array() ) {
 		if ( ! empty( $this->query_vars['number'] ) && ! empty( $this->query_vars['no_found_rows'] ) ) {
 			/**
-			 * Filters the query used to retrieve found site alias count.
+			 * Filters the query used to retrieve found relationship count.
 			 *
-			 * @since 2.0.0
+			 * @since 0.1.0
 			 *
 			 * @param string              $found_object_relationships_query SQL query. Default 'SELECT FOUND_ROWS()'.
 			 * @param WP_Object_Relationship_Query $relationship_query         The `WP_Object_Relationship_Query` instance.
 			 */
 			$found_object_relationships_query = apply_filters( 'found_object_relationships_query', 'SELECT FOUND_ROWS()', $this );
 
-			$this->found_site_aliases = (int) $wpdb->get_var( $found_object_relationships_query );
+			$this->found_relationships = (int) $this->db->get_var( $found_object_relationships_query );
 		} elseif ( ! empty( $relationship_ids ) ) {
-			$this->found_site_aliases = count( $relationship_ids );
+			$this->found_relationships = count( $relationship_ids );
 		}
 	}
 
 	/**
 	 * Used internally to generate an SQL string for searching across multiple columns.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access protected
-	 *
-	 * @global wpdb  $wpdb WordPress database abstraction object.
 	 *
 	 * @param string $string  Search string.
 	 * @param array  $columns Columns to search.
 	 * @return string Search SQL.
 	 */
 	protected function get_search_sql( $string, $columns ) {
-		global $wpdb;
 
 		if ( false !== strpos( $string, '*' ) ) {
-			$like = '%' . implode( '%', array_map( array( $wpdb, 'esc_like' ), explode( '*', $string ) ) ) . '%';
+			$like = '%' . implode( '%', array_map( array( $this->db, 'esc_like' ), explode( '*', $string ) ) ) . '%';
 		} else {
-			$like = '%' . $wpdb->esc_like( $string ) . '%';
+			$like = '%' . $this->db->esc_like( $string ) . '%';
 		}
 
 		$searches = array();
 		foreach ( $columns as $column ) {
-			$searches[] = $wpdb->prepare( "$column LIKE %s", $like );
+			$searches[] = $this->db->prepare( "$column LIKE %s", $like );
 		}
 
 		return '(' . implode( ' OR ', $searches ) . ')';
 	}
 
 	/**
-	 * Parses and sanitizes 'orderby' keys passed to the site alias query.
+	 * Parses and sanitizes 'orderby' keys passed to the relationship query.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access protected
-	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param string $orderby Alias for the field to order by.
 	 * @return string|false Value to used in the ORDER clause. False otherwise.
 	 */
 	protected function parse_orderby( $orderby ) {
-		global $wpdb;
-
-		$parsed = false;
 
 		switch ( $orderby ) {
-			case 'id':
-				$parsed = 'id';
+			case 'id' :
+			case 'ID' :
+			case 'relationship_id' :
+				$parsed = 'relationship_id';
 				break;
-			case 'site_id':
-				$parsed = 'blog_id';
+			case 'relationship__in' :
+				$relationship__in = implode( ',', array_map( 'absint', $this->query_vars['relationship__in'] ) );
+				$parsed           = "FIELD( {$this->db->relationships}.id, $relationship__in )";
 				break;
-			case 'alias__in':
-				$relationship__in = implode( ',', array_map( 'absint', $this->query_vars['alias__in'] ) );
-				$parsed = "FIELD( {$wpdb->relationships}.id, $relationship__in )";
+			case 'primary__in' :
+				$primary_in = implode( ',', array_map( 'absint', $this->query_vars['primary__in'] ) );
+				$parsed     = "FIELD( {$this->db->relationships}.primary_id, $primary_in )";
 				break;
-			case 'site__in':
-				$site__in = implode( ',', array_map( 'absint', $this->query_vars['site__in'] ) );
-				$parsed = "FIELD( {$wpdb->relationships}.blog_id, $site__in )";
+			case 'secondary__in' :
+				$secondary_in = implode( ',', array_map( 'absint', $this->query_vars['secondary__in'] ) );
+				$parsed       = "FIELD( {$this->db->relationships}.secondary_id, $secondary_in )";
 				break;
-			case 'domain':
-			case 'created':
-			case 'status':
-				$parsed = $orderby;
+			case 'primary_type__in' :
+				$primary_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['primary__in'] ) );
+				$parsed     = "FIELD( {$this->db->relationships}.primary_type, $primary_in )";
 				break;
-			case 'domain_length':
-				$parsed = 'CHAR_LENGTH(domain)';
+			case 'secondary_type__in' :
+				$secondary_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['secondary__in'] ) );
+				$parsed       = "FIELD( {$this->db->relationships}.secondary_type, $secondary_in )";
+				break;
+			case 'type' :
+			case 'status' :
+			case 'parent' :
+			case 'order' :
+				$parsed = "relationship_{$orderby}";
+				break;
+			default :
+				$parsed = false;
 				break;
 		}
 
@@ -636,7 +654,7 @@ class WP_Object_Relationship_Query {
 	/**
 	 * Parses an 'order' query variable and cast it to 'ASC' or 'DESC' as necessary.
 	 *
-	 * @since 2.0.0
+	 * @since 0.1.0
 	 * @access protected
 	 *
 	 * @param string $order The 'order' query variable.
