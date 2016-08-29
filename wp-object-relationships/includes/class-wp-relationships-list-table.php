@@ -109,7 +109,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			$this->_actions = apply_filters( "bulk_actions-{$this->screen->id}", $this->_actions );
 			$this->_actions = array_intersect_assoc( $this->_actions, $no_new_actions );
 			$two = '';
-			wp_nonce_field( "object_relationships-bulk" );
+			wp_nonce_field( 'relationships-bulk' );
 		} else {
 			$two = '2';
 		}
