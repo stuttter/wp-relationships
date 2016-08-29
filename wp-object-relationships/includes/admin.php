@@ -224,7 +224,7 @@ function wp_object_relationships_handle_actions() {
 			check_admin_referer( 'relationship_add' );
 
 			// Add
-			$relationship = WP_Object_Relationship::create(  wp_unslash( $_POST ) );
+			$relationship = WP_Object_Relationship::create( wp_unslash( $_POST ) );
 
 			// Bail if an error occurred
 			if ( is_wp_error( $relationship ) ) {
