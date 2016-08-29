@@ -185,6 +185,7 @@ final class WP_Object_Relationship {
 			case 'id':
 			case 'relationship_id':
 				return (int) $this->relationship_id;
+			case 'name':
 			case 'relationship_name':
 				return ! empty( $this->relationship_name )
 					? $this->relationship_name
