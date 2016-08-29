@@ -56,8 +56,8 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			'cb'        => '<input type="checkbox" />',
 			'name'      => _x( 'Name',      'object relationship', 'wp-object-relationships' ),
 			'status'    => _x( 'Status',    'object relationship', 'wp-object-relationships' ),
-			'primary'   => _x( 'Primary',   'object relationship', 'wp-object-relationships' ),
-			'secondary' => _x( 'Secondary', 'object relationship', 'wp-object-relationships' ),
+			'from'      => _x( 'From',      'object relationship', 'wp-object-relationships' ),
+			'to'        => _x( 'To',        'object relationship', 'wp-object-relationships' ),
 			'activity'  => _x( 'Activity',  'object relationship', 'wp-object-relationships' )
 		);
 
@@ -206,7 +206,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$args = array(
 			'action'           => $action,
 			'relationship_ids' => array( $relationship_id ),
-			'_wpnonce'         => wp_create_nonce( "object_relationships-bulk" )
+			'_wpnonce'         => wp_create_nonce( 'relationships-bulk' )
 		);
 
 		$status_link = wp_object_relationships_admin_url( $args );
@@ -253,7 +253,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for the site column
+	 * Get value for the from column
 	 *
 	 * @since 0.1.0
 	 * @access protected
@@ -262,12 +262,12 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 *
 	 * @return string HTML for the cell
 	 */
-	protected function column_primary( $relationship ) {
-		echo $relationship->primary_id . '<br>' . $relationship->primary_type;
+	protected function column_from( $relationship ) {
+		echo $relationship->from_id . '<br>' . $relationship->from_type;
 	}
 
 	/**
-	 * Get value for the site column
+	 * Get value for the to column
 	 *
 	 * @since 0.1.0
 	 * @access protected
@@ -276,12 +276,12 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 *
 	 * @return string HTML for the cell
 	 */
-	protected function column_secondary( $relationship ) {
-		echo $relationship->secondary_id . '<br>' . $relationship->secondary_type;
+	protected function column_to( $relationship ) {
+		echo $relationship->to_id . '<br>' . $relationship->to_type;
 	}
 
 	/**
-	 * Get value for the status column
+	 * Get value for the activity column
 	 *
 	 * @since 0.1.0
 	 * @access protected

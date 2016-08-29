@@ -175,18 +175,18 @@ class WP_Object_Relationship_Query {
 			'parent'                 => '',
 			'parent__in'             => '',
 			'parent__not_in'         => '',
-			'primary_id'             => '',
-			'primary__in'            => '',
-			'primary__not_in'        => '',
-			'primary_type'           => '',
-			'primary_type__in'       => '',
-			'primary_type__not_in'   => '',
-			'secondary_id'           => '',
-			'secondary__in'          => '',
-			'secondary__not_in'      => '',
-			'secondary_type'         => '',
-			'secondary_type__in'     => '',
-			'secondary_type__not_in' => '',
+			'from_id'                => '',
+			'from__in'               => '',
+			'from__not_in'           => '',
+			'from_type'              => '',
+			'from_type__in'          => '',
+			'from_type__not_in'      => '',
+			'to_id'                  => '',
+			'to__in'                 => '',
+			'to__not_in'             => '',
+			'to_type'                => '',
+			'to_type__in'            => '',
+			'to_type__not_in'        => '',
 			'number'                 => 100,
 			'offset'                 => '',
 			'orderby'                => 'order, ID',
@@ -621,21 +621,21 @@ class WP_Object_Relationship_Query {
 				$relationship__in = implode( ',', array_map( 'absint', $this->query_vars['relationship__in'] ) );
 				$parsed           = "FIELD( {$this->db->relationships}.id, $relationship__in )";
 				break;
-			case 'primary__in' :
-				$primary_in = implode( ',', array_map( 'absint', $this->query_vars['primary__in'] ) );
-				$parsed     = "FIELD( {$this->db->relationships}.primary_id, $primary_in )";
+			case 'from__in' :
+				$from_in = implode( ',', array_map( 'absint', $this->query_vars['from__in'] ) );
+				$parsed  = "FIELD( {$this->db->relationships}.from_id, $from_in )";
 				break;
-			case 'secondary__in' :
-				$secondary_in = implode( ',', array_map( 'absint', $this->query_vars['secondary__in'] ) );
-				$parsed       = "FIELD( {$this->db->relationships}.secondary_id, $secondary_in )";
+			case 'to__in' :
+				$to_in  = implode( ',', array_map( 'absint', $this->query_vars['to__in'] ) );
+				$parsed = "FIELD( {$this->db->relationships}.to_id, $to_in )";
 				break;
-			case 'primary_type__in' :
-				$primary_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['primary__in'] ) );
-				$parsed     = "FIELD( {$this->db->relationships}.primary_type, $primary_in )";
+			case 'from_type__in' :
+				$from_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['from__in'] ) );
+				$parsed  = "FIELD( {$this->db->relationships}.from_type, $from_in )";
 				break;
-			case 'secondary_type__in' :
-				$secondary_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['secondary__in'] ) );
-				$parsed       = "FIELD( {$this->db->relationships}.secondary_type, $secondary_in )";
+			case 'to_type__in' :
+				$to_in  = implode( ',', array_map( 'sanitize_key', $this->query_vars['to__in'] ) );
+				$parsed = "FIELD( {$this->db->relationships}.to_type, $to_in )";
 				break;
 			case 'type' :
 			case 'status' :

@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201608290001;
+	public $db_version = 201608290002;
 
 	/**
 	 * @var string Database version key
@@ -169,7 +169,7 @@ final class WP_Relationships_DB {
 			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
 			from_id bigint(20) NOT NULL,
-			fromtype varchar(20) NOT NULL,
+			from_type varchar(20) NOT NULL,
 			to_id bigint(20) NOT NULL,
 			to_type varchar(20) NOT NULL,
 			PRIMARY KEY (relationship_id),

@@ -107,40 +107,40 @@ final class WP_Object_Relationship {
 	public $relationship_order = 0;
 
 	/**
-	 * Primary ID.
+	 * From ID.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var int
 	 */
-	public $primary_id = 0;
+	public $from_id = 0;
 
 	/**
-	 * Type of primary object.
+	 * Type of object this is relationship is from.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $primary_type = '';
+	public $from_type = '';
 
 	/**
-	 * Primary ID.
+	 * To ID.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var int
 	 */
-	public $secondary_id = 0;
+	public $to_id = 0;
 
 	/**
-	 * Type of secondary object.
+	 * Type of object this relationship is to.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $secondary_type = '';
+	public $to_type = '';
 
 	/**
 	 * Creates a new WP_Object_Relationship object.
@@ -185,6 +185,10 @@ final class WP_Object_Relationship {
 			case 'id':
 			case 'relationship_id':
 				return (int) $this->relationship_id;
+			case 'relationship_name':
+				return ! empty( $this->relationship_name )
+					? $this->relationship_name
+					: 'No name';
 			default :
 				return $this->{$key};
 		}
@@ -262,13 +266,15 @@ final class WP_Object_Relationship {
 	public function update( $args = array() ) {
 		global $wpdb;
 
-		$fields  = self::sanitize( $args );
-		$formats = self::format();
+		$fields = self::sanitize( $args );
+		if ( empty( $fields ) || is_wp_error( $fields ) ) {
+			return new WP_Error( 'update_failed' );
+		}
 
-		$relationship_id = $this->id;
-		$where        = array( 'id' => $relationship_id );
+		$relationship_id = $this->relationship_id;
+		$where        = array( 'relationship_id' => $relationship_id );
 		$where_format = array( '%d' );
-		$result       = $wpdb->update( $wpdb->relationships, $fields, $where, $formats, $where_format );
+		$result       = $wpdb->update( $wpdb->relationships, $fields, $where, self::format(), $where_format );
 
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
 			return new WP_Error( 'update_failed' );
@@ -308,8 +314,8 @@ final class WP_Object_Relationship {
 		global $wpdb;
 
 		// Try to delete the alias
-		$relationship_id = $this->id;
-		$where           = array( 'id' => $relationship_id );
+		$relationship_id = $this->relationship_id;
+		$where           = array( 'relationship_id' => $relationship_id );
 		$where_format    = array( '%d' );
 		$result          = $wpdb->delete( $wpdb->relationships, $where, $where_format );
 
@@ -418,6 +424,9 @@ final class WP_Object_Relationship {
 
 		// Parse the args
 		$r = self::sanitize( $args );
+		if ( empty( $r ) || is_wp_error( $r ) ) {
+			return new WP_Error( 'insert_failed' );
+		}
 
 		// Create the alias!
 		$prev_errors = ! empty( $GLOBALS['EZSQL_ERROR'] ) ? $GLOBALS['EZSQL_ERROR'] : array();
@@ -436,7 +445,7 @@ final class WP_Object_Relationship {
 				$wpdb->print_error( $error['error_str'] );
 			}
 
-			return new WP_Error( 'wp_object_relationships_insert_failed' );
+			return new WP_Error( 'insert_failed' );
 		}
 
 		// Ensure the cache is flushed
@@ -481,10 +490,10 @@ final class WP_Object_Relationship {
 			'relationship_modified' => $now,
 			'relationship_parent'   => 0,
 			'relationship_order'    => 0,
-			'primary_id'            => 0,
-			'primary_type'          => '',
-			'secondary_id'          => 0,
-			'secondary_type'        => ''
+			'from_id'               => 0,
+			'from_type'             => '',
+			'to_id'                 => 0,
+			'to_type'               => ''
 		) );
 
 		// Sanitize
@@ -494,22 +503,22 @@ final class WP_Object_Relationship {
 		$r['relationship_content']  = wp_kses_data( $r['relationship_content'] );
 		$r['relationship_type']     = sanitize_key( $r['relationship_type'] );
 		$r['relationship_status']   = sanitize_key( $r['relationship_status'] );
-		$r['relationship_created']  = gmdate( 'Y-m-d H:i:s', (int) $r['relationship_created'] );
-		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', (int) $r['relationship_modified'] );
+		$r['relationship_created']  = gmdate( 'Y-m-d H:i:s', $r['relationship_created'] );
+		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', $r['relationship_modified'] );
 		$r['relationship_parent']   = (int) $r['relationship_parent'];
 		$r['relationship_order']    = (int) $r['relationship_order'];
 
-		// Primary
-		$r['primary_id']   = (int) $r['primary_id'];
-		$r['primary_type'] = sanitize_key( $r['primary_type'] );
+		// From
+		$r['from_id']   = (int) $r['from_id'];
+		$r['from_type'] = sanitize_key( $r['from_type'] );
 
-		// Secondary
-		$r['secondary_id']   = (int) $r['secondary_id'];
-		$r['secondary_type'] = sanitize_key( $r['secondary_type'] );
+		// To
+		$r['to_id']   = (int) $r['to_id'];
+		$r['to_type'] = sanitize_key( $r['to_type'] );
 
 		// Validate status
 		if ( ! in_array( $r['relationship_status'], array( 'active', 'inactive' ), true ) ) {
-			return new WP_Error( 'wp_object_relationships_domain_invalid_status', esc_html__( 'Status must be active or inactive', 'wp-object-relationships' ) );
+			return new WP_Error( 'create_status' );
 		}
 
 		// Remove keys that definitely don't belong, but might be part of submissions
@@ -537,10 +546,10 @@ final class WP_Object_Relationship {
 			'%d', // Order
 			'%s', // Created
 			'%s', // Modified
-			'%d', // Primary ID
-			'%s', // Primary Type
-			'%d', // Secondary ID
-			'%s'  // Secondary Type
+			'%d', // From ID
+			'%s', // From Type
+			'%d', // To ID
+			'%s'  // To Type
 		);
 	}
 }
