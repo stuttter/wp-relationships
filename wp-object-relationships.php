@@ -37,6 +37,7 @@ require_once $plugin_path . 'wp-object-relationships/includes/admin.php';
 require_once $plugin_path . 'wp-object-relationships/includes/assets.php';
 require_once $plugin_path . 'wp-object-relationships/includes/capabilities.php';
 require_once $plugin_path . 'wp-object-relationships/includes/functions.php';
+require_once $plugin_path . 'wp-object-relationships/includes/metadata.php';
 require_once $plugin_path . 'wp-object-relationships/includes/hooks.php';
 
 // Clean up the plugin path
