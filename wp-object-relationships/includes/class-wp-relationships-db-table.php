@@ -52,8 +52,9 @@ final class WP_Relationships_DB {
 		$this->db = $GLOBALS['wpdb'];
 
 		// Force table on to the global database object
-		add_action( 'init',           array( $this, 'add_table_to_db_object' ) );
-		add_action( 'switch_to_blog', array( $this, 'add_table_to_db_object' ) );
+		add_action( 'init',             array( $this, 'add_table_to_db_object'  ) );
+		add_action( 'switch_to_blog',   array( $this, 'add_table_to_db_object'  ) );
+		add_action( 'wpmu_drop_tables', array( $this, 'filter_wpmu_drop_tables' ) );
 
 		// Check if DB needs upgrading
 		if ( is_admin() ) {
@@ -81,8 +82,8 @@ final class WP_Relationships_DB {
 	public function add_table_to_db_object() {
 		$this->db->relationships    = "{$this->db->get_blog_prefix()}relationships";
 		$this->db->relationshipmeta = "{$this->db->get_blog_prefix()}relationshipmeta";
-		$this->db->tables[]         = "relationships";
-		$this->db->tables[]         = "relationshipmeta";
+		$this->db->tables[]         = 'relationships';
+		$this->db->tables[]         = 'relationshipmeta';
 	}
 
 	/**
@@ -193,6 +194,26 @@ final class WP_Relationships_DB {
 
 		// Make doubly sure the global database object is modified
 		$this->add_table_to_db_object();
+	}
+
+	/**
+	 * Add relationship tables to array of tables to drop
+	 *
+	 * @since 0.1.0
+	 */
+	public function filter_wpmu_drop_tables( $tables = array() ) {
+
+		// Relationships
+		if ( ! isset( $tables['relationships'] ) && isset( $this->db->relationships ) ) {
+			$tables[] = $this->db->relationships;
+		}
+
+		// Meta
+		if ( ! isset( $tables['relationshipmeta'] ) && isset( $this->db->relationshipmeta ) ) {
+			$tables[] = $this->db->relationshipmeta;
+		}
+
+		return $tables;
 	}
 }
 

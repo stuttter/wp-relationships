@@ -35,34 +35,6 @@ function wp_object_relationships_admin_url( $args = array() ) {
 }
 
 /**
- * Clear aliases for a site when it's deleted
- *
- * @param int $site_id Site being deleted
- */
-function wp_object_relationships_clear_on_delete( $site_id = 0 ) {
-	$relationships = WP_Object_Relationship::get_by_site( $site_id );
-
-	// Bail if no aliases
-	if ( empty( $relationships ) ) {
-		return;
-	}
-
-	// Loop through aliases & delete them one by one
-	foreach ( $relationships as $relationship ) {
-		$error = $relationship->delete();
-
-		if ( is_wp_error( $error ) ) {
-			$message = sprintf(
-				__( 'Unable to delete alias %d for site %d', 'wp-object-relationships' ),
-				$relationship->id,
-				$site_id
-			);
-			trigger_error( $message, E_USER_WARNING );
-		}
-	}
-}
-
-/**
  * Get all available site alias statuses
  *
  * @since 0.1.0

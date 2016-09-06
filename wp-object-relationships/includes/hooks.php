@@ -15,9 +15,6 @@ add_action( 'admin_enqueue_scripts', 'wp_object_relationships_admin_enqueue_scri
 // Capabilities
 add_filter( 'map_meta_cap', 'wp_object_relationships_map_meta_cap', 10, 4 );
 
-// Site delete
-add_action( 'delete_blog', 'wp_object_relationships_clear_on_delete' );
-
 // Navigation
 add_action( 'admin_menu', 'wp_object_relationships_add_menu_item', 30 );
 
