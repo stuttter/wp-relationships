@@ -46,7 +46,7 @@ final class WP_Relationships_DB {
 	public function __construct() {
 
 		// Activation hook
-		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+		register_activation_hook( __FILE__, array( $this, 'install' ) );
 
 		// Setup plugin
 		$this->db = $GLOBALS['wpdb'];
@@ -80,14 +80,22 @@ final class WP_Relationships_DB {
 	 * @since 0.1.0
 	 */
 	public function add_table_to_db_object() {
-		$this->db->relationships    = "{$this->db->get_blog_prefix()}relationships";
-		$this->db->relationshipmeta = "{$this->db->get_blog_prefix()}relationshipmeta";
+
+		// Bail if already occupied
+		if ( isset( $this->db->relationships ) ) {
+			return;
+		}
+
+		// Add the database tables
+		$prefix                     = $this->db->get_blog_prefix();
+		$this->db->relationships    = "{$prefix}relationships";
+		$this->db->relationshipmeta = "{$prefix}relationshipmeta";
 		$this->db->tables[]         = 'relationships';
 		$this->db->tables[]         = 'relationshipmeta';
 	}
 
 	/**
-	 * Install this plugin on a specific site
+	 * Install this plugin (on the current site)
 	 *
 	 * @since 0.1.0
 	 *
@@ -95,19 +103,6 @@ final class WP_Relationships_DB {
 	 */
 	public function install() {
 		$this->upgrade_database();
-	}
-
-	/**
-	 * Activation hook
-	 *
-	 * Handles both single & multi site installations
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param   bool    $network_wide
-	 */
-	public function activate() {
-		$this->install();
 	}
 
 	/**
@@ -138,6 +133,7 @@ final class WP_Relationships_DB {
 	 * @since 0.1.0
 	 */
 	private function create_tables() {
+		$this->add_table_to_db_object();
 
 		// Vars
 		$sql              = array();
@@ -154,7 +150,15 @@ final class WP_Relationships_DB {
 
 		// Check for `dbDelta`
 		if ( ! function_exists( 'dbDelta' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+			// Look for and require the upgrader
+			if ( file_exists( ABSPATH . 'wp-admin/includes/upgrade.php' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+			// Upgrader is missing, so silently yield to the environment gods
+			} else {
+				return;
+			}
 		}
 
 		// Relationships
@@ -191,25 +195,54 @@ final class WP_Relationships_DB {
 		) {$charset_collate};";
 
 		dbDelta( $sql );
-
-		// Make doubly sure the global database object is modified
-		$this->add_table_to_db_object();
 	}
 
 	/**
-	 * Add relationship tables to array of tables to drop
+	 * Convenience function to drop database tables
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param int $blog_id Blog ID of database to drop tables from
+	 */
+	public function drop_tables( $blog_id = 0 ) {
+		$this->add_table_to_db_object();
+
+		// Default to current blog ID
+		if ( empty( $blog_id ) ) {
+			$blog_id = get_current_blog_id();
+		}
+
+		// Switch in multisite
+		if ( is_multisite() ) {
+			switch_to_blog( $blog_id );
+		}
+
+		// Drop relationship and relationship meta tables
+		$this->db->query( "DROP TABLE IF EXISTS `{$this->db->relationships}`"    );
+		$this->db->query( "DROP TABLE IF EXISTS `{$this->db->relationshipmeta}`" );
+
+		// Restore if multisite
+		if ( is_multisite() ) {
+			restore_current_blog();
+		}
+	}
+
+	/**
+	 * Add relationship tables to array of blog tables to drop if they are not
+	 * already in the tables array.
 	 *
 	 * @since 0.1.0
 	 */
 	public function filter_wpmu_drop_tables( $tables = array() ) {
+		$this->add_table_to_db_object();
 
 		// Relationships
-		if ( ! isset( $tables['relationships'] ) && isset( $this->db->relationships ) ) {
+		if ( ! isset( $tables[ $this->db->relationships ] ) ) {
 			$tables[] = $this->db->relationships;
 		}
 
 		// Meta
-		if ( ! isset( $tables['relationshipmeta'] ) && isset( $this->db->relationshipmeta ) ) {
+		if ( ! isset( $tables[ $this->db->relationshipmeta ] ) ) {
 			$tables[] = $this->db->relationshipmeta;
 		}
 
