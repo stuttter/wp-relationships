@@ -263,7 +263,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_from( $relationship ) {
-		echo $relationship->from_id . '<br>' . $relationship->from_type;
+		echo $relationship->relationship_from_id . '<br>' . $relationship->from_type;
 	}
 
 	/**
@@ -277,7 +277,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @return string HTML for the cell
 	 */
 	protected function column_to( $relationship ) {
-		echo $relationship->to_id . '<br>' . $relationship->to_type;
+		echo $relationship->relationship_to_id . '<br>' . $relationship->to_type;
 	}
 
 	/**

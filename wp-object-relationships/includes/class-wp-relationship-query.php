@@ -152,52 +152,49 @@ class WP_Object_Relationship_Query {
 	 *     @type array        $search_columns       Array of column names to be searched. Accepts 'domain' and 'status'.
 	 *                                              Default empty array.
 	 *
-	 *     @type bool         $update_object_relationship_cache Whether to prime the cache for found relationships. Default false.
+	 *     @type bool         $update_relationship_cache Whether to prime the cache for found relationships. Default false.
 	 * }
 	 */
 	public function __construct( $query = '' ) {
 		$this->db = $GLOBALS['wpdb'];
 
 		$this->query_var_defaults = array(
-			'fields'                 => '',
-			'ID'                     => '',
-			'relationship__in'       => '',
-			'relationship__not_in'   => '',
-			'author_id'              => '',
-			'author__in'             => '',
-			'author__not_in'         => '',
-			'type'                   => '',
-			'type__in'               => '',
-			'type__not_in'           => '',
-			'status'                 => '',
-			'status__in'             => '',
-			'status__not_in'         => '',
-			'parent'                 => '',
-			'parent__in'             => '',
-			'parent__not_in'         => '',
-			'from_id'                => '',
-			'from__in'               => '',
-			'from__not_in'           => '',
-			'from_type'              => '',
-			'from_type__in'          => '',
-			'from_type__not_in'      => '',
-			'to_id'                  => '',
-			'to__in'                 => '',
-			'to__not_in'             => '',
-			'to_type'                => '',
-			'to_type__in'            => '',
-			'to_type__not_in'        => '',
-			'number'                 => 100,
-			'offset'                 => '',
-			'orderby'                => 'order, ID',
-			'order'                  => 'ASC',
-			'search'                 => '',
-			'search_columns'         => array(),
-			'count'                  => false,
-			'date_query'             => null, // See WP_Date_Query
-			'meta_query'             => null, // See WP_Meta_Query
-			'no_found_rows'          => true,
-			'update_object_relationship_cache' => true,
+			'fields'                    => '',
+			'ID'                        => '',
+			'relationship__in'          => '',
+			'relationship__not_in'      => '',
+			'author_id'                 => '',
+			'author__in'                => '',
+			'author__not_in'            => '',
+			'type'                      => '',
+			'type__in'                  => '',
+			'type__not_in'              => '',
+			'slug'                      => '',
+			'slug__in'                  => '',
+			'slug__not_in'              => '',
+			'status'                    => '',
+			'status__in'                => '',
+			'status__not_in'            => '',
+			'parent'                    => '',
+			'parent__in'                => '',
+			'parent__not_in'            => '',
+			'from_id'                   => '',
+			'from__in'                  => '',
+			'from__not_in'              => '',
+			'to_id'                     => '',
+			'to__in'                    => '',
+			'to__not_in'                => '',
+			'number'                    => 100,
+			'offset'                    => '',
+			'orderby'                   => 'order, ID',
+			'order'                     => 'ASC',
+			'search'                    => '',
+			'search_columns'            => array(),
+			'count'                     => false,
+			'date_query'                => null, // See WP_Date_Query
+			'meta_query'                => null, // See WP_Meta_Query
+			'no_found_rows'             => true,
+			'update_relationship_cache' => true,
 		);
 
 		if ( ! empty( $query ) ) {
@@ -314,7 +311,7 @@ class WP_Object_Relationship_Query {
 		}
 
 		// Prime site network caches.
-		if ( $this->query_vars['update_object_relationship_cache'] ) {
+		if ( $this->query_vars['update_relationship_cache'] ) {
 			_prime_object_relationship_caches( $relationship_ids );
 		}
 
@@ -441,6 +438,20 @@ class WP_Object_Relationship_Query {
 		// Parse relationship type for a NOT IN clause.
 		if ( is_array( $this->query_vars['type__not_in'] ) ) {
 			$this->sql_clauses['where']['type__not_in'] = "relationship_type NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['type__not_in'] ) ) . "' )";
+		}
+
+		if ( ! empty( $this->query_vars['slug'] ) ) {
+			$this->sql_clauses['where']['slug'] = $this->db->prepare( 'relationship_slug = %s', $this->query_vars['slug'] );
+		}
+
+		// Parse relationship slug for an IN clause.
+		if ( is_array( $this->query_vars['slug__in'] ) ) {
+			$this->sql_clauses['where']['slug__in'] = "relationship_slug IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['slug__in'] ) ) . "' )";
+		}
+
+		// Parse relationship slug for a NOT IN clause.
+		if ( is_array( $this->query_vars['slug__not_in'] ) ) {
+			$this->sql_clauses['where']['slug__not_in'] = "relationship_slug NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['slug__not_in'] ) ) . "' )";
 		}
 
 		if ( ! empty( $this->query_vars['status'] ) ) {
@@ -619,25 +630,18 @@ class WP_Object_Relationship_Query {
 				break;
 			case 'relationship__in' :
 				$relationship__in = implode( ',', array_map( 'absint', $this->query_vars['relationship__in'] ) );
-				$parsed           = "FIELD( {$this->db->relationships}.id, $relationship__in )";
+				$parsed           = "FIELD( {$this->db->relationships}.relationship_id, $relationship__in )";
 				break;
 			case 'from__in' :
 				$from_in = implode( ',', array_map( 'absint', $this->query_vars['from__in'] ) );
-				$parsed  = "FIELD( {$this->db->relationships}.from_id, $from_in )";
+				$parsed  = "FIELD( {$this->db->relationships}.relationship_from_id, $from_in )";
 				break;
 			case 'to__in' :
 				$to_in  = implode( ',', array_map( 'absint', $this->query_vars['to__in'] ) );
-				$parsed = "FIELD( {$this->db->relationships}.to_id, $to_in )";
-				break;
-			case 'from_type__in' :
-				$from_in = implode( ',', array_map( 'sanitize_key', $this->query_vars['from__in'] ) );
-				$parsed  = "FIELD( {$this->db->relationships}.from_type, $from_in )";
-				break;
-			case 'to_type__in' :
-				$to_in  = implode( ',', array_map( 'sanitize_key', $this->query_vars['to__in'] ) );
-				$parsed = "FIELD( {$this->db->relationships}.to_type, $to_in )";
+				$parsed = "FIELD( {$this->db->relationships}.relationship_to_id, $to_in )";
 				break;
 			case 'type' :
+			case 'slug' :
 			case 'status' :
 			case 'parent' :
 			case 'order' :
