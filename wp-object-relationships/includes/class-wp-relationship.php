@@ -113,16 +113,7 @@ final class WP_Object_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $from_id = 0;
-
-	/**
-	 * Type of object this is relationship is from.
-	 *
-	 * @since 0.1.0
-	 * @access public
-	 * @var string
-	 */
-	public $from_type = '';
+	public $relationship_from_id = 0;
 
 	/**
 	 * To ID.
@@ -131,16 +122,7 @@ final class WP_Object_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $to_id = 0;
-
-	/**
-	 * Type of object this relationship is to.
-	 *
-	 * @since 0.1.0
-	 * @access public
-	 * @var string
-	 */
-	public $to_type = '';
+	public $relationship_to_id = 0;
 
 	/**
 	 * Creates a new WP_Object_Relationship object.
@@ -491,10 +473,8 @@ final class WP_Object_Relationship {
 			'relationship_modified' => $now,
 			'relationship_parent'   => 0,
 			'relationship_order'    => 0,
-			'from_id'               => 0,
-			'from_type'             => '',
-			'to_id'                 => 0,
-			'to_type'               => ''
+			'relationship_from_id'  => 0,
+			'relationship_to_id'    => 0
 		) );
 
 		// Sanitize
@@ -508,14 +488,8 @@ final class WP_Object_Relationship {
 		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', $r['relationship_modified'] );
 		$r['relationship_parent']   = (int) $r['relationship_parent'];
 		$r['relationship_order']    = (int) $r['relationship_order'];
-
-		// From
-		$r['from_id']   = (int) $r['from_id'];
-		$r['from_type'] = sanitize_key( $r['from_type'] );
-
-		// To
-		$r['to_id']   = (int) $r['to_id'];
-		$r['to_type'] = sanitize_key( $r['to_type'] );
+		$r['relationship_from_id']  = (int) $r['relationship_from_id'];
+		$r['relationship_to_id']    = (int) $r['relationship_to_id'];
 
 		// Validate status
 		if ( ! in_array( $r['relationship_status'], array( 'active', 'inactive' ), true ) ) {
