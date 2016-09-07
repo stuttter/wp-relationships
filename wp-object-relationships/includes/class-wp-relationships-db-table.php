@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class facilitates the following functionality:
  *
- * - Creates & maintains the `wp_relationship_typees` table
- * - Deletes all aliases for sites when sites are deleted
- * - Adds `wp_relationship_typees` to the main database object when appropriate
+ * - Creates & maintains the `wp_relationships` table
+ * - Deletes tables for sites when sites are deleted
+ * - Adds `wp_relationships` & `wp_relationshipmeta` to the main database object when appropriate
  *
  * @since 0.1.0
  */
@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201609070010;
+	public $db_version = 201609070030;
 
 	/**
 	 * @var string Database version key
@@ -174,13 +174,13 @@ final class WP_Relationships_DB {
 			relationship_order bigint(20) NOT NULL default '0',
 			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
-			relationship_last_activity datetime NOT NULL default '0000-00-00 00:00:00',
+			relationship_updated datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_from_id bigint(20) NOT NULL,
 			relationship_to_id bigint(20) NOT NULL,
 			PRIMARY KEY (relationship_id),
 			KEY relationship_id (relationship_id),
 			KEY relationship_slug (relationship_slug),
-			KEY type_status_created_activity (relationship_type(20),relationship_status(20),relationship_created,relationship_last_activity,relationship_id),
+			KEY type_status_created_activity (relationship_type(20),relationship_status(20),relationship_created,relationship_updated,relationship_id),
 			KEY relationship_parent (relationship_parent),
 			KEY relationship_author (relationship_author),
 			KEY relationship_from_id (relationship_from_id),
