@@ -3,7 +3,7 @@
 /**
  * Object Relationships Class
  *
- * @package Plugins/Site/Aliases/Class
+ * @package Plugins/Site/Relationships/Class
  */
 
 // Exit if accessed directly
@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 final class WP_Object_Relationship {
 
 	/**
-	 * Alias ID.
+	 * Relationship ID.
 	 *
 	 * @since 0.1.0
 	 * @access public
@@ -371,7 +371,7 @@ final class WP_Object_Relationship {
 	 *
 	 * @param int|stdClass $relationship Relationship
 	 *
-	 * @return WP_Object_Relationship|WP_Error|null Alias on success, WP_Error if error occurred, or null if no alias found
+	 * @return WP_Object_Relationship|WP_Error|null Relationship on success, WP_Error if error occurred, or null if no alias found
 	 */
 	public static function get_by_id( $relationship = null ) {
 
