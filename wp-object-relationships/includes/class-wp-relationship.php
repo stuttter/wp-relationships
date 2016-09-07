@@ -44,6 +44,15 @@ final class WP_Object_Relationship {
 	public $relationship_name = '';
 
 	/**
+	 * Slug of relationship.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $relationship_slug = '';
+
+	/**
 	 * Relationship content.
 	 *
 	 * @since 0.1.0
@@ -87,6 +96,15 @@ final class WP_Object_Relationship {
 	 * @var string Date in MySQL's datetime format.
 	 */
 	public $relationship_modified = '0000-00-00 00:00:00';
+
+	/**
+	 * The date on which the relationship was most recently updated.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string Date in MySQL's datetime format.
+	 */
+	public $relationship_updated = '0000-00-00 00:00:00';
 
 	/**
 	 * Parent relationship.
@@ -167,13 +185,25 @@ final class WP_Object_Relationship {
 			case 'id':
 			case 'relationship_id':
 				return (int) $this->relationship_id;
+			case 'slug':
+			case 'relationship_slug':
+				return ! empty( $this->relationship_slug )
+					? $this->relationship_slug
+					: '-';
 			case 'name':
 			case 'relationship_name':
 				return ! empty( $this->relationship_name )
 					? $this->relationship_name
 					: 'No name';
+			case 'status';
+			case 'relationship_status':
+				return ! empty( $this->relationship_status )
+					? $this->relationship_status
+					: 'No name';
 			default :
-				return $this->{$key};
+				return isset( $this->{$key} )
+					? $this->{$key}
+					: null;
 		}
 
 		return null;
@@ -466,11 +496,13 @@ final class WP_Object_Relationship {
 			'relationship_id'       => 0,
 			'relationship_author'   => get_current_user_id(),
 			'relationship_name'     => '',
+			'relationship_slug'     => '',
 			'relationship_content'  => '',
 			'relationship_type'     => '',
 			'relationship_status'   => 'active',
 			'relationship_created'  => $now,
 			'relationship_modified' => $now,
+			'relationship_updated'  => $now,
 			'relationship_parent'   => 0,
 			'relationship_order'    => 0,
 			'relationship_from_id'  => 0,
@@ -481,11 +513,13 @@ final class WP_Object_Relationship {
 		$r['relationship_id']       = (int) $r['relationship_id'];
 		$r['relationship_author']   = (int) $r['relationship_author'];
 		$r['relationship_name']     = wp_kses_data( $r['relationship_name'] );
+		$r['relationship_slug']     = sanitize_title_with_dashes( $r['relationship_name'] );
 		$r['relationship_content']  = wp_kses_data( $r['relationship_content'] );
 		$r['relationship_type']     = sanitize_key( $r['relationship_type'] );
 		$r['relationship_status']   = sanitize_key( $r['relationship_status'] );
 		$r['relationship_created']  = gmdate( 'Y-m-d H:i:s', $r['relationship_created'] );
 		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', $r['relationship_modified'] );
+		$r['relationship_updated']  = gmdate( 'Y-m-d H:i:s', $r['relationship_updated'] );
 		$r['relationship_parent']   = (int) $r['relationship_parent'];
 		$r['relationship_order']    = (int) $r['relationship_order'];
 		$r['relationship_from_id']  = (int) $r['relationship_from_id'];
@@ -514,17 +548,17 @@ final class WP_Object_Relationship {
 			'%d', // ID
 			'%d', // Author
 			'%s', // Name
-			'%s', // Description
+			'%s', // Slug
+			'%s', // Content
 			'%s', // Type
 			'%s', // Status
-			'%d', // Parent
-			'%d', // Order
 			'%s', // Created
 			'%s', // Modified
+			'%s', // Updated
+			'%d', // Parent
+			'%d', // Order
 			'%d', // From ID
-			'%s', // From Type
 			'%d', // To ID
-			'%s'  // To Type
 		);
 	}
 }
