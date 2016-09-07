@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201608290002;
+	public $db_version = 201609070004;
 
 	/**
 	 * @var string Database version key
@@ -173,15 +173,13 @@ final class WP_Relationships_DB {
 			relationship_order bigint(20) NOT NULL default '0',
 			relationship_created datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
-			from_id bigint(20) NOT NULL,
-			from_type varchar(20) NOT NULL,
-			to_id bigint(20) NOT NULL,
-			to_type varchar(20) NOT NULL,
+			relationship_from_id bigint(20) NOT NULL,
+			relationship_to_id bigint(20) NOT NULL,
 			PRIMARY KEY (relationship_id),
-			KEY relationship_id (relationship_id,from_id,from_type(20),relationship_status(20)),
+			KEY relationship_id (relationship_id),
 			KEY relationship_status (relationship_status(20)),
-			KEY from_id (from_type),
-			KEY from_type (from_type(20))
+			KEY relationship_from_id (relationship_from_id),
+			KEY relationship_to_id (relationship_to_id)
 		) {$charset_collate};";
 
 		// Relationship meta

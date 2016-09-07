@@ -25,20 +25,20 @@ if ( empty( $GLOBALS['wpdb']->relationships ) ) {
 }
 
 // Get the plugin path
-$plugin_path = dirname( __FILE__ ) . '/';
+$plugin_path = dirname( __FILE__ ) . '/wp-object-relationships/';
 
 // Classes
-require_once $plugin_path . 'wp-object-relationships/includes/class-wp-relationship.php';
-require_once $plugin_path . 'wp-object-relationships/includes/class-wp-relationship-query.php';
-require_once $plugin_path . 'wp-object-relationships/includes/class-wp-relationships-db-table.php';
+require_once $plugin_path . 'includes/class-wp-relationship.php';
+require_once $plugin_path . 'includes/class-wp-relationship-query.php';
+require_once $plugin_path . 'includes/class-wp-relationships-db-table.php';
 
 // Required Files
-require_once $plugin_path . 'wp-object-relationships/includes/admin.php';
-require_once $plugin_path . 'wp-object-relationships/includes/assets.php';
-require_once $plugin_path . 'wp-object-relationships/includes/capabilities.php';
-require_once $plugin_path . 'wp-object-relationships/includes/functions.php';
-require_once $plugin_path . 'wp-object-relationships/includes/metadata.php';
-require_once $plugin_path . 'wp-object-relationships/includes/hooks.php';
+require_once $plugin_path . 'includes/admin.php';
+require_once $plugin_path . 'includes/assets.php';
+require_once $plugin_path . 'includes/capabilities.php';
+require_once $plugin_path . 'includes/functions.php';
+require_once $plugin_path . 'includes/metadata.php';
+require_once $plugin_path . 'includes/hooks.php';
 
 // Clean up the plugin path
 unset( $plugin_path );
@@ -73,5 +73,5 @@ function wp_object_relationships_get_plugin_url() {
  * @return int
  */
 function wp_object_relationships_get_asset_version() {
-	return 201608260001;
+	return 201609070001;
 }
