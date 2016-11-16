@@ -20,7 +20,7 @@ function wp_object_relationships_add_menu_item() {
 	$hooks = array();
 
 	if ( is_blog_admin() ) {
-		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-object-relationships' ), esc_html__( 'Relationships', 'wp-object-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_object_relationships_output_list_page', 'dashicons-networking', 5 );
+		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-object-relationships' ), esc_html__( 'Relationships', 'wp-object-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_object_relationships_output_list_page', 'dashicons-networking', 30 );
 		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-object-relationships' ), esc_html__( 'Add New', 'wp-object-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_object_relationships_output_edit_page' );
 	}
 
@@ -306,6 +306,10 @@ function wp_object_relationships_output_edit_page() {
 		$active = ( 'active' === $relationship->relationship_status );
 	}
 
+	// Drop-downs
+	$types    = wp_object_relationships_get_types();
+	$statuses = wp_object_relationships_get_statuses();
+	
 	// Output the header, maybe with network site tabs
 	wp_object_relationships_output_page_header();
 
@@ -313,10 +317,33 @@ function wp_object_relationships_output_edit_page() {
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="relationship_type"><?php echo esc_html_x( 'Relationship Type', 'field name', 'wp-object-relationships' ); ?></label>
+					<label for="relationship_name"><?php echo esc_html_x( 'Name', 'field name', 'wp-object-relationships' ); ?></label>
 				</th>
 				<td>
-					<input type="text" class="regular-text code" name="domain" id="relationship_type" value="<?php echo esc_attr( '' ); ?>">
+					<input type="text" class="regular-text" name="relationship_name" id="relationship_name" value="<?php echo esc_attr( '' ); ?>">
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">
+					<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-object-relationships' ); ?></label>
+				</th>
+				<td>
+					<select name="relationship_type" id="type"><?php
+
+						// Loop throug sites
+						foreach ( $types as $type ) :
+
+							// Maybe selected
+							$selected = ! empty( $relationship )
+								? selected( $type->id, $relationship->relationship_status )
+								: '';
+
+							// Loop through sites
+							?><option value="<?php echo esc_attr( $type->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->name ); ?></option><?php
+
+						endforeach;
+
+					?></select>
 				</td>
 			</tr>
 			<tr>
@@ -324,15 +351,18 @@ function wp_object_relationships_output_edit_page() {
 					<?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?>
 				</th>
 				<td>
-					<select name="status" id="status"><?php
+					<select name="relationship_status" id="status"><?php
 
-						$statuses = wp_object_relationships_get_statuses();
-
-						// Loop throug sites
+						// Loop through sites
 						foreach ( $statuses as $status ) :
 
+							// Maybe selected
+							$selected = ! empty( $relationship )
+								? selected( $status->id, $relationship->relationship_status )
+								: '';
+
 							// Loop through sites
-							?><option value="<?php echo esc_attr( $status->id ); ?>" <?php selected( $status->id, $relationship->relationship_status ); ?>><?php echo esc_html( $status->name ); ?></option><?php
+							?><option value="<?php echo esc_attr( $status->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->name ); ?></option><?php
 
 						endforeach;
 
@@ -455,16 +485,14 @@ function wp_object_relationships_output_list_page() {
 						</div>
 
 						<div class="form-field form-required from-wrap">
-							<label for="from_id"><?php echo esc_html_x( 'From', 'field name', 'wp-object-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="from_id" id="from_id" value="">
-							<input type="hidden" name="from_type" id="from_type" value="">
+							<label for="relationship_from_id"><?php echo esc_html_x( 'From', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="text" class="regular-text code" name="relationship_from_id" id="relationship_from_id" value="">
 							<p><?php esc_html_e( 'ID of object to relate to.', 'wp-object-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required to-wrap">
-							<label for="to_id"><?php echo esc_html_x( 'To', 'field name', 'wp-object-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="to_id" id="to_id" value="">
-							<input type="hidden" name="to_type" id="to_type" value="">
+							<label for="relationship_to_id"><?php echo esc_html_x( 'To', 'field name', 'wp-object-relationships' ); ?></label>
+							<input type="text" class="regular-text code" name="relationship_to_id" id="relationship_to_id" value="">
 							<p><?php esc_html_e( 'ID of object relating to.', 'wp-object-relationships' ); ?></p>
 						</div>
 

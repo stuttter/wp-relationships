@@ -21,5 +21,5 @@ function wp_object_relationships_admin_enqueue_scripts() {
 	$ver = wp_object_relationships_get_asset_version();
 
 	// Styles
-	wp_enqueue_style( 'wp-object-relationships', $src . 'assets/css/site-aliases.css', array(), $ver );
+	wp_enqueue_style( 'wp-object-relationships', $src . 'assets/css/relationships.css', array(), $ver );
 }

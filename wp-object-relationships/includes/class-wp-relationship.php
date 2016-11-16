@@ -154,8 +154,10 @@ final class WP_Object_Relationship {
 	 * @param WP_Object_Relationship|object $relationship A relationship object.
 	 */
 	public function __construct( $relationship ) {
-		foreach( get_object_vars( $relationship ) as $key => $value ) {
-			$this->{$key} = $value;
+		if ( is_object( $relationship ) ) {
+			foreach ( get_object_vars( $relationship ) as $key => $value ) {
+				$this->{$key} = $value;
+			}
 		}
 	}
 
@@ -369,9 +371,6 @@ final class WP_Object_Relationship {
 		global $wpdb;
 
 		$relationship_id = (int) $relationship_id;
-		if ( empty( $relationship_id ) ) {
-			return false;
-		}
 
 		// Check cache first
 		$_relationship = wp_cache_get( $relationship_id, 'object-relationships' );
@@ -380,14 +379,11 @@ final class WP_Object_Relationship {
 		if ( false === $_relationship ) {
 			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE id = %d LIMIT 1", $relationship_id ) );
 
-			// Bail if no alias found
-			if ( empty( $_relationship ) || is_wp_error( $_relationship ) ) {
-				return false;
-			}
-
 			// Add alias to cache
-			wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
-			wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
+			if ( ! empty( $_relationship ) && ! is_wp_error( $_relationship ) ) {
+				wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
+				wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
+			}
 		}
 
 		// Return alias object

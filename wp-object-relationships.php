@@ -62,7 +62,7 @@ function wp_object_relationships_get_plugin_file() {
  * @return string
  */
 function wp_object_relationships_get_plugin_url() {
-	return plugin_dir_url( wp_object_relationships_get_plugin_file() );
+	return plugin_dir_url( wp_object_relationships_get_plugin_file() ) . 'wp-object-relationships/';
 }
 
 /**
