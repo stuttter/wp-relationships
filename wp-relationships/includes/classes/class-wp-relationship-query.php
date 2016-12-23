@@ -226,7 +226,7 @@ class WP_Object_Relationship_Query {
 		 *
 		 * @param WP_Object_Relationship_Query &$this The WP_Object_Relationship_Query instance (passed by reference).
 		 */
-		do_action_ref_array( 'parse_object_relationships_query', array( &$this ) );
+		do_action_ref_array( 'parse_relationships_query', array( &$this ) );
 	}
 
 	/**
@@ -241,7 +241,7 @@ class WP_Object_Relationship_Query {
 	public function query( $query ) {
 		$this->query_vars = wp_parse_args( $query );
 
-		return $this->get_object_relationships();
+		return $this->get_relationships();
 	}
 
 	/**
@@ -252,7 +252,7 @@ class WP_Object_Relationship_Query {
 	 *
 	 * @return array|int List of relationships, or number of relationships when 'count' is passed as a query var.
 	 */
-	public function get_object_relationships() {
+	public function get_relationships() {
 		$this->parse_query();
 
 		/**
@@ -262,7 +262,7 @@ class WP_Object_Relationship_Query {
 		 *
 		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
 		 */
-		do_action_ref_array( 'pre_get_object_relationships', array( &$this ) );
+		do_action_ref_array( 'pre_get_relationships', array( &$this ) );
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
@@ -273,7 +273,7 @@ class WP_Object_Relationship_Query {
 			wp_cache_set( 'last_changed', $last_changed, 'object-relationships' );
 		}
 
-		$cache_key   = "get_object_relationships:{$key}:{$last_changed}";
+		$cache_key   = "get_relationships:{$key}:{$last_changed}";
 		$cache_value = wp_cache_get( $cache_key, 'object-relationships' );
 
 		if ( false === $cache_value ) {
@@ -574,12 +574,12 @@ class WP_Object_Relationship_Query {
 			 *
 			 * @since 0.1.0
 			 *
-			 * @param string              $found_object_relationships_query SQL query. Default 'SELECT FOUND_ROWS()'.
+			 * @param string              $found_relationships_query SQL query. Default 'SELECT FOUND_ROWS()'.
 			 * @param WP_Object_Relationship_Query $relationship_query         The `WP_Object_Relationship_Query` instance.
 			 */
-			$found_object_relationships_query = apply_filters( 'found_object_relationships_query', 'SELECT FOUND_ROWS()', $this );
+			$found_relationships_query = apply_filters( 'found_relationships_query', 'SELECT FOUND_ROWS()', $this );
 
-			$this->found_relationships = (int) $this->db->get_var( $found_object_relationships_query );
+			$this->found_relationships = (int) $this->db->get_var( $found_relationships_query );
 		} elseif ( ! empty( $relationship_ids ) ) {
 			$this->found_relationships = count( $relationship_ids );
 		}

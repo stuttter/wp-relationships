@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name: WP Object Relationships
- * Plugin URI:  http://wordpress.org/plugins/wp-object-relationships/
+ * Plugin Name: WP Relationships
+ * Plugin URI:  http://wordpress.org/plugins/wp-relationships/
  * Author:      John James Jacoby
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPLv2 or later
@@ -25,44 +25,44 @@ if ( empty( $GLOBALS['wpdb']->relationships ) ) {
 }
 
 // Get the plugin path
-$plugin_path = dirname( __FILE__ ) . '/wp-object-relationships/';
+$plugin_path = dirname( __FILE__ ) . '/wp-relationships/';
 
 // Classes
-require_once $plugin_path . 'includes/class-wp-relationship.php';
-require_once $plugin_path . 'includes/class-wp-relationship-query.php';
-require_once $plugin_path . 'includes/class-wp-relationships-db-table.php';
+require_once $plugin_path . 'includes/classes/class-wp-relationship.php';
+require_once $plugin_path . 'includes/classes/class-wp-relationship-query.php';
+require_once $plugin_path . 'includes/classes/class-wp-relationships-db-table.php';
 
 // Required Files
-require_once $plugin_path . 'includes/admin.php';
-require_once $plugin_path . 'includes/assets.php';
-require_once $plugin_path . 'includes/capabilities.php';
-require_once $plugin_path . 'includes/functions.php';
-require_once $plugin_path . 'includes/metadata.php';
-require_once $plugin_path . 'includes/hooks.php';
+require_once $plugin_path . 'includes/functions/admin.php';
+require_once $plugin_path . 'includes/functions/assets.php';
+require_once $plugin_path . 'includes/functions/capabilities.php';
+require_once $plugin_path . 'includes/functions/common.php';
+require_once $plugin_path . 'includes/functions/metadata.php';
+require_once $plugin_path . 'includes/functions/hooks.php';
 
 // Clean up the plugin path
 unset( $plugin_path );
 
 /**
- * Return the plugin's root file
+ * Return the plugin root file
  *
  * @since 0.1.0
  *
  * @return string
  */
-function wp_object_relationships_get_plugin_file() {
+function wp_relationships_get_plugin_file() {
 	return __FILE__;
 }
 
 /**
- * Return the plugin's URL
+ * Return the plugin URL
  *
  * @since 0.1.0
  *
  * @return string
  */
-function wp_object_relationships_get_plugin_url() {
-	return plugin_dir_url( wp_object_relationships_get_plugin_file() ) . 'wp-object-relationships/';
+function wp_relationships_get_plugin_url() {
+	return plugin_dir_url( wp_relationships_get_plugin_file() ) . 'wp-relationships/';
 }
 
 /**
@@ -72,6 +72,6 @@ function wp_object_relationships_get_plugin_url() {
  *
  * @return int
  */
-function wp_object_relationships_get_asset_version() {
-	return 201609070001;
+function wp_relationships_get_asset_version() {
+	return 201612230001;
 }

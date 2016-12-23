@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * @param array $args
  * @return array
  */
-function wp_object_relationships_admin_url( $args = array() ) {
+function wp_relationships_admin_url( $args = array() ) {
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
@@ -31,7 +31,7 @@ function wp_object_relationships_admin_url( $args = array() ) {
 	$url = add_query_arg( $r, $admin_url );
 
 	// Add args and return
-	return apply_filters( 'wp_object_relationships_admin_url', $url, $admin_url, $r, $args );
+	return apply_filters( 'wp_relationships_admin_url', $url, $admin_url, $r, $args );
 }
 
 /**
@@ -41,8 +41,8 @@ function wp_object_relationships_admin_url( $args = array() ) {
  *
  * @return array
  */
-function wp_object_relationships_get_types() {
-	return apply_filters( 'wp_object_relationships_get_types', array(
+function wp_relationships_get_types() {
+	return apply_filters( 'wp_relationships_get_types', array(
 		(object) array(
 			'id'   => 'post_taxonomy_term',
 			'name' => _x( 'Taxonomy Terms to Posts', 'object relationships', 'wp-object-relationships' )
@@ -61,8 +61,8 @@ function wp_object_relationships_get_types() {
  *
  * @return array
  */
-function wp_object_relationships_get_statuses() {
-	return apply_filters( 'wp_object_relationships_get_statuses', array(
+function wp_relationships_get_statuses() {
+	return apply_filters( 'wp_relationships_get_statuses', array(
 		(object) array(
 			'id'   => 'active',
 			'name' => _x( 'Active', 'object relationships', 'wp-object-relationships' )
@@ -82,7 +82,7 @@ function wp_object_relationships_get_statuses() {
  * @param bool $single
  * @return mixed
  */
-function wp_object_relationships_sanitize_relationship_ids( $single = false ) {
+function wp_relationships_sanitize_relationship_ids( $single = false ) {
 
 	// Default value
 	$retval = array();
@@ -98,7 +98,7 @@ function wp_object_relationships_sanitize_relationship_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return apply_filters( 'wp_object_relationships_sanitize_relationship_ids', $retval );
+	return apply_filters( 'wp_relationships_sanitize_relationship_ids', $retval );
 }
 
 /**

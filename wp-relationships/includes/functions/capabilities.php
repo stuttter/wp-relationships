@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @param string  $cap
  * @param int     $user_id
  */
-function wp_object_relationships_map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+function wp_relationships_map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
 	// One of our caps?
 	switch ( $cap ) {
@@ -47,5 +47,5 @@ function wp_object_relationships_map_meta_cap( $caps = array(), $cap = '', $user
 	}
 
 	// Filter and return
-	return apply_filters( 'wp_object_relationships_map_meta_cap', $caps, $cap, $user_id, $args );
+	return apply_filters( 'wp_relationships_map_meta_cap', $caps, $cap, $user_id, $args );
 }

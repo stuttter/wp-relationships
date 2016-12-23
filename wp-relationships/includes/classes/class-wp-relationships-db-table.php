@@ -29,7 +29,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version key
 	 */
-	public $db_version_key = 'wpdb_object_relationships_version';
+	public $db_version_key = 'wpdb_relationships_version';
 
 	/**
 	 * @var object Database object (usually $GLOBALS['wpdb'])
@@ -258,7 +258,7 @@ final class WP_Relationships_DB {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_db() {
+function wp_relationships_db() {
 	new WP_Relationships_DB();
 }
-add_action( 'plugins_loaded', 'wp_object_relationships_db', -PHP_INT_MAX );
+add_action( 'plugins_loaded', 'wp_relationships_db', -PHP_INT_MAX );

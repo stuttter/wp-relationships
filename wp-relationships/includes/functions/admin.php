@@ -14,20 +14,20 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-function wp_object_relationships_add_menu_item() {
+function wp_relationships_add_menu_item() {
 
 	// Define empty array
 	$hooks = array();
 
 	if ( is_blog_admin() ) {
-		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-object-relationships' ), esc_html__( 'Relationships', 'wp-object-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_object_relationships_output_list_page', 'dashicons-networking', 30 );
-		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-object-relationships' ), esc_html__( 'Add New', 'wp-object-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_object_relationships_output_edit_page' );
+		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-object-relationships' ), esc_html__( 'Relationships', 'wp-object-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
+		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-object-relationships' ), esc_html__( 'Add New', 'wp-object-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
 	}
 
 	// Load the list table
 	foreach ( $hooks as $hook ) {
-		add_action( "load-{$hook}", 'wp_object_relationships_handle_actions'       );
-		add_action( "load-{$hook}", 'wp_object_relationships_load_site_list_table' );
+		add_action( "load-{$hook}", 'wp_relationships_handle_actions'       );
+		add_action( "load-{$hook}", 'wp_relationships_load_site_list_table' );
 	}
 }
 
@@ -38,7 +38,7 @@ function wp_object_relationships_add_menu_item() {
  *
  * @return string
  */
-function wp_object_relationships_get_admin_action() {
+function wp_relationships_get_admin_action() {
 
 	$action = false;
 
@@ -63,7 +63,7 @@ function wp_object_relationships_get_admin_action() {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_load_site_list_table() {
+function wp_relationships_load_site_list_table() {
 	global $wp_list_table;
 
 	// Include the list table class
@@ -80,13 +80,13 @@ function wp_object_relationships_load_site_list_table() {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_output_page_header() {
+function wp_relationships_output_page_header() {
 
 	?><div class="wrap">
 		<h1 id="edit-relationship"><?php esc_html_e( 'Object Relationships', 'wp-object-relationships' ); ?></h1><?php
 
 	// Admin notices
-	do_action( 'wp_object_relationships_admin_notices' );
+	do_action( 'wp_relationships_admin_notices' );
 }
 
 /**
@@ -94,7 +94,7 @@ function wp_object_relationships_output_page_header() {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_output_page_footer() {
+function wp_relationships_output_page_footer() {
 	?></div><?php
 }
 
@@ -108,10 +108,10 @@ function wp_object_relationships_output_page_footer() {
  *
  * @param  string  $action  Action to perform
  */
-function wp_object_relationships_handle_actions() {
+function wp_relationships_handle_actions() {
 
 	// Look for actions
-	$action = wp_object_relationships_get_admin_action();
+	$action = wp_relationships_get_admin_action();
 
 	// Bail if no action
 	if ( false === $action ) {
@@ -124,12 +124,12 @@ function wp_object_relationships_handle_actions() {
 
 	// Maybe fallback redirect
 	if ( empty( $redirect_to ) ) {
-		$redirect_to = wp_object_relationships_admin_url();
+		$redirect_to = wp_relationships_admin_url();
 	}
 
 	// Get aliases being bulk actioned
 	$processed        = array();
-	$relationship_ids = wp_object_relationships_sanitize_relationship_ids();
+	$relationship_ids = wp_relationships_sanitize_relationship_ids();
 
 	// Redirect args
 	$args = array(
@@ -285,15 +285,15 @@ function wp_object_relationships_handle_actions() {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_output_edit_page() {
+function wp_relationships_output_edit_page() {
 
 	// Vars
-	$relationship_id = wp_object_relationships_sanitize_relationship_ids( true );
+	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
 	$relationship    = WP_Object_Relationship::get_instance( $relationship_id );
 	$action          = ! empty( $relationship ) ? 'edit' : 'add';
 
 	// URL
-	$action_url = wp_object_relationships_admin_url( array(
+	$action_url = wp_relationships_admin_url( array(
 		'action' => $action
 	) );
 
@@ -307,11 +307,11 @@ function wp_object_relationships_output_edit_page() {
 	}
 
 	// Drop-downs
-	$types    = wp_object_relationships_get_types();
-	$statuses = wp_object_relationships_get_statuses();
+	$types    = wp_relationships_get_types();
+	$statuses = wp_relationships_get_statuses();
 	
 	// Output the header, maybe with network site tabs
-	wp_object_relationships_output_page_header();
+	wp_relationships_output_page_header();
 
 	?><form method="post" action="<?php echo esc_url( $action_url ); ?>">
 		<table class="form-table">
@@ -391,7 +391,7 @@ function wp_object_relationships_output_edit_page() {
 	?></form><?php
 
 	// Footer
-	wp_object_relationships_output_page_footer();
+	wp_relationships_output_page_footer();
 }
 
 /**
@@ -399,7 +399,7 @@ function wp_object_relationships_output_edit_page() {
  *
  * @since 0.1.0
  */
-function wp_object_relationships_output_list_page() {
+function wp_relationships_output_list_page() {
 	global $wp_list_table;
 
 	// Get site ID being requested
@@ -407,10 +407,10 @@ function wp_object_relationships_output_list_page() {
 	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'manage_relationships';
 
 	// Action URLs
-	$form_url = $action_url = wp_object_relationships_admin_url();
+	$form_url = $action_url = wp_relationships_admin_url();
 
 	// Output header, maybe with tabs
-	wp_object_relationships_output_page_header(); ?>
+	wp_relationships_output_page_header(); ?>
 
 	<div id="col-container" style="margin-top: 20px;">
 		<div id="col-right">
@@ -453,7 +453,7 @@ function wp_object_relationships_output_list_page() {
 							<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-object-relationships' ); ?></label>
 							<select name="relationship_type" id="relationship_type"><?php
 
-								$types = wp_object_relationships_get_types();
+								$types = wp_relationships_get_types();
 
 								// Loop throug sites
 								foreach ( $types as $type ) :
@@ -470,7 +470,7 @@ function wp_object_relationships_output_list_page() {
 							<label for="relationship_status"><?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?></label>
 							<select name="relationship_status" id="relationship_status"><?php
 
-								$statuses = wp_object_relationships_get_statuses();
+								$statuses = wp_relationships_get_statuses();
 
 								// Loop throug sites
 								foreach ( $statuses as $status ) :
@@ -522,7 +522,7 @@ function wp_object_relationships_output_list_page() {
 	</div><?php
 
 	// Footer
-	wp_object_relationships_output_page_footer();
+	wp_relationships_output_page_footer();
 }
 
 /**
@@ -532,7 +532,7 @@ function wp_object_relationships_output_list_page() {
  *
  * @global type $wp_list_table
  */
-function wp_object_relationships_output_admin_notices() {
+function wp_relationships_output_admin_notices() {
 
 	// Add messages for bulk actions
 	if ( empty( $_REQUEST['did_action'] ) ) {

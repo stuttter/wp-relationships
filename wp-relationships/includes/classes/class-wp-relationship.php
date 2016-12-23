@@ -313,7 +313,7 @@ final class WP_Object_Relationship {
 		 * @param  WP_Object_Relationship  $relationship  The alias object.
 		 * @param  WP_Object_Relationship  $relationship  The previous alias object.
 		 */
-		do_action( 'wp_object_relationships_updated', $this, $old_alias );
+		do_action( 'wp_relationships_updated', $this, $old_alias );
 
 		return true;
 	}
@@ -350,7 +350,7 @@ final class WP_Object_Relationship {
 		 *
 		 * @param  WP_Object_Relationship  $relationship The alias object.
 		 */
-		do_action( 'wp_object_relationships_deleted', $this );
+		do_action( 'wp_relationships_deleted', $this );
 
 		return true;
 	}
@@ -468,7 +468,7 @@ final class WP_Object_Relationship {
 		 *
 		 * @param  WP_Object_Relationship  $relationship  The alias object.
 		 */
-		do_action( 'wp_object_relationships_created', $relationship );
+		do_action( 'wp_relationships_created', $relationship );
 
 		return $relationship;
 	}

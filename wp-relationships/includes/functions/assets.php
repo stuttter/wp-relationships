@@ -14,11 +14,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-function wp_object_relationships_admin_enqueue_scripts() {
+function wp_relationships_admin_enqueue_scripts() {
 
 	// Set location & version for scripts & styles
-	$src = wp_object_relationships_get_plugin_url();
-	$ver = wp_object_relationships_get_asset_version();
+	$src = wp_relationships_get_plugin_url();
+	$ver = wp_relationships_get_asset_version();
 
 	// Styles
 	wp_enqueue_style( 'wp-object-relationships', $src . 'assets/css/relationships.css', array(), $ver );

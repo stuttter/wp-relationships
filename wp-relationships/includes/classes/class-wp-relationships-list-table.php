@@ -75,7 +75,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	protected function get_bulk_actions() {
-		return apply_filters( 'wp_object_relationships_bulk_actions', array(
+		return apply_filters( 'wp_relationships_bulk_actions', array(
 			'activate'   => esc_html__( 'Activate',   'wp-object-relationships' ),
 			'deactivate' => esc_html__( 'Deactivate', 'wp-object-relationships' ),
 			'delete'     => esc_html__( 'Delete',     'wp-object-relationships' )
@@ -188,7 +188,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$status          = $relationship->relationship_status;
 
 		// Edit
-		$edit_link = wp_object_relationships_admin_url( array(
+		$edit_link = wp_relationships_admin_url( array(
 			'relationship_ids' => array( $relationship_id ),
 			'page'             => 'relationship_edit',
 		) );
@@ -209,12 +209,12 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			'_wpnonce'         => wp_create_nonce( 'relationships-bulk' )
 		);
 
-		$status_link = wp_object_relationships_admin_url( $args );
+		$status_link = wp_relationships_admin_url( $args );
 
 		// Delete
 		$delete_args           = $args;
 		$delete_args['action'] = 'delete';
-		$delete_link           = wp_object_relationships_admin_url( $delete_args );
+		$delete_link           = wp_relationships_admin_url( $delete_args );
 
 		// Edit
 		if ( current_user_can( 'edit_alias', $relationship_id ) ) {
