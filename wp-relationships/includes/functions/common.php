@@ -84,13 +84,10 @@ function wp_relationships_get_statuses() {
  */
 function wp_relationships_sanitize_relationship_ids( $single = false ) {
 
-	// Default value
-	$retval = array();
-
 	// Map IDs to integers
-	if ( isset( $_REQUEST['relationship_ids'] ) ) {
-		$retval = array_map( 'absint', (array) $_REQUEST['relationship_ids'] );
-	}
+	$retval = isset( $_REQUEST['relationship_ids'] )
+		? array_map( 'absint', (array) $_REQUEST['relationship_ids'] )
+		: array();
 
 	// Return the first item
 	if ( true === $single ) {
@@ -98,7 +95,7 @@ function wp_relationships_sanitize_relationship_ids( $single = false ) {
 	}
 
 	// Filter & return
-	return apply_filters( 'wp_relationships_sanitize_relationship_ids', $retval );
+	return apply_filters( 'wp_relationships_sanitize_relationship_ids', $retval, $single );
 }
 
 /**
@@ -112,10 +109,13 @@ function wp_relationships_sanitize_relationship_ids( $single = false ) {
  * @return WP_Object_Relationship|null The site object or null if not found.
  */
 function get_object_relationship( $relationship = null ) {
+
+	// Bail if no relationship
 	if ( empty( $relationship ) ) {
 		return null;
 	}
 
+	// Try to get a relationship instance
 	if ( $relationship instanceof WP_Object_Relationship ) {
 		$_relationship = $relationship;
 	} elseif ( is_object( $relationship ) ) {
@@ -124,7 +124,8 @@ function get_object_relationship( $relationship = null ) {
 		$_relationship = WP_Object_Relationship::get_instance( $relationship );
 	}
 
-	if ( ! $_relationship ) {
+	// Bail if no relationship
+	if ( empty( $_relationship ) ) {
 		return null;
 	}
 
@@ -134,14 +135,15 @@ function get_object_relationship( $relationship = null ) {
 	 * @since 2.0.0
 	 *
 	 * @param WP_Object_Relationship $_relationship relationship data.
+	 * @param mixes                  $relationship  the original value.
 	 */
-	$_relationship = apply_filters( 'get_object_relationship', $_relationship );
+	$_relationship = apply_filters( 'get_object_relationship', $_relationship, $relationship );
 
 	return $_relationship;
 }
 
 /**
- * Adds any relationshipes from the given ids to the cache that do not already
+ * Adds any relationships from the given IDs to the cache that do not already
  * exist in cache.
  *
  * @since 2.0.0
@@ -164,17 +166,20 @@ function _prime_object_relationship_caches( $ids = array() ) {
 }
 
 /**
- * Updates relationshipes in cache.
+ * Updates relationships in cache.
  *
  * @since 2.0.0
  *
  * @param array $relationships Array of relationship objects.
  */
 function update_object_relationship_cache( $relationships = array() ) {
+
+	// Bail if no relationships
 	if ( empty( $relationships ) ) {
 		return;
 	}
 
+	// Add each relatioship to the cache
 	foreach ( $relationships as $relationship ) {
 		wp_cache_add( $relationship->relationship_id, $relationship, 'object-relationships' );
 	}

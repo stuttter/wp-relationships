@@ -75,4 +75,3 @@ function get_relationship_meta( $id, $meta_key = '', $single = false ) {
 function update_relationship_meta( $id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'relationship', $id, $meta_key, $meta_value, $prev_value );
 }
-

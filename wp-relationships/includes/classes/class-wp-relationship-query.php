@@ -256,7 +256,7 @@ class WP_Object_Relationship_Query {
 		$this->parse_query();
 
 		/**
-		 * Fires before relationshipes are retrieved.
+		 * Fires before relationships are retrieved.
 		 *
 		 * @since 0.1.0
 		 *
