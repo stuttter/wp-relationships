@@ -39,7 +39,7 @@ function delete_relationship_meta( $id, $meta_key, $meta_value = '' ) {
 }
 
 /**
- * Retrieve relatioship meta field for a relationship.
+ * Retrieve relationship meta field for a relationship.
  *
  * @since 0.1.0
  *
