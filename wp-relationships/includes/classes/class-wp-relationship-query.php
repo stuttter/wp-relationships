@@ -1,6 +1,6 @@
 <?php
 /**
- * Site API: WP_Object_Relationship_Query class
+ * Site API: WP_Relationship_Query class
  *
  * @package Plugins/Relationships/Queries
  * @since 0.1.0
@@ -11,9 +11,9 @@
  *
  * @since 0.1.0
  *
- * @see WP_Object_Relationship_Query::__construct() for accepted arguments.
+ * @see WP_Relationship_Query::__construct() for accepted arguments.
  */
-class WP_Object_Relationship_Query {
+class WP_Relationship_Query {
 
 	/**
 	 * SQL for database query.
@@ -208,9 +208,9 @@ class WP_Object_Relationship_Query {
 	 * @since 0.1.0
 	 * @access public
 	 *
-	 * @see WP_Object_Relationship_Query::__construct()
+	 * @see WP_Relationship_Query::__construct()
 	 *
-	 * @param string|array $query Array or string of WP_Object_Relationship_Query arguments. See WP_Object_Relationship_Query::__construct().
+	 * @param string|array $query Array or string of WP_Relationship_Query arguments. See WP_Relationship_Query::__construct().
 	 */
 	public function parse_query( $query = '' ) {
 		if ( empty( $query ) ) {
@@ -224,7 +224,7 @@ class WP_Object_Relationship_Query {
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param WP_Object_Relationship_Query &$this The WP_Object_Relationship_Query instance (passed by reference).
+		 * @param WP_Relationship_Query &$this The WP_Relationship_Query instance (passed by reference).
 		 */
 		do_action_ref_array( 'parse_relationships_query', array( &$this ) );
 	}
@@ -260,7 +260,7 @@ class WP_Object_Relationship_Query {
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
+		 * @param WP_Relationship_Query &$this Current instance of WP_Relationship_Query, passed by reference.
 		 */
 		do_action_ref_array( 'pre_get_relationships', array( &$this ) );
 
@@ -330,11 +330,11 @@ class WP_Object_Relationship_Query {
 		 * @since 0.1.0
 		 *
 		 * @param array         $results An array of relationships.
-		 * @param WP_Object_Relationship_Query &$this   Current instance of WP_Object_Relationship_Query, passed by reference.
+		 * @param WP_Relationship_Query &$this   Current instance of WP_Relationship_Query, passed by reference.
 		 */
 		$_relationships = apply_filters_ref_array( 'the_relationships', array( $_relationships, &$this ) );
 
-		// Convert to WP_Object_Relationship_ instances.
+		// Convert to WP_Relationship_ instances.
 		$this->relationships = array_map( 'get_object_relationship', $_relationships );
 
 		return $this->relationships;
@@ -481,7 +481,7 @@ class WP_Object_Relationship_Query {
 			}
 
 			/**
-			 * Filters the columns to search in a WP_Object_Relationship_Query search.
+			 * Filters the columns to search in a WP_Relationship_Query search.
 			 *
 			 * The default columns include 'domain' and 'path.
 			 *
@@ -489,7 +489,7 @@ class WP_Object_Relationship_Query {
 			 *
 			 * @param array         $search_columns Array of column names to be searched.
 			 * @param string        $search         Text being searched.
-			 * @param WP_Object_Relationship_Query $this           The current WP_Object_Relationship_Query instance.
+			 * @param WP_Relationship_Query $this           The current WP_Relationship_Query instance.
 			 */
 			$search_columns = apply_filters( 'relationship_search_columns', $search_columns, $this->query_vars['search'], $this );
 
@@ -512,7 +512,7 @@ class WP_Object_Relationship_Query {
 		 * @since 0.1.0
 		 *
 		 * @param array $pieces A compacted array of relationship query clauses.
-		 * @param WP_Object_Relationship_Query &$this Current instance of WP_Object_Relationship_Query, passed by reference.
+		 * @param WP_Relationship_Query &$this Current instance of WP_Relationship_Query, passed by reference.
 		 */
 		$clauses = apply_filters_ref_array( 'relationship_clauses', array( compact( $pieces ), &$this ) );
 
@@ -575,7 +575,7 @@ class WP_Object_Relationship_Query {
 			 * @since 0.1.0
 			 *
 			 * @param string              $found_relationships_query SQL query. Default 'SELECT FOUND_ROWS()'.
-			 * @param WP_Object_Relationship_Query $relationship_query         The `WP_Object_Relationship_Query` instance.
+			 * @param WP_Relationship_Query $relationship_query         The `WP_Relationship_Query` instance.
 			 */
 			$found_relationships_query = apply_filters( 'found_relationships_query', 'SELECT FOUND_ROWS()', $this );
 

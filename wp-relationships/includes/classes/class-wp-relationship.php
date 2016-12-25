@@ -3,7 +3,7 @@
 /**
  * Object Relationships Class
  *
- * @package Plugins/Site/Relationships/Class
+ * @package Plugins/Relationships/Class
  */
 
 // Exit if accessed directly
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-final class WP_Object_Relationship {
+final class WP_Relationship {
 
 	/**
 	 * Relationship ID.
@@ -143,7 +143,7 @@ final class WP_Object_Relationship {
 	public $relationship_to_id = 0;
 
 	/**
-	 * Creates a new WP_Object_Relationship object.
+	 * Creates a new WP_Relationship object.
 	 *
 	 * Will populate object properties from the object provided and assign other
 	 * default properties based on that information.
@@ -151,7 +151,7 @@ final class WP_Object_Relationship {
 	 * @since 0.1.0
 	 * @access public
 	 *
-	 * @param WP_Object_Relationship|object $relationship A relationship object.
+	 * @param WP_Relationship|object $relationship A relationship object.
 	 */
 	public function __construct( $relationship ) {
 		if ( is_object( $relationship ) ) {
@@ -310,8 +310,8 @@ final class WP_Object_Relationship {
 		/**
 		 * Fires after a relationship has been updated.
 		 *
-		 * @param  WP_Object_Relationship  $relationship  The relationship object.
-		 * @param  WP_Object_Relationship  $relationship  The previous relationship object.
+		 * @param  WP_Relationship  $relationship  The relationship object.
+		 * @param  WP_Relationship  $relationship  The previous relationship object.
 		 */
 		do_action( 'wp_relationships_updated', $this, $old_relationship );
 
@@ -348,7 +348,7 @@ final class WP_Object_Relationship {
 		/**
 		 * Fires after a relationship has been delete.
 		 *
-		 * @param  WP_Object_Relationship  $relationship The relationship object.
+		 * @param  WP_Relationship  $relationship The relationship object.
 		 */
 		do_action( 'wp_relationships_deleted', $this );
 
@@ -365,7 +365,7 @@ final class WP_Object_Relationship {
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param int $relationship_id The ID of the site to retrieve.
-	 * @return WP_Object_Relationship|false The relationship's object if found. False if not.
+	 * @return WP_Relationship|false The relationship's object if found. False if not.
 	 */
 	public static function get_instance( $relationship_id = 0 ) {
 		global $wpdb;
@@ -387,7 +387,7 @@ final class WP_Object_Relationship {
 		}
 
 		// Return relationship object
-		return new WP_Object_Relationship( $_relationship );
+		return new WP_Relationship( $_relationship );
 	}
 
 	/**
@@ -397,7 +397,7 @@ final class WP_Object_Relationship {
 	 *
 	 * @param int|stdClass $relationship Relationship
 	 *
-	 * @return WP_Object_Relationship|WP_Error|null Relationship on success, WP_Error if error occurred, or null if no relationship found
+	 * @return WP_Relationship|WP_Error|null Relationship on success, WP_Error if error occurred, or null if no relationship found
 	 */
 	public static function get_by_id( $relationship = null ) {
 
@@ -411,7 +411,7 @@ final class WP_Object_Relationship {
 		}
 
 		// Get relationships
-		$relationships = new WP_Object_Relationship_Query();
+		$relationships = new WP_Relationship_Query();
 
 		// Bail if no relationships
 		if ( empty( $relationships->found_relationships ) ) {
@@ -426,7 +426,7 @@ final class WP_Object_Relationship {
 	 *
 	 * @param array  $args
 	 *
-	 * @return WP_Object_Relationship|WP_Error
+	 * @return WP_Relationship|WP_Error
 	 */
 	public static function create( $args = array() ) {
 		global $wpdb;
@@ -466,7 +466,7 @@ final class WP_Object_Relationship {
 		/**
 		 * Fires after a relationship has been created.
 		 *
-		 * @param  WP_Object_Relationship  $relationship  The relationship object.
+		 * @param  WP_Relationship  $relationship  The relationship object.
 		 */
 		do_action( 'wp_relationships_created', $relationship );
 

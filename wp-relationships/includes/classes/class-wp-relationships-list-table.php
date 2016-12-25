@@ -28,7 +28,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			: '';
 
 		// Get relationships
-		$relationships = new WP_Object_Relationship_Query( array(
+		$relationships = new WP_Relationship_Query( array(
 			'search' => $search
 		) );
 
@@ -159,7 +159,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $relationship ) {
@@ -175,7 +175,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_name( $relationship ) {
@@ -243,7 +243,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_status( $relationship ) {
@@ -258,7 +258,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -272,7 +272,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -286,7 +286,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current relationship item
+	 * @param WP_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */

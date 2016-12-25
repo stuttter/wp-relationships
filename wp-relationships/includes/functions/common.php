@@ -42,16 +42,27 @@ function wp_relationships_admin_url( $args = array() ) {
  * @return array
  */
 function wp_relationships_get_types() {
-	return apply_filters( 'wp_relationships_get_types', array(
-		(object) array(
-			'id'   => 'post_taxonomy_term',
-			'name' => _x( 'Taxonomy Terms to Posts', 'object relationships', 'wp-object-relationships' )
-		),
-		(object) array(
-			'id'   => 'post_post',
-			'name' => _x( 'Posts to Posts', 'object relationships', 'wp-object-relationships' )
-		)
-	) );
+	static $types = null;
+
+	// Register types
+	if ( null === $types ) {
+		$types = array();
+
+		// Post/Term
+		$types[] = new WP_Relationship_Type( array(
+			'type_id'   => 'post_taxonomy_term',
+			'type_name' => _x( 'Taxonomy Terms to Posts', 'object relationships', 'wp-object-relationships' )
+		) );
+
+		// Post/Post
+		$types[] = new WP_Relationship_Type( array(
+			'type_id'   => 'post_post',
+			'type_name' => _x( 'Posts to Posts', 'object relationships', 'wp-object-relationships' )
+		) );
+	}
+
+	// Filter & return
+	return apply_filters( 'wp_relationships_get_types', $types );
 }
 
 /**
@@ -62,16 +73,26 @@ function wp_relationships_get_types() {
  * @return array
  */
 function wp_relationships_get_statuses() {
-	return apply_filters( 'wp_relationships_get_statuses', array(
-		(object) array(
-			'id'   => 'active',
-			'name' => _x( 'Active', 'object relationships', 'wp-object-relationships' )
-		),
-		(object) array(
-			'id'   => 'inactive',
-			'name' => _x( 'Inactive', 'object relationships', 'wp-object-relationships' )
-		),
-	) );
+	static $statuses = null;
+
+	if ( is_null( $statuses ) ) {
+		$statuses = array();
+
+		// Active
+		$statuses[] = new WP_Relationship_Status( array(
+			'status_id'   => 'active',
+			'status_name' => _x( 'Active', 'object relationships', 'wp-object-relationships' )
+		) );
+
+		// Inactive
+		$statuses[] = new WP_Relationship_Status( array(
+			'status_id'   => 'inactive',
+			'status_name' => _x( 'Inactive', 'object relationships', 'wp-object-relationships' )
+		) );
+	}
+
+	// Filter & return
+	return apply_filters( 'wp_relationships_get_statuses', $statuses );
 }
 
 /**
@@ -105,8 +126,8 @@ function wp_relationships_sanitize_relationship_ids( $single = false ) {
  *
  * @since 2.0.0
  *
- * @param WP_Object_Relationship|int|null $relationship Optional. relationship to retrieve.
- * @return WP_Object_Relationship|null The site object or null if not found.
+ * @param WP_Relationship|int|null $relationship Optional. relationship to retrieve.
+ * @return WP_Relationship|null The site object or null if not found.
  */
 function get_object_relationship( $relationship = null ) {
 
@@ -116,12 +137,12 @@ function get_object_relationship( $relationship = null ) {
 	}
 
 	// Try to get a relationship instance
-	if ( $relationship instanceof WP_Object_Relationship ) {
+	if ( $relationship instanceof WP_Relationship ) {
 		$_relationship = $relationship;
 	} elseif ( is_object( $relationship ) ) {
-		$_relationship = new WP_Object_Relationship( $relationship );
+		$_relationship = new WP_Relationship( $relationship );
 	} else {
-		$_relationship = WP_Object_Relationship::get_instance( $relationship );
+		$_relationship = WP_Relationship::get_instance( $relationship );
 	}
 
 	// Bail if no relationship
@@ -134,7 +155,7 @@ function get_object_relationship( $relationship = null ) {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param WP_Object_Relationship $_relationship relationship data.
+	 * @param WP_Relationship $_relationship relationship data.
 	 * @param mixes                  $relationship  the original value.
 	 */
 	$_relationship = apply_filters( 'get_object_relationship', $_relationship, $relationship );
@@ -190,9 +211,9 @@ function update_object_relationship_cache( $relationships = array() ) {
  *
  * @since 0.1.0
  *
- * @param WP_Object_Relationship $relationship The relationship details as returned from get_object_relationship()
+ * @param WP_Relationship $relationship The relationship details as returned from get_object_relationship()
  */
-function clean_object_relationship_cache( WP_Object_Relationship $relationship ) {
+function clean_object_relationship_cache( WP_Relationship $relationship ) {
 
 	wp_cache_delete( $relationship->relationship_id, 'object-relationships' );
 

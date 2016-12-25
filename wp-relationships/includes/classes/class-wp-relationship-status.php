@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Object Relationships Type
+ * Object Relationships Status
  *
- * @package Plugins/Relationships/Type/Class
+ * @package Plugins/Relationships/Status/Class
  */
 
 // Exit if accessed directly
@@ -14,16 +14,16 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-final class WP_Relationship_Type {
+final class WP_Relationship_Status {
 
 	/**
-	 * Type ID.
+	 * Status ID.
 	 *
 	 * @since 0.1.0
 	 * @access public
 	 * @var string
 	 */
-	public $type_id;
+	public $status_id;
 
 	/**
 	 * Name.
@@ -32,10 +32,10 @@ final class WP_Relationship_Type {
 	 * @access public
 	 * @var string
 	 */
-	public $type_name;
+	public $status_name;
 
 	/**
-	 * Creates a new WP_Relationship_Type object.
+	 * Creates a new WP_Relationship_Status object.
 	 *
 	 * Will populate object properties from the object provided and assign other
 	 * default properties based on that information.
@@ -43,18 +43,18 @@ final class WP_Relationship_Type {
 	 * @since 0.1.0
 	 * @access public
 	 *
-	 * @param WP_Relationship_Type|object|array $type A status object.
+	 * @param WP_Relationship_Status|object|array $status A status object.
 	 */
-	public function __construct( $type ) {
+	public function __construct( $status ) {
 
 		// Convert to array
-		if ( is_object( $type ) ) {
-			$type = get_object_vars( $type );
+		if ( is_object( $status ) ) {
+			$status = get_object_vars( $status );
 		}
 
 		// Set values
-		if ( ! empty( $type ) && is_array( $type ) ) {
-			foreach ( $type as $key => $value ) {
+		if ( ! empty( $status ) && is_array( $status ) ) {
+			foreach ( $status as $key => $value ) {
 				$this->{$key} = $value;
 			}
 		}
@@ -84,10 +84,10 @@ final class WP_Relationship_Type {
 	public function __get( $key = '' ) {
 		switch ( $key ) {
 			case 'id':
-			case 'type_id':
-				return sanitize_key( $this->type_id );
-			case 'type_name':
-				return $this->type_name;
+			case 'status_id':
+				return sanitize_key( $this->status_id );
+			case 'status_name':
+				return $this->status_name;
 			default :
 				return isset( $this->{$key} )
 					? $this->{$key}
@@ -109,7 +109,7 @@ final class WP_Relationship_Type {
 	public function __isset( $key = '' ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'type_id' :
+			case 'status_id' :
 				return true;
 			default :
 				return isset( $this->{$key} );
@@ -130,8 +130,8 @@ final class WP_Relationship_Type {
 	public function __set( $key, $value ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'type_id' :
-				$this->type_id = sanitize_key( $value );
+			case 'status_id' :
+				$this->status_id = sanitize_key( $value );
 				break;
 			default:
 				$this->{$key} = $value;

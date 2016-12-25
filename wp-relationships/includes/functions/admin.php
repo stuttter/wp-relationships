@@ -146,7 +146,7 @@ function wp_relationships_handle_actions() {
 			check_admin_referer( 'relationships-bulk' );
 
 			foreach ( $relationship_ids as $relationship_id ) {
-				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
+				$relationship = WP_Relationship::get_instance( $relationship_id );
 
 				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
@@ -171,7 +171,7 @@ function wp_relationships_handle_actions() {
 			check_admin_referer( 'relationships-bulk' );
 
 			foreach ( $relationship_ids as $relationship_id ) {
-				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
+				$relationship = WP_Relationship::get_instance( $relationship_id );
 
 				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
@@ -198,7 +198,7 @@ function wp_relationships_handle_actions() {
 			$args['domains'] = array();
 
 			foreach ( $relationship_ids as $relationship_id ) {
-				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
+				$relationship = WP_Relationship::get_instance( $relationship_id );
 
 				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
@@ -224,7 +224,7 @@ function wp_relationships_handle_actions() {
 			check_admin_referer( 'relationship_add' );
 
 			// Add
-			$relationship = WP_Object_Relationship::create( wp_unslash( $_POST ) );
+			$relationship = WP_Relationship::create( wp_unslash( $_POST ) );
 
 			// Bail if an error occurred
 			if ( is_wp_error( $relationship ) ) {
@@ -242,7 +242,7 @@ function wp_relationships_handle_actions() {
 
 			// Check that the parameters are correct first
 			$relationship_id = $relationship_ids[0];
-			$relationship    = WP_Object_Relationship::get_instance( $relationship_id );
+			$relationship    = WP_Relationship::get_instance( $relationship_id );
 
 			// Error messages
 			if ( is_wp_error( $relationship ) ) {
@@ -289,7 +289,7 @@ function wp_relationships_output_edit_page() {
 
 	// Vars
 	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
-	$relationship    = WP_Object_Relationship::get_instance( $relationship_id );
+	$relationship    = WP_Relationship::get_instance( $relationship_id );
 	$action          = ! empty( $relationship ) ? 'edit' : 'add';
 
 	// URL
@@ -335,11 +335,11 @@ function wp_relationships_output_edit_page() {
 
 							// Maybe selected
 							$selected = ! empty( $relationship )
-								? selected( $type->id, $relationship->relationship_status )
+								? selected( $type->type_id, $relationship->relationship_status )
 								: '';
 
 							// Loop through sites
-							?><option value="<?php echo esc_attr( $type->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->name ); ?></option><?php
+							?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->type_name ); ?></option><?php
 
 						endforeach;
 
@@ -358,11 +358,11 @@ function wp_relationships_output_edit_page() {
 
 							// Maybe selected
 							$selected = ! empty( $relationship )
-								? selected( $status->id, $relationship->relationship_status )
+								? selected( $status->status_id, $relationship->relationship_status )
 								: '';
 
 							// Loop through sites
-							?><option value="<?php echo esc_attr( $status->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->name ); ?></option><?php
+							?><option value="<?php echo esc_attr( $status->status_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->status_name ); ?></option><?php
 
 						endforeach;
 
@@ -459,7 +459,7 @@ function wp_relationships_output_list_page() {
 								foreach ( $types as $type ) :
 
 									// Loop through sites
-									?><option value="<?php echo esc_attr( $type->id ); ?>"><?php echo esc_html( $type->name ); ?></option><?php
+									?><option value="<?php echo esc_attr( $type->type_id ); ?>"><?php echo esc_html( $type->type_name ); ?></option><?php
 
 								endforeach;
 
@@ -476,7 +476,7 @@ function wp_relationships_output_list_page() {
 								foreach ( $statuses as $status ) :
 
 									// Loop through sites
-									?><option value="<?php echo esc_attr( $status->id ); ?>"><?php echo esc_html( $status->name ); ?></option><?php
+									?><option value="<?php echo esc_attr( $status->status_id ); ?>"><?php echo esc_html( $status->status_name ); ?></option><?php
 
 								endforeach;
 
