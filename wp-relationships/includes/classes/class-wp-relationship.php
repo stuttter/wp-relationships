@@ -253,7 +253,7 @@ final class WP_Object_Relationship {
 	}
 
 	/**
-	 * Set the status for the alias
+	 * Set the status for the relationship
 	 *
 	 * @since 0.1.0
 	 *
@@ -268,7 +268,7 @@ final class WP_Object_Relationship {
 	}
 
 	/**
-	 * Update the alias
+	 * Update the relationship
 	 *
 	 * See also, {@see set_domain} and {@see set_status} as convenience methods.
 	 *
@@ -296,30 +296,30 @@ final class WP_Object_Relationship {
 		}
 
 		// Clone this object
-		$old_alias = clone( $this );
+		$old_relationship = clone( $this );
 
 		// Update internal state
 		foreach ( $fields as $key => $val ) {
 			$this->{$key} = $val;
 		}
 
-		// Update the alias caches
+		// Update the relationship caches
 		wp_cache_set( $relationship_id, $this, 'object-relationships' );
 		wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 
 		/**
-		 * Fires after a alias has been updated.
+		 * Fires after a relationship has been updated.
 		 *
-		 * @param  WP_Object_Relationship  $relationship  The alias object.
-		 * @param  WP_Object_Relationship  $relationship  The previous alias object.
+		 * @param  WP_Object_Relationship  $relationship  The relationship object.
+		 * @param  WP_Object_Relationship  $relationship  The previous relationship object.
 		 */
-		do_action( 'wp_relationships_updated', $this, $old_alias );
+		do_action( 'wp_relationships_updated', $this, $old_relationship );
 
 		return true;
 	}
 
 	/**
-	 * Delete the alias
+	 * Delete the relationship
 	 *
 	 * @since 0.1.0
 	 *
@@ -328,13 +328,13 @@ final class WP_Object_Relationship {
 	public function delete() {
 		global $wpdb;
 
-		// Try to delete the alias
+		// Try to delete the relationship
 		$relationship_id = $this->relationship_id;
 		$where           = array( 'relationship_id' => $relationship_id );
 		$where_format    = array( '%d' );
 		$result          = $wpdb->delete( $wpdb->relationships, $where, $where_format );
 
-		// Bail if no alias to delete
+		// Bail if no relationship to delete
 		if ( empty( $result ) ) {
 			return new WP_Error( 'delete_failed' );
 		}
@@ -346,9 +346,9 @@ final class WP_Object_Relationship {
 		wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 
 		/**
-		 * Fires after a alias has been delete.
+		 * Fires after a relationship has been delete.
 		 *
-		 * @param  WP_Object_Relationship  $relationship The alias object.
+		 * @param  WP_Object_Relationship  $relationship The relationship object.
 		 */
 		do_action( 'wp_relationships_deleted', $this );
 
@@ -375,29 +375,29 @@ final class WP_Object_Relationship {
 		// Check cache first
 		$_relationship = wp_cache_get( $relationship_id, 'object-relationships' );
 
-		// No cached alias
+		// No cached relationship
 		if ( false === $_relationship ) {
 			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE id = %d LIMIT 1", $relationship_id ) );
 
-			// Add alias to cache
+			// Add relationship to cache
 			if ( ! empty( $_relationship ) && ! is_wp_error( $_relationship ) ) {
 				wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
 				wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 			}
 		}
 
-		// Return alias object
+		// Return relationship object
 		return new WP_Object_Relationship( $_relationship );
 	}
 
 	/**
-	 * Get alias by relationship ID
+	 * Get relationship by relationship ID
 	 *
 	 * @since 0.1.0
 	 *
 	 * @param int|stdClass $relationship Relationship
 	 *
-	 * @return WP_Object_Relationship|WP_Error|null Relationship on success, WP_Error if error occurred, or null if no alias found
+	 * @return WP_Object_Relationship|WP_Error|null Relationship on success, WP_Error if error occurred, or null if no relationship found
 	 */
 	public static function get_by_id( $relationship = null ) {
 
@@ -437,7 +437,7 @@ final class WP_Object_Relationship {
 			return new WP_Error( 'insert_failed' );
 		}
 
-		// Create the alias!
+		// Create the relationship!
 		$prev_errors = ! empty( $GLOBALS['EZSQL_ERROR'] ) ? $GLOBALS['EZSQL_ERROR'] : array();
 		$suppress    = $wpdb->suppress_errors( true );
 		$result      = $wpdb->insert( $wpdb->relationships, $r, self::format() );
@@ -460,13 +460,13 @@ final class WP_Object_Relationship {
 		// Ensure the cache is flushed
 		wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 
-		// Get the alias, and prime the caches
+		// Get the relationship, and prime the caches
 		$relationship = static::get_instance( $wpdb->insert_id );
 
 		/**
-		 * Fires after a alias has been created.
+		 * Fires after a relationship has been created.
 		 *
-		 * @param  WP_Object_Relationship  $relationship  The alias object.
+		 * @param  WP_Object_Relationship  $relationship  The relationship object.
 		 */
 		do_action( 'wp_relationships_created', $relationship );
 

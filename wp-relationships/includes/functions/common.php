@@ -75,7 +75,7 @@ function wp_relationships_get_statuses() {
 }
 
 /**
- * Sanitize requested alias ID values
+ * Sanitize requested relationship ID values
  *
  * @since 0.1.0
  *
@@ -185,7 +185,7 @@ function update_object_relationship_cache( $relationships = array() ) {
  *
  * @since 0.1.0
  *
- * @param WP_Object_Relationship $relationship The alias details as returned from get_object_relationship()
+ * @param WP_Object_Relationship $relationship The relationship details as returned from get_object_relationship()
  */
 function clean_object_relationship_cache( WP_Object_Relationship $relationship ) {
 

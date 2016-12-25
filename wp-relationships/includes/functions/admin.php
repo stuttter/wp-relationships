@@ -281,7 +281,7 @@ function wp_relationships_handle_actions() {
 }
 
 /**
- * Output alias editing page
+ * Output relationship editing page
  *
  * @since 0.1.0
  */
@@ -395,7 +395,7 @@ function wp_relationships_output_edit_page() {
 }
 
 /**
- * Output alias editing page
+ * Output relationship editing page
  *
  * @since 0.1.0
  */

@@ -119,9 +119,9 @@ class WP_Object_Relationship_Query {
 	 * @param string|array $query {
 	 *     Optional. Array or query string of relationship query parameters. Default empty.
 	 *
-	 *     @type int          $ID                   An alias ID to only return that alias. Default empty.
-	 *     @type array        $relationship__in     Array of alias IDs to include. Default empty.
-	 *     @type array        $relationship__not_in Array of alias IDs to exclude. Default empty.
+	 *     @type int          $ID                   An relationship ID to only return that relationship. Default empty.
+	 *     @type array        $relationship__in     Array of relationship IDs to include. Default empty.
+	 *     @type array        $relationship__not_in Array of relationship IDs to exclude. Default empty.
 	 *     @type int          $site_id              A site ID to only return that site. Default empty.
 	 *     @type array        $site__in             Array of site IDs to include. Default empty.
 	 *     @type array        $site__not_in         Array of site IDs to exclude. Default empty.
@@ -565,7 +565,7 @@ class WP_Object_Relationship_Query {
 	 * @access private
 	 *
 	 * @global wpdb  $this->db WordPress database abstraction object.
-	 * @param  array $relationship_ids Optional array of alias IDs
+	 * @param  array $relationship_ids Optional array of relationship IDs
 	 */
 	private function set_found_relationships( $relationship_ids = array() ) {
 		if ( ! empty( $this->query_vars['number'] ) && ! empty( $this->query_vars['no_found_rows'] ) ) {

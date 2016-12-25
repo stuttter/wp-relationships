@@ -159,7 +159,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_cb( $relationship ) {
@@ -175,7 +175,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_name( $relationship ) {
@@ -217,17 +217,17 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$delete_link           = wp_relationships_admin_url( $delete_args );
 
 		// Edit
-		if ( current_user_can( 'edit_alias', $relationship_id ) ) {
+		if ( current_user_can( 'edit_relationship', $relationship_id ) ) {
 			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-object-relationships' ) );
 		}
 
 		// Activate/deactivate
-		if ( current_user_can( "{$action}_alias", $relationship_id ) ) {
+		if ( current_user_can( "{$action}_relationship", $relationship_id ) ) {
 			$actions[ $action ] = sprintf( '<a href="%s">%s</a>', esc_url( $status_link ), esc_html( $text ) );
 		}
 
 		// Delete
-		if ( current_user_can( 'delete_alias', $relationship_id ) ) {
+		if ( current_user_can( 'delete_relationship', $relationship_id ) ) {
 			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-object-relationships' ) );
 		}
 
@@ -243,7 +243,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 * @return string HTML for the cell
 	 */
 	protected function column_status( $relationship ) {
@@ -258,7 +258,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -272,7 +272,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */
@@ -286,7 +286,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 * @since 0.1.0
 	 * @access protected
 	 *
-	 * @param WP_Object_Relationship $relationship Current alias item
+	 * @param WP_Object_Relationship $relationship Current relationship item
 	 *
 	 * @return string HTML for the cell
 	 */
