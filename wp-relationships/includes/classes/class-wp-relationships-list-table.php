@@ -54,11 +54,11 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		// Universal columns
 		$columns = array(
 			'cb'        => '<input type="checkbox" />',
-			'name'      => _x( 'Name',      'object relationship', 'wp-object-relationships' ),
-			'status'    => _x( 'Status',    'object relationship', 'wp-object-relationships' ),
-			'from'      => _x( 'From',      'object relationship', 'wp-object-relationships' ),
-			'to'        => _x( 'To',        'object relationship', 'wp-object-relationships' ),
-			'activity'  => _x( 'Activity',  'object relationship', 'wp-object-relationships' )
+			'name'      => _x( 'Name',     'object relationship', 'wp-relationships' ),
+			'status'    => _x( 'Status',   'object relationship', 'wp-relationships' ),
+			'from'      => _x( 'From',     'object relationship', 'wp-relationships' ),
+			'to'        => _x( 'To',       'object relationship', 'wp-relationships' ),
+			'activity'  => _x( 'Activity', 'object relationship', 'wp-relationships' )
 		);
 
 		// Return columns
@@ -76,9 +76,9 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		return apply_filters( 'wp_relationships_bulk_actions', array(
-			'activate'   => esc_html__( 'Activate',   'wp-object-relationships' ),
-			'deactivate' => esc_html__( 'Deactivate', 'wp-object-relationships' ),
-			'delete'     => esc_html__( 'Delete',     'wp-object-relationships' )
+			'activate'   => esc_html__( 'Activate',   'wp-relationships' ),
+			'deactivate' => esc_html__( 'Deactivate', 'wp-relationships' ),
+			'delete'     => esc_html__( 'Delete',     'wp-relationships' )
 		) );
 	}
 
@@ -195,10 +195,10 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Active/Deactive
 		if ( 'active' === $status ) {
-			$text   = _x( 'Deactivate', 'object relationship', 'wp-object-relationships' );
+			$text   = _x( 'Deactivate', 'object relationship', 'wp-relationships' );
 			$action = 'deactivate';
 		} else {
-			$text   = _x( 'Activate', 'object relationship', 'wp-object-relationships' );
+			$text   = _x( 'Activate', 'object relationship', 'wp-relationships' );
 			$action = 'activate';
 		}
 
@@ -218,7 +218,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Edit
 		if ( current_user_can( 'edit_relationship', $relationship_id ) ) {
-			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-object-relationships' ) );
+			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-relationships' ) );
 		}
 
 		// Activate/deactivate
@@ -228,7 +228,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Delete
 		if ( current_user_can( 'delete_relationship', $relationship_id ) ) {
-			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-object-relationships' ) );
+			$actions['delete'] = sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'wp-relationships' ) );
 		}
 
 		// Get HTML from actions
@@ -248,8 +248,8 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 */
 	protected function column_status( $relationship ) {
 		return ( 'active' === $relationship->relationship_status )
-			? esc_html_x( 'Active',   'object relationship', 'wp-object-relationships' )
-			: esc_html_x( 'Inactive', 'object relationship', 'wp-object-relationships' );
+			? esc_html_x( 'Active',   'object relationship', 'wp-relationships' )
+			: esc_html_x( 'Inactive', 'object relationship', 'wp-relationships' );
 	}
 
 	/**

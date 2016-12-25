@@ -51,49 +51,49 @@ function wp_relationships_get_types() {
 		// Post/Post
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'post_post',
-			'type_name' => _x( 'Post to Post', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'Post to Post', 'object relationships', 'wp-relationships' )
 		) );
 
 		// Term/Post
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'term_post',
-			'type_name' => _x( 'Term to Post', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'Term to Post', 'object relationships', 'wp-relationships' )
 		) );
 
 		// Comment/Post
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'comment_post',
-			'type_name' => _x( 'Comment to Post', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'Comment to Post', 'object relationships', 'wp-relationships' )
 		) );
 
 		// User/Post
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'user_post',
-			'type_name' => _x( 'User to Post', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'User to Post', 'object relationships', 'wp-relationships' )
 		) );
 
 		// User/Comment
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'user_comment',
-			'type_name' => _x( 'User to Comment', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'User to Comment', 'object relationships', 'wp-relationships' )
 		) );
 
 		// Term/Term
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'term_term',
-			'type_name' => _x( 'Term to Term', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'Term to Term', 'object relationships', 'wp-relationships' )
 		) );
 
 		// User/Term
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'user_term',
-			'type_name' => _x( 'User to Term', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'User to Term', 'object relationships', 'wp-relationships' )
 		) );
 
 		// User/User
 		$types[] = new WP_Relationship_Type( array(
 			'type_id'   => 'user_user',
-			'type_name' => _x( 'User to User', 'object relationships', 'wp-object-relationships' )
+			'type_name' => _x( 'User to User', 'object relationships', 'wp-relationships' )
 		) );
 	}
 
@@ -117,13 +117,13 @@ function wp_relationships_get_statuses() {
 		// Active
 		$statuses[] = new WP_Relationship_Status( array(
 			'status_id'   => 'active',
-			'status_name' => _x( 'Active', 'object relationships', 'wp-object-relationships' )
+			'status_name' => _x( 'Active', 'object relationships', 'wp-relationships' )
 		) );
 
 		// Inactive
 		$statuses[] = new WP_Relationship_Status( array(
 			'status_id'   => 'inactive',
-			'status_name' => _x( 'Inactive', 'object relationships', 'wp-object-relationships' )
+			'status_name' => _x( 'Inactive', 'object relationships', 'wp-relationships' )
 		) );
 	}
 

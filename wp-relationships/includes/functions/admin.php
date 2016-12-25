@@ -20,8 +20,8 @@ function wp_relationships_add_menu_item() {
 	$hooks = array();
 
 	if ( is_blog_admin() ) {
-		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-object-relationships' ), esc_html__( 'Relationships', 'wp-object-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
-		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-object-relationships' ), esc_html__( 'Add New', 'wp-object-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
+		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-relationships' ), esc_html__( 'Relationships', 'wp-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
+		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-relationships' ), esc_html__( 'Add New', 'wp-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
 	}
 
 	// Load the list table
@@ -83,7 +83,7 @@ function wp_relationships_load_site_list_table() {
 function wp_relationships_output_page_header() {
 
 	?><div class="wrap">
-		<h1 id="edit-relationship"><?php esc_html_e( 'Object Relationships', 'wp-object-relationships' ); ?></h1><?php
+		<h1 id="edit-relationship"><?php esc_html_e( 'Object Relationships', 'wp-relationships' ); ?></h1><?php
 
 	// Admin notices
 	do_action( 'wp_relationships_admin_notices' );
@@ -317,7 +317,7 @@ function wp_relationships_output_edit_page() {
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="relationship_name"><?php echo esc_html_x( 'Name', 'field name', 'wp-object-relationships' ); ?></label>
+					<label for="relationship_name"><?php echo esc_html_x( 'Name', 'field name', 'wp-relationships' ); ?></label>
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="relationship_name" id="relationship_name" value="<?php echo esc_attr( '' ); ?>">
@@ -325,7 +325,7 @@ function wp_relationships_output_edit_page() {
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-object-relationships' ); ?></label>
+					<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-relationships' ); ?></label>
 				</th>
 				<td>
 					<select name="relationship_type" id="type"><?php
@@ -348,7 +348,7 @@ function wp_relationships_output_edit_page() {
 			</tr>
 			<tr>
 				<th scope="row">
-					<?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?>
+					<?php echo esc_html_x( 'Status', 'field name', 'wp-relationships' ); ?>
 				</th>
 				<td>
 					<select name="relationship_status" id="status"><?php
@@ -377,12 +377,12 @@ function wp_relationships_output_edit_page() {
 		// Add
 		if ( 'add' === $action ) {
 			wp_nonce_field( 'relationship_add' );
-			$submit_text = esc_html__( 'Add Relationship', 'wp-object-relationships' );
+			$submit_text = esc_html__( 'Add Relationship', 'wp-relationships' );
 
 		// Edit
 		} else {
 			wp_nonce_field( "relationship_edit-{$relationship_id}" );
-			$submit_text = esc_html__( 'Save Relationship', 'wp-object-relationships' );
+			$submit_text = esc_html__( 'Save Relationship', 'wp-relationships' );
 		}
 
 		// Submit button
@@ -419,9 +419,9 @@ function wp_relationships_output_list_page() {
 					<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
 					<input type="hidden" name="relationship_id" value="<?php echo esc_attr( '' ); ?>" />
 					<p class="search-box">
-						<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-object-relationships' ); ?></label>
+						<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-relationships' ); ?></label>
 						<input type="search" id="relationship-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
-						<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Relationships', 'wp-object-relationships' ); ?>">
+						<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Relationships', 'wp-relationships' ); ?>">
 					</p>
 				</form>
 
@@ -435,22 +435,22 @@ function wp_relationships_output_list_page() {
 		<div id="col-left">
 			<div class="col-wrap">
 				<div class="form-wrap">
-					<h2><?php esc_html_e( 'Add New Relationship', 'wp-object-relationships' ); ?></h2>
+					<h2><?php esc_html_e( 'Add New Relationship', 'wp-relationships' ); ?></h2>
 					<form method="post" action="<?php echo esc_url( $action_url ); ?>">
 						<div class="form-field form-required name-wrap">
-							<label for="relationship_name"><?php echo esc_html_x( 'Relationship Name', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_name"><?php echo esc_html_x( 'Relationship Name', 'field name', 'wp-relationships' ); ?></label>
 							<input type="text" class="regular-text" name="relationship_name" id="relationship_name" value="">
-							<p><?php esc_html_e( 'Name of relationship, to make it easy to identify.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Name of relationship, to make it easy to identify.', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required content-wrap">
-							<label for="relationship_content"><?php echo esc_html_x( 'Relationship Description', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_content"><?php echo esc_html_x( 'Relationship Description', 'field name', 'wp-relationships' ); ?></label>
 							<textarea class="regular-text" name="relationship_content" id="relationship_content"></textarea>
-							<p><?php esc_html_e( 'Describe this relationship, Totally optional...', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Describe this relationship, Totally optional...', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required type-wrap">
-							<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-relationships' ); ?></label>
 							<select name="relationship_type" id="relationship_type"><?php
 
 								$types = wp_relationships_get_types();
@@ -464,10 +464,10 @@ function wp_relationships_output_list_page() {
 								endforeach;
 
 							?></select>
-							<p><?php esc_html_e( 'What types of objects are related to each other.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'What types of objects are related to each other.', 'wp-relationships' ); ?></p>
 						</div>
 						<div class="form-field form-required status-wrap">
-							<label for="relationship_status"><?php echo esc_html_x( 'Status', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_status"><?php echo esc_html_x( 'Status', 'field name', 'wp-relationships' ); ?></label>
 							<select name="relationship_status" id="relationship_status"><?php
 
 								$statuses = wp_relationships_get_statuses();
@@ -481,31 +481,31 @@ function wp_relationships_output_list_page() {
 								endforeach;
 
 							?></select>
-							<p><?php esc_html_e( 'Whether this relationship is currently active.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Whether this relationship is currently active.', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required from-wrap">
-							<label for="relationship_from_id"><?php echo esc_html_x( 'From', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_from_id"><?php echo esc_html_x( 'From', 'field name', 'wp-relationships' ); ?></label>
 							<input type="text" class="regular-text code" name="relationship_from_id" id="relationship_from_id" value="">
-							<p><?php esc_html_e( 'ID of object to relate to.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'ID of object to relate to.', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required to-wrap">
-							<label for="relationship_to_id"><?php echo esc_html_x( 'To', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_to_id"><?php echo esc_html_x( 'To', 'field name', 'wp-relationships' ); ?></label>
 							<input type="text" class="regular-text code" name="relationship_to_id" id="relationship_to_id" value="">
-							<p><?php esc_html_e( 'ID of object relating to.', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'ID of object relating to.', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required parent-wrap">
-							<label for="relationship_parent"><?php echo esc_html_x( 'Relationship Parent', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_parent"><?php echo esc_html_x( 'Relationship Parent', 'field name', 'wp-relationships' ); ?></label>
 							<input type="text" class="regular-text code" name="relationship_parent" id="relationship_parent" value="0">
-							<p><?php esc_html_e( 'Relationships can have a hierarchy. You might have a Post relationship, and under that have child relationships for other objects. Totally optional..', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Relationships can have a hierarchy. You might have a Post relationship, and under that have child relationships for other objects. Totally optional..', 'wp-relationships' ); ?></p>
 						</div>
 
 						<div class="form-field form-required order-wrap">
-							<label for="relationship_order"><?php echo esc_html_x( 'Relationship Order', 'field name', 'wp-object-relationships' ); ?></label>
+							<label for="relationship_order"><?php echo esc_html_x( 'Relationship Order', 'field name', 'wp-relationships' ); ?></label>
 							<input type="number" class="regular-text code" name="relationship_order" id="relationship_order" value="0">
-							<p><?php esc_html_e( 'Relationships can have an order. You might want one relationship to appear before or after another. Totally optional..', 'wp-object-relationships' ); ?></p>
+							<p><?php esc_html_e( 'Relationships can have an order. You might want one relationship to appear before or after another. Totally optional..', 'wp-relationships' ); ?></p>
 						</div>
 
 						<input type="hidden" name="relationship_author" value="<?php echo get_current_user_id(); ?>">
@@ -513,7 +513,7 @@ function wp_relationships_output_list_page() {
 
 						wp_nonce_field( 'relationship_add' );
 
-						submit_button( esc_html__( 'Add New Relationship', 'wp-object-relationships' ) );
+						submit_button( esc_html__( 'Add New Relationship', 'wp-relationships' ) );
 
 					?></form>
 				</div>
@@ -548,16 +548,16 @@ function wp_relationships_output_admin_notices() {
 	$messages   = array(
 
 		// Success messages
-		'activate'   => _n( '%s relationship activated.',   '%s relationships activated.',   $count, 'wp-object-relationships' ),
-		'deactivate' => _n( '%s relationship deactivated.', '%s relationships deactivated.', $count, 'wp-object-relationships' ),
-		'delete'     => _n( '%s relationship deleted.',     '%s relationships deleted.',     $count, 'wp-object-relationships' ),
-		'add'        => _n( '%s relationship added.',       '%s relationships added.',       $count, 'wp-object-relationships' ),
-		'edit'       => _n( '%s relationship updated.',     '%s relationships updated.',     $count, 'wp-object-relationships' ),
+		'activate'   => _n( '%s relationship activated.',   '%s relationships activated.',   $count, 'wp-relationships' ),
+		'deactivate' => _n( '%s relationship deactivated.', '%s relationships deactivated.', $count, 'wp-relationships' ),
+		'delete'     => _n( '%s relationship deleted.',     '%s relationships deleted.',     $count, 'wp-relationships' ),
+		'add'        => _n( '%s relationship added.',       '%s relationships added.',       $count, 'wp-relationships' ),
+		'edit'       => _n( '%s relationship updated.',     '%s relationships updated.',     $count, 'wp-relationships' ),
 
 		// Failure messages
-		'create_failed' => _x( 'Create failed.', 'object relationship', 'wp-object-relationships' ),
-		'update_failed' => _x( 'Update failed.', 'object relationship', 'wp-object-relationships' ),
-		'delete_failed' => _x( 'Delete failed.', 'object relationship', 'wp-object-relationships' ),
+		'create_failed' => _x( 'Create failed.', 'object relationship', 'wp-relationships' ),
+		'update_failed' => _x( 'Update failed.', 'object relationship', 'wp-relationships' ),
+		'delete_failed' => _x( 'Delete failed.', 'object relationship', 'wp-relationships' ),
 	);
 
 	// Insert the placeholder
