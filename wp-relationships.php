@@ -25,7 +25,7 @@ if ( empty( $GLOBALS['wpdb']->relationships ) ) {
 }
 
 // Get the plugin path
-$plugin_path = dirname( __FILE__ ) . '/wp-relationships/';
+$plugin_path = wp_relationships_get_plugin_path();
 
 // Classes
 require_once $plugin_path . 'includes/classes/class-wp-relationship.php';
@@ -52,6 +52,17 @@ unset( $plugin_path );
  */
 function wp_relationships_get_plugin_file() {
 	return __FILE__;
+}
+
+/**
+ * Return the plugin path
+ *
+ * @since 0.1.0
+ *
+ * @return string
+ */
+function wp_relationships_get_plugin_path() {
+	return plugin_dir_path( wp_relationships_get_plugin_file() ) . 'wp-relationships/';
 }
 
 /**

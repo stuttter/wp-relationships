@@ -3,7 +3,7 @@
 /**
  * Object Relationships Hooks
  *
- * @package Plugins/Site/Aliases/Hooks
+ * @package Plugins/Relationships/Hooks
  */
 
 // Exit if accessed directly

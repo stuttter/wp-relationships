@@ -3,7 +3,7 @@
 /**
  * Object Relationships Assets
  *
- * @package Plugins/Site/Aliases/Assets
+ * @package Plugins/Relationships/Assets
  */
 
 // Exit if accessed directly

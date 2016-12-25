@@ -3,7 +3,7 @@
 /**
  * Object Relationships List Table
  *
- * @package Plugins/Site/Aliases/ListTable
+ * @package Plugins/Relationships/ListTable
  */
 
 // Exit if accessed directly

@@ -3,7 +3,7 @@
 /**
  * Object Relationships Admin
  *
- * @package Plugins/Site/Aliases/Admin
+ * @package Plugins/Relationships/Admin
  */
 
 // Exit if accessed directly
@@ -67,7 +67,7 @@ function wp_relationships_load_site_list_table() {
 	global $wp_list_table;
 
 	// Include the list table class
-	require_once dirname( __FILE__ ) . '/class-wp-relationships-list-table.php';
+	require_once wp_relationships_get_plugin_path() . 'includes/classes/class-wp-relationships-list-table.php';
 
 	// Create a new list table object
 	$wp_list_table = new WP_Relationships_List_Table();
@@ -127,7 +127,7 @@ function wp_relationships_handle_actions() {
 		$redirect_to = wp_relationships_admin_url();
 	}
 
-	// Get aliases being bulk actioned
+	// Get Relationships being bulk actioned
 	$processed        = array();
 	$relationship_ids = wp_relationships_sanitize_relationship_ids();
 
@@ -148,7 +148,7 @@ function wp_relationships_handle_actions() {
 			foreach ( $relationship_ids as $relationship_id ) {
 				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
 					$args['did_action'] = $relationship->get_error_code();
 					continue;
@@ -173,7 +173,7 @@ function wp_relationships_handle_actions() {
 			foreach ( $relationship_ids as $relationship_id ) {
 				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
 					$args['did_action'] = $relationship->get_error_code();
 					continue;
@@ -200,7 +200,7 @@ function wp_relationships_handle_actions() {
 			foreach ( $relationship_ids as $relationship_id ) {
 				$relationship = WP_Object_Relationship::get_instance( $relationship_id );
 
-				// Skip erroneous aliases
+				// Skip erroneous relationships
 				if ( is_wp_error( $relationship ) ) {
 					$args['did_action'] = $relationship->get_error_code();
 					continue;
@@ -271,7 +271,7 @@ function wp_relationships_handle_actions() {
 			break;
 	}
 
-	// Add processed aliases to redirection
+	// Add processed Relationships to redirection
 	$args['processed'] = $processed;
 	$redirect_to = add_query_arg( $args, $redirect_to );
 

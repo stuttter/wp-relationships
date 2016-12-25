@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Site Alias Class
+ * relationship Class
  *
  * @since 0.1.0
  */
@@ -356,7 +356,7 @@ final class WP_Object_Relationship {
 	}
 
 	/**
-	 * Retrieves a site alias from the database by its ID.
+	 * Retrieves a relationship from the database by its ID.
 	 *
 	 * @static
 	 * @since 2.0.0
@@ -365,7 +365,7 @@ final class WP_Object_Relationship {
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param int $relationship_id The ID of the site to retrieve.
-	 * @return WP_Object_Relationship|false The site alias's object if found. False if not.
+	 * @return WP_Object_Relationship|false The relationship's object if found. False if not.
 	 */
 	public static function get_instance( $relationship_id = 0 ) {
 		global $wpdb;
@@ -410,10 +410,10 @@ final class WP_Object_Relationship {
 			return new WP_Error( 'invalid_id' );
 		}
 
-		// Get aliases
+		// Get relationships
 		$relationships = new WP_Object_Relationship_Query();
 
-		// Bail if no aliases
+		// Bail if no relationships
 		if ( empty( $relationships->found_relationships ) ) {
 			return null;
 		}

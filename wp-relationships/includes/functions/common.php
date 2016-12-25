@@ -3,7 +3,7 @@
 /**
  * Object Relationships Functions
  *
- * @package Plugins/Site/Aliases/Functions
+ * @package Plugins/Relationships/Functions
  */
 
 // Exit if accessed directly
@@ -35,7 +35,7 @@ function wp_relationships_admin_url( $args = array() ) {
 }
 
 /**
- * Get all available site alias statuses
+ * Get all available relationship statuses
  *
  * @since 0.1.0
  *
@@ -55,7 +55,7 @@ function wp_relationships_get_types() {
 }
 
 /**
- * Get all available site alias statuses
+ * Get all available relationship statuses
  *
  * @since 0.1.0
  *
@@ -102,13 +102,13 @@ function wp_relationships_sanitize_relationship_ids( $single = false ) {
 }
 
 /**
- * Retrieves site alias data given a site alias ID or site alias object.
+ * Retrieves relationship data given a relationship ID or relationship object.
  *
- * Site alias data will be cached and returned after being passed through a filter.
+ * relationship data will be cached and returned after being passed through a filter.
  *
  * @since 2.0.0
  *
- * @param WP_Object_Relationship|int|null $relationship Optional. Site alias to retrieve.
+ * @param WP_Object_Relationship|int|null $relationship Optional. relationship to retrieve.
  * @return WP_Object_Relationship|null The site object or null if not found.
  */
 function get_object_relationship( $relationship = null ) {
@@ -129,11 +129,11 @@ function get_object_relationship( $relationship = null ) {
 	}
 
 	/**
-	 * Fires after a site alias is retrieved.
+	 * Fires after a relationship is retrieved.
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param WP_Object_Relationship $_relationship Site alias data.
+	 * @param WP_Object_Relationship $_relationship relationship data.
 	 */
 	$_relationship = apply_filters( 'get_object_relationship', $_relationship );
 
@@ -141,7 +141,7 @@ function get_object_relationship( $relationship = null ) {
 }
 
 /**
- * Adds any site aliases from the given ids to the cache that do not already
+ * Adds any relationshipes from the given ids to the cache that do not already
  * exist in cache.
  *
  * @since 2.0.0
@@ -157,18 +157,18 @@ function _prime_object_relationship_caches( $ids = array() ) {
 
 	$non_cached_ids = _get_non_cached_ids( $ids, 'object-relationships' );
 	if ( ! empty( $non_cached_ids ) ) {
-		$fresh_aliases = $wpdb->get_results( sprintf( "SELECT * FROM {$wpdb->relationships} WHERE relationship_id IN (%s)", join( ",", array_map( 'intval', $non_cached_ids ) ) ) );
+		$fresh_relationships = $wpdb->get_results( sprintf( "SELECT * FROM {$wpdb->relationships} WHERE relationship_id IN (%s)", join( ",", array_map( 'intval', $non_cached_ids ) ) ) );
 
-		update_object_relationship_cache( $fresh_aliases );
+		update_object_relationship_cache( $fresh_relationships );
 	}
 }
 
 /**
- * Updates site aliases in cache.
+ * Updates relationshipes in cache.
  *
  * @since 2.0.0
  *
- * @param array $relationships Array of site alias objects.
+ * @param array $relationships Array of relationship objects.
  */
 function update_object_relationship_cache( $relationships = array() ) {
 	if ( empty( $relationships ) ) {
@@ -181,7 +181,7 @@ function update_object_relationship_cache( $relationships = array() ) {
 }
 
 /**
- * Clean the site alias cache
+ * Clean the relationship cache
  *
  * @since 0.1.0
  *
@@ -192,7 +192,7 @@ function clean_object_relationship_cache( WP_Object_Relationship $relationship )
 	wp_cache_delete( $relationship->relationship_id, 'object-relationships' );
 
 	/**
-	 * Fires immediately after a site alias has been removed from the object cache.
+	 * Fires immediately after a relationship has been removed from the object cache.
 	 *
 	 * @since 0.1.0
 	 *

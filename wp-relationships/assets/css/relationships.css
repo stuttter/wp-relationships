@@ -1,7 +1,7 @@
 @media screen and ( min-width: 786px ) {
 	.wp-list-table.sites .column-lastupdated,
 	.wp-list-table.sites .column-registered,
-	.wp-list-table.sites .column-aliases {
+	.wp-list-table.sites .column-relationships {
 		width: 14%;
 	}
 }

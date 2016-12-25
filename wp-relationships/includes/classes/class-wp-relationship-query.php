@@ -2,7 +2,7 @@
 /**
  * Site API: WP_Object_Relationship_Query class
  *
- * @package Plugins/Sites/Aliases/Queries
+ * @package Plugins/Relationships/Queries
  * @since 0.1.0
  */
 

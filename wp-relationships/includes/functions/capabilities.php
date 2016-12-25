@@ -3,14 +3,14 @@
 /**
  * Object Relationships Capabilities
  *
- * @package Plugins/Site/Aliases/Capabilities
+ * @package Plugins/Relationships/Capabilities
  */
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Map site alias meta capabilites
+ * Map relationship meta capabilites
  *
  * @since 0.1.0
  *
@@ -23,25 +23,19 @@ function wp_relationships_map_meta_cap( $caps = array(), $cap = '', $user_id = 0
 	// One of our caps?
 	switch ( $cap ) {
 
-		// Network site edit
-		case 'manage_site_aliases' :
-		case 'edit_site_aliases' :
-			$caps = array( 'manage_site_info' );
-			break;
-
 		// Site edit (single)
-		case 'edit_alias' :
-		case 'activate_alias' :
-		case 'deactivate_alias' :
-		case 'delete_alias' :
+		case 'edit_relationship' :
+		case 'activate_relationship' :
+		case 'deactivate_relationship' :
+		case 'delete_relationship' :
 
 		// Site edit (many)
-		case 'manage_aliases' :
-		case 'edit_aliases' :
-		case 'create_aliases' :
-		case 'activate_aliases' :
-		case 'deactivate_aliases' :
-		case 'delete_aliases' :
+		case 'manage_relationships' :
+		case 'edit_relationships' :
+		case 'create_relationships' :
+		case 'activate_relationships' :
+		case 'deactivate_relationships' :
+		case 'delete_relationships' :
 			$caps = array( 'manage_options' );
 			break;
 	}
