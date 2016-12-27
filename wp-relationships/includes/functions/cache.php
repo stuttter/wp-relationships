@@ -46,7 +46,7 @@ function update_object_relationship_cache( $relationships = array() ) {
 		return;
 	}
 
-	// Add each relatioship to the cache
+	// Add each relationship to the cache
 	foreach ( $relationships as $relationship ) {
 		wp_cache_add( $relationship->relationship_id, $relationship, 'object-relationships' );
 	}
