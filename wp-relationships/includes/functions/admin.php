@@ -386,6 +386,57 @@ function wp_relationships_output_list_page() {
 }
 
 /**
+ * Display the relationship edit page.
+ *
+ * @since 0.1.0
+ */
+function wp_relationships_output_edit_page() {
+
+	// Vars
+	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
+	$relationship    = WP_Relationship::get_instance( $relationship_id );
+	$action          = ! empty( $relationship ) ? 'edit' : 'add';
+
+	// Reset a bunch of global values
+	wp_reset_vars( array( 'action', 'relationship_id', 'wp_http_referer' ) );
+
+	// Remove possible query arguments
+	$request_url = remove_query_arg( array( 'action', 'error', 'updated' ), $_SERVER['REQUEST_URI'] );
+
+	// Setup form action URL
+	$form_action_url = add_query_arg( array(
+		'action' => $action
+	), $request_url );
+
+	// Header
+	wp_relationships_output_page_header( 'edit' ); ?>
+
+	<form action="<?php echo esc_url( $form_action_url ); ?>" id="wp-relationships-form" method="post" novalidate="novalidate" <?php do_action( 'relationships_form_tag' ); ?>>
+		<div id="poststuff">
+			<div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
+				<div id="postbox-container-1" class="postbox-container">
+					<?php do_meta_boxes( get_current_screen()->id, 'side', $relationship ); ?>
+				</div>
+
+				<div id="postbox-container-2" class="postbox-container">
+					<?php do_meta_boxes( get_current_screen()->id, 'normal',   $relationship ); ?>
+					<?php do_meta_boxes( get_current_screen()->id, 'advanced', $relationship ); ?>
+				</div>
+			</div>
+		</div><?php
+
+		// Nonce fields
+		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+		wp_nonce_field( 'meta-box-order',  'meta-box-order-nonce', false );
+		wp_nonce_field( 'update-relationship_' . $relationship->relationship_id );
+
+	?></form><?php
+
+	// Footer
+	wp_relationships_output_page_footer();
+}
+
+/**
  * Output admin notices
  *
  * @since 0.1.0
@@ -447,55 +498,4 @@ function wp_relationships_output_admin_notices() {
 
 	// Output the buffer
 	ob_end_flush();
-}
-
-/**
- * Display the relationship edit page.
- *
- * @since 0.1.0
- */
-function wp_relationships_output_edit_page() {
-
-	// Vars
-	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
-	$relationship    = WP_Relationship::get_instance( $relationship_id );
-	$action          = ! empty( $relationship ) ? 'edit' : 'add';
-
-	// Reset a bunch of global values
-	wp_reset_vars( array( 'action', 'relationship_id', 'wp_http_referer' ) );
-
-	// Remove possible query arguments
-	$request_url = remove_query_arg( array( 'action', 'error', 'updated' ), $_SERVER['REQUEST_URI'] );
-
-	// Setup form action URL
-	$form_action_url = add_query_arg( array(
-		'action' => $action
-	), $request_url );
-
-	// Header
-	wp_relationships_output_page_header( 'edit' ); ?>
-
-	<form action="<?php echo esc_url( $form_action_url ); ?>" id="wp-relationships-form" method="post" novalidate="novalidate" <?php do_action( 'relationships_form_tag' ); ?>>
-		<div id="poststuff">
-			<div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
-				<div id="postbox-container-1" class="postbox-container">
-					<?php do_meta_boxes( get_current_screen()->id, 'side', $relationship ); ?>
-				</div>
-
-				<div id="postbox-container-2" class="postbox-container">
-					<?php do_meta_boxes( get_current_screen()->id, 'normal',   $relationship ); ?>
-					<?php do_meta_boxes( get_current_screen()->id, 'advanced', $relationship ); ?>
-				</div>
-			</div>
-		</div><?php
-
-		// Nonce fields
-		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
-		wp_nonce_field( 'meta-box-order',  'meta-box-order-nonce', false );
-		wp_nonce_field( 'update-relationship_' . $relationship->relationship_id );
-
-	?></form><?php
-
-	// Footer
-	wp_relationships_output_page_footer();
 }
