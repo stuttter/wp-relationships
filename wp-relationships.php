@@ -40,7 +40,17 @@ require_once $plugin_path . 'includes/functions/assets.php';
 require_once $plugin_path . 'includes/functions/capabilities.php';
 require_once $plugin_path . 'includes/functions/common.php';
 require_once $plugin_path . 'includes/functions/metadata.php';
+require_once $plugin_path . 'includes/functions/metaboxes.php';
 require_once $plugin_path . 'includes/functions/hooks.php';
+
+// Metaboxes
+require_once $plugin_path . 'includes/metaboxes/author.php';
+require_once $plugin_path . 'includes/metaboxes/content.php';
+require_once $plugin_path . 'includes/metaboxes/position.php';
+require_once $plugin_path . 'includes/metaboxes/name.php';
+require_once $plugin_path . 'includes/metaboxes/relationship.php';
+require_once $plugin_path . 'includes/metaboxes/slug.php';
+require_once $plugin_path . 'includes/metaboxes/status.php';
 
 // Clean up the plugin path
 unset( $plugin_path );
