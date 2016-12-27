@@ -84,10 +84,21 @@ function wp_relationships_load_site_list_table() {
  *
  * @since 0.1.0
  */
-function wp_relationships_output_page_header() {
+function wp_relationships_output_page_header( $type = 'list' ) {
+
+	// Edit
+	if ( 'edit' === $type ) {
+		$title = esc_html__( 'Relationships', 'wp-relationships' );
+
+	// List
+	} elseif ( 'list' === $type ) {
+		$title = esc_html__( 'Relationships', 'wp-relationships' );
+
+	}
 
 	?><div class="wrap">
-		<h1 id="edit-relationship"><?php esc_html_e( 'Relationships', 'wp-relationships' ); ?></h1><?php
+		<h1 id="edit-relationship" class="wp-heading-inline"><?php esc_html_e( 'Relationships', 'wp-relationships' ); ?></h1>
+		<hr class="wp-header-end"><?php
 
 	// Admin notices
 	do_action( 'wp_relationships_admin_notices' );
@@ -343,20 +354,20 @@ function wp_relationships_output_list_page() {
 	global $wp_list_table;
 
 	// Get site ID being requested
-	$search  = isset( $_GET['s']    ) ? $_GET['s']                    : '';
-	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'relationships';
+	$search = isset( $_GET['s']    ) ? $_GET['s']                    : '';
+	$page   = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'relationships';
 
 	// Action URLs
 	$form_url = $action_url = wp_relationships_admin_url();
 
 	// Output header, maybe with tabs
-	wp_relationships_output_page_header();
+	wp_relationships_output_page_header( 'list' );
 
+	// Status links
 	$wp_list_table->views(); ?>
 
-	<form class="search-form wp-clearfix" method="get" action="<?php echo esc_url( $form_url ); ?>">
+	<form class="search-form" method="get" action="<?php echo esc_url( $form_url ); ?>">
 		<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
-		<input type="hidden" name="relationship_id" value="<?php echo esc_attr( '' ); ?>" />
 		<p class="search-box">
 			<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-relationships' ); ?></label>
 			<input type="search" id="relationship-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
@@ -462,7 +473,7 @@ function wp_relationships_output_edit_page() {
 	), $request_url );
 
 	// Header
-	wp_relationships_output_page_header(); ?>
+	wp_relationships_output_page_header( 'edit' ); ?>
 
 	<form action="<?php echo esc_url( $form_action_url ); ?>" id="wp-relationships-form" method="post" novalidate="novalidate" <?php do_action( 'relationships_form_tag' ); ?>>
 		<div id="poststuff">

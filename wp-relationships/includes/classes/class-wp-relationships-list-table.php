@@ -52,7 +52,9 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Get relationships
 		$relationships = new WP_Relationship_Query( array(
-			'search' => $search
+			'search' => $search,
+			'type'   => $this->current_type(),
+			'status' => $this->current_status()
 		) );
 
 		// Bail if no relationships
@@ -101,10 +103,10 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Relationship view links
+	 *
 	 * @since 0.1.0
 	 *
-	 * @global array $locked_post_status This seems to be deprecated.
-	 * @global array $avail_post_stati
 	 * @return array
 	 */
 	protected function get_views() {
@@ -114,13 +116,12 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$status_links = array();
 		$num_rels     = wp_count_relationships();
 		$total_rels   = array_sum( (array) $num_rels );
-		$all_args     = array( 'relationship_status' => '' );
 		$class        = ( $this->is_base_request() || empty( $current ) )
 			? 'current'
 			: '';
 
 		// All statuses
-		$status_links['all'] = $this->get_edit_link( $all_args, sprintf(
+		$status_links['all'] = $this->get_edit_link( array(), sprintf(
 			_nx(
 				'All <span class="count">(%s)</span>',
 				'All <span class="count">(%s)</span>',
