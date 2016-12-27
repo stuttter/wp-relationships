@@ -45,14 +45,9 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	public function prepare_items() {
 		$this->items = array();
 
-		// Searching?
-		$search = isset( $_GET['s'] )
-			? $_GET['s']
-			: '';
-
 		// Get relationships
 		$relationships = new WP_Relationship_Query( array(
-			'search'  => $search,
+			'search'  => $this->current_search(),
 			'type'    => $this->current_type(),
 			'status'  => $this->current_status(),
 			'orderby' => $this->current_orderby(),
@@ -281,6 +276,19 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		echo "</select>\n";
 		submit_button( __( 'Apply' ), 'action', false, false, array( 'id' => "doaction{$two}" ) );
 		echo "\n";
+	}
+
+	/**
+	 * Get the current search
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return string|bool The search text or empty string
+	 */
+	public function current_search() {
+		return isset( $_GET['s'] )
+			? $_GET['s']
+			: '';
 	}
 
 	/**
