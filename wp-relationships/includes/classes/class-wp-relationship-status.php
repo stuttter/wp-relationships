@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Status
+ * Relationships Status
  *
  * @package Plugins/Relationships/Status/Class
  */

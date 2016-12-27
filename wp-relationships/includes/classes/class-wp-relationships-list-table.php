@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships List Table
+ * Relationships List Table
  *
  * @package Plugins/Relationships/ListTable
  */

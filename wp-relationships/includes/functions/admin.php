@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Admin
+ * Relationships Admin
  *
  * @package Plugins/Relationships/Admin
  */

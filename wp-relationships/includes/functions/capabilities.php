@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Capabilities
+ * Relationships Capabilities
  *
  * @package Plugins/Relationships/Capabilities
  */

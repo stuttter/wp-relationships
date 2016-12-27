@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Assets
+ * Relationships Assets
  *
  * @package Plugins/Relationships/Assets
  */

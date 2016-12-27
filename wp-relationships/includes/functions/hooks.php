@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Hooks
+ * Relationships Hooks
  *
  * @package Plugins/Relationships/Hooks
  */

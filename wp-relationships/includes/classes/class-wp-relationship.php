@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Object Relationships Class
+ * Relationships Class
  *
  * @package Plugins/Relationships/Class
  */

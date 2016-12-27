@@ -4,7 +4,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Main WP Object Relationships class
+ * Main WP Relationships class
  *
  * This class facilitates the following functionality:
  *
