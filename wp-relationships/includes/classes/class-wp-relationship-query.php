@@ -362,7 +362,7 @@ class WP_Relationship_Query {
 
 			$orderby_array = array();
 			foreach ( $ordersby as $_key => $_value ) {
-				if ( ! $_value ) {
+				if ( empty( $_value ) ) {
 					continue;
 				}
 
@@ -376,7 +376,7 @@ class WP_Relationship_Query {
 
 				$parsed = $this->parse_orderby( $_orderby );
 
-				if ( ! $parsed ) {
+				if ( empty( $parsed ) ) {
 					continue;
 				}
 
@@ -473,11 +473,11 @@ class WP_Relationship_Query {
 			$search_columns = array();
 
 			if ( $this->query_vars['search_columns'] ) {
-				$search_columns = array_intersect( $this->query_vars['search_columns'], array( 'domain', 'status' ) );
+				$search_columns = array_intersect( $this->query_vars['search_columns'], array( 'relationship_name', 'relationship_content' ) );
 			}
 
-			if ( ! $search_columns ) {
-				$search_columns = array( 'domain', 'status' );
+			if ( empty( $search_columns ) ) {
+				$search_columns = array( 'relationship_name', 'relationship_content' );
 			}
 
 			/**
@@ -640,12 +640,18 @@ class WP_Relationship_Query {
 				$to_in  = implode( ',', array_map( 'absint', $this->query_vars['to__in'] ) );
 				$parsed = "FIELD( {$this->db->relationships}.relationship_to_id, $to_in )";
 				break;
+			case 'from_id' :
+			case 'to_id' :
 			case 'type' :
 			case 'slug' :
+			case 'author' :
 			case 'status' :
 			case 'parent' :
 			case 'order' :
-				$parsed = "relationship_{$orderby}";
+			case 'modified' :
+			case 'created' :
+			case 'updated' :
+				$parsed = "{$this->db->relationships}.relationship_{$orderby}";
 				break;
 			default :
 				$parsed = false;

@@ -52,9 +52,11 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Get relationships
 		$relationships = new WP_Relationship_Query( array(
-			'search' => $search,
-			'type'   => $this->current_type(),
-			'status' => $this->current_status()
+			'search'  => $search,
+			'type'    => $this->current_type(),
+			'status'  => $this->current_status(),
+			'orderby' => $this->current_orderby(),
+			'order'   => $this->current_order()
 		) );
 
 		// Bail if no relationships
@@ -186,6 +188,22 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get sortable columns for table
+	 *
+	 * @since 0.1.0
+	 */
+	public function get_sortable_columns() {
+		return array(
+			'name'     => 'name',
+			'type'     => 'type',
+			'status'   => 'status',
+			'from'     => 'from_id',
+			'to'       => 'to_id',
+			'activity' => 'updated'
+		);
+	}
+
+	/**
 	 * Get an associative array ( option_name => option_title ) with the list
 	 * of bulk actions available on this table.
 	 *
@@ -288,6 +306,32 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	public function current_status() {
 		return ! empty( $_REQUEST['relationship_status'] )
 			? sanitize_key( $_REQUEST['relationship_status'] )
+			: false;
+	}
+
+	/**
+	 * Get the current orderby
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return string|bool The type or False if no status was selected
+	 */
+	public function current_orderby() {
+		return ! empty( $_REQUEST['orderby'] )
+			? sanitize_key( $_REQUEST['orderby'] )
+			: false;
+	}
+
+	/**
+	 * Get the current order
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return string|bool The type or False if no status was selected
+	 */
+	public function current_order() {
+		return ! empty( $_REQUEST['order'] )
+			? sanitize_key( $_REQUEST['order'] )
 			: false;
 	}
 
