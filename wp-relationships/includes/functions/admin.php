@@ -97,7 +97,7 @@ function wp_relationships_output_page_header( $type = 'list' ) {
 	}
 
 	?><div class="wrap">
-		<h1 id="edit-relationship" class="wp-heading-inline"><?php esc_html_e( 'Relationships', 'wp-relationships' ); ?></h1>
+		<h1 id="edit-relationship" class="wp-heading-inline"><?php echo esc_html( $title ); ?></h1>
 		<hr class="wp-header-end"><?php
 
 	// Admin notices
@@ -360,7 +360,7 @@ function wp_relationships_output_list_page() {
 	$page   = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'relationships';
 
 	// Action URLs
-	$form_url = $action_url = wp_relationships_admin_url();
+	$form_url = wp_relationships_admin_url();
 
 	// Output header, maybe with tabs
 	wp_relationships_output_page_header( 'list' );
@@ -409,7 +409,7 @@ function wp_relationships_output_edit_page() {
 	), $request_url );
 
 	// Header
-	wp_relationships_output_page_header( 'edit' ); ?>
+	wp_relationships_output_page_header( 'edit', $action ); ?>
 
 	<form action="<?php echo esc_url( $form_action_url ); ?>" id="wp-relationships-form" method="post" novalidate="novalidate" <?php do_action( 'relationships_form_tag' ); ?>>
 		<div id="poststuff">
