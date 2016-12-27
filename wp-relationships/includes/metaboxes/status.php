@@ -37,7 +37,7 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 
 							// Maybe selected
 							$selected = ! empty( $relationship )
-								? selected( $type->type_id, $relationship->relationship_status )
+								? selected( $type->type_id, $relationship->relationship_type )
 								: '';
 
 							// Loop through sites
