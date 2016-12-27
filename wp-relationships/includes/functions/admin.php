@@ -86,9 +86,16 @@ function wp_relationships_load_site_list_table() {
  */
 function wp_relationships_output_page_header( $type = 'list' ) {
 
+	// Get add-new link
+	$add_new_link = current_user_can( 'create_relationships' ) && ( ( 'list' === $type ) || ! empty( $_GET['relationship_ids'] ) )
+		? '<a href="' . wp_relationships_admin_url( array( 'page' => 'relationship_edit' ) ) . '" class="page-title-action">' . esc_html_x( 'Add New', 'relationship', 'wp-relationships' ) . '</a>'
+		: '';
+
 	// Edit
 	if ( 'edit' === $type ) {
-		$title = esc_html__( 'Relationships', 'wp-relationships' );
+		$title = empty( $_GET['relationship_ids'] )
+			? esc_html__( 'Add New Relationship', 'wp-relationships' )
+			: esc_html__( 'Edit Relationship',    'wp-relationships' );
 
 	// List
 	} elseif ( 'list' === $type ) {
@@ -96,8 +103,9 @@ function wp_relationships_output_page_header( $type = 'list' ) {
 
 	}
 
+	// Output header
 	?><div class="wrap">
-		<h1 id="edit-relationship" class="wp-heading-inline"><?php echo esc_html( $title ); ?></h1>
+		<h1 id="edit-relationship" class="wp-heading-inline"><?php echo esc_html( $title ); echo $add_new_link; ?></h1>
 		<hr class="wp-header-end"><?php
 
 	// Admin notices
