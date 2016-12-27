@@ -370,11 +370,11 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		<select name="relationship_type" id="type">
 			<option value=""><?php esc_html_e( 'All Types', 'wp-relationships' ); ?></option><?php
 
-			// Loop throug sites
+			// Loop through types
 			foreach ( $types as $type ) :
 
-				// Loop through sites
-				?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php selected( $filter, $type->type_id ); ?>><?php echo esc_html( $type->type_name ); ?></option><?php
+				// Output type
+				?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php selected( $filter, $type->type_id, true ); ?>><?php echo esc_html( $type->type_name ); ?></option><?php
 
 			endforeach;
 

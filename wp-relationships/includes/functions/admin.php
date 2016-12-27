@@ -349,6 +349,8 @@ function wp_count_relationships() {
  * Output relationship editing page
  *
  * @since 0.1.0
+ * 
+ * @global WP_Relationships_List_Table $wp_list_table
  */
 function wp_relationships_output_list_page() {
 	global $wp_list_table;
@@ -375,11 +377,9 @@ function wp_relationships_output_list_page() {
 		</p>
 	</form>
 
-	<div class="form-wrap">
-		<form method="post" action="<?php echo esc_url( $form_url ); ?>">
-			<?php $wp_list_table->display(); ?>
-		</form>
-	</div><?php
+	<form method="get" action="<?php echo esc_url( $form_url ); ?>">
+		<?php $wp_list_table->display(); ?>
+	</form><?php
 
 	// Footer
 	wp_relationships_output_page_footer();

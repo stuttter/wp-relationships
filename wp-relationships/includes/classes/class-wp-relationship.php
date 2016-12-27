@@ -377,7 +377,7 @@ final class WP_Relationship {
 
 		// No cached relationship
 		if ( false === $_relationship ) {
-			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE id = %d LIMIT 1", $relationship_id ) );
+			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE relationship_id = %d LIMIT 1", $relationship_id ) );
 
 			// Add relationship to cache
 			if ( ! empty( $_relationship ) && ! is_wp_error( $_relationship ) ) {
