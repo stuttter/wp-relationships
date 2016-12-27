@@ -22,7 +22,7 @@ function wp_relationships_slug_metabox( $relationship = null ) {
 	<table class="form-table">
 		<tr class="relationship-slug-wrap">
 			<th><label for="relationship_slug"><?php esc_html_e( 'Slug', 'wp-relationships' ); ?></label></th>
-			<td><input type="text" name="relationship_slug" id="relationship_slug" value="<?php echo esc_attr( $relationship->relationship_slug ); ?>" /></td>
+			<td><input type="text" name="relationship_slug" id="relationship_slug" value="<?php echo esc_attr( $relationship->relationship_slug ); ?>" class="code" /></td>
 		</tr>
 	</table>
 
