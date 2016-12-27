@@ -16,19 +16,23 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_relationships_add_menu_item() {
 
-	// Define empty array
-	$hooks = array();
-
-	if ( is_blog_admin() ) {
-		$hooks[] = add_menu_page( esc_html__( 'Relationships', 'wp-relationships' ), esc_html__( 'Relationships', 'wp-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
-		$hooks[] = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-relationships' ), esc_html__( 'Add New', 'wp-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
+	// Bail if not the blog admin
+	if ( ! is_blog_admin() ) {
+		return;
 	}
 
-	// Load the list table
-	foreach ( $hooks as $hook ) {
-		add_action( "load-{$hook}", 'wp_relationships_handle_actions'       );
-		add_action( "load-{$hook}", 'wp_relationships_load_site_list_table' );
-	}
+	// Add pages
+	$list = add_menu_page( esc_html__( 'Relationships', 'wp-relationships' ), esc_html__( 'Relationships', 'wp-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
+	$edit = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-relationships' ), esc_html__( 'Add New', 'wp-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
+
+	// Additional per-page actions
+	add_action( "load-{$edit}", 'wp_relationships_add_meta_boxes'       );
+	add_action( "load-{$list}", 'wp_relationships_handle_actions'       );
+	add_action( "load-{$list}", 'wp_relationships_load_site_list_table' );
+
+	// Assets
+	add_action( "admin_head-{$edit}", 'wp_relationships_admin_enqueue_scripts' );
+	add_action( "admin_head-{$list}", 'wp_relationships_admin_enqueue_scripts' );
 }
 
 /**
@@ -83,7 +87,7 @@ function wp_relationships_load_site_list_table() {
 function wp_relationships_output_page_header() {
 
 	?><div class="wrap">
-		<h1 id="edit-relationship"><?php esc_html_e( 'Object Relationships', 'wp-relationships' ); ?></h1><?php
+		<h1 id="edit-relationship"><?php esc_html_e( 'Relationships', 'wp-relationships' ); ?></h1><?php
 
 	// Admin notices
 	do_action( 'wp_relationships_admin_notices' );
@@ -119,7 +123,6 @@ function wp_relationships_handle_actions() {
 	}
 
 	// Get action
-	$action      = sanitize_key( $action );
 	$redirect_to = remove_query_arg( array( 'did_action', 'processed', 'relationship_ids', 'referrer', '_wpnonce' ), wp_get_referer() );
 
 	// Maybe fallback redirect
@@ -285,120 +288,6 @@ function wp_relationships_handle_actions() {
  *
  * @since 0.1.0
  */
-function wp_relationships_output_edit_page() {
-
-	// Vars
-	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
-	$relationship    = WP_Relationship::get_instance( $relationship_id );
-	$action          = ! empty( $relationship ) ? 'edit' : 'add';
-
-	// URL
-	$action_url = wp_relationships_admin_url( array(
-		'action' => $action
-	) );
-
-	// Add
-	if ( empty( $relationship ) || ! empty( $_POST['_wpnonce'] ) ) {
-		$active = ! empty( $_POST['active'] );
-
-	// Edit
-	} else {
-		$active = ( 'active' === $relationship->relationship_status );
-	}
-
-	// Drop-downs
-	$types    = wp_relationships_get_types();
-	$statuses = wp_relationships_get_statuses();
-	
-	// Output the header, maybe with network site tabs
-	wp_relationships_output_page_header();
-
-	?><form method="post" action="<?php echo esc_url( $action_url ); ?>">
-		<table class="form-table">
-			<tr>
-				<th scope="row">
-					<label for="relationship_name"><?php echo esc_html_x( 'Name', 'field name', 'wp-relationships' ); ?></label>
-				</th>
-				<td>
-					<input type="text" class="regular-text" name="relationship_name" id="relationship_name" value="<?php echo esc_attr( '' ); ?>">
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-relationships' ); ?></label>
-				</th>
-				<td>
-					<select name="relationship_type" id="type"><?php
-
-						// Loop throug sites
-						foreach ( $types as $type ) :
-
-							// Maybe selected
-							$selected = ! empty( $relationship )
-								? selected( $type->type_id, $relationship->relationship_status )
-								: '';
-
-							// Loop through sites
-							?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->type_name ); ?></option><?php
-
-						endforeach;
-
-					?></select>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<?php echo esc_html_x( 'Status', 'field name', 'wp-relationships' ); ?>
-				</th>
-				<td>
-					<select name="relationship_status" id="status"><?php
-
-						// Loop through sites
-						foreach ( $statuses as $status ) :
-
-							// Maybe selected
-							$selected = ! empty( $relationship )
-								? selected( $status->status_id, $relationship->relationship_status )
-								: '';
-
-							// Loop through sites
-							?><option value="<?php echo esc_attr( $status->status_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->status_name ); ?></option><?php
-
-						endforeach;
-
-					?></select>
-				</td>
-			</tr>
-		</table>
-
-		<input type="hidden" name="action"           value="<?php echo esc_attr( $action          ); ?>">
-		<input type="hidden" name="relationship_ids" value="<?php echo esc_attr( $relationship_id ); ?>"><?php
-
-		// Add
-		if ( 'add' === $action ) {
-			wp_nonce_field( 'relationship_add' );
-			$submit_text = esc_html__( 'Add Relationship', 'wp-relationships' );
-
-		// Edit
-		} else {
-			wp_nonce_field( "relationship_edit-{$relationship_id}" );
-			$submit_text = esc_html__( 'Save Relationship', 'wp-relationships' );
-		}
-
-		// Submit button
-		submit_button( $submit_text );
-
-	?></form><?php
-
-	// Footer
-	wp_relationships_output_page_footer();
-}
-
-/**
- * Output relationship editing page
- *
- * @since 0.1.0
- */
 function wp_relationships_output_list_page() {
 	global $wp_list_table;
 
@@ -412,113 +301,20 @@ function wp_relationships_output_list_page() {
 	// Output header, maybe with tabs
 	wp_relationships_output_page_header(); ?>
 
-	<div id="col-container" style="margin-top: 20px;">
-		<div id="col-right">
-			<div class="col-wrap">
-				<form class="search-form wp-clearfix" method="get" action="<?php echo esc_url( $form_url ); ?>">
-					<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
-					<input type="hidden" name="relationship_id" value="<?php echo esc_attr( '' ); ?>" />
-					<p class="search-box">
-						<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-relationships' ); ?></label>
-						<input type="search" id="relationship-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
-						<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Relationships', 'wp-relationships' ); ?>">
-					</p>
-				</form>
+	<form class="search-form wp-clearfix" method="get" action="<?php echo esc_url( $form_url ); ?>">
+		<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
+		<input type="hidden" name="relationship_id" value="<?php echo esc_attr( '' ); ?>" />
+		<p class="search-box">
+			<label class="screen-reader-text" for="relationship-search-input"><?php esc_html_e( 'Search Relationships:', 'wp-relationships' ); ?></label>
+			<input type="search" id="relationship-search-input" name="s" value="<?php echo esc_attr( $search ); ?>">
+			<input type="submit" id="search-submit" class="button" value="<?php esc_html_e( 'Search Relationships', 'wp-relationships' ); ?>">
+		</p>
+	</form>
 
-				<div class="form-wrap">
-					<form method="post" action="<?php echo esc_url( $form_url ); ?>">
-						<?php $wp_list_table->display(); ?>
-					</form>
-				</div>
-			</div>
-		</div>
-		<div id="col-left">
-			<div class="col-wrap">
-				<div class="form-wrap">
-					<h2><?php esc_html_e( 'Add New Relationship', 'wp-relationships' ); ?></h2>
-					<form method="post" action="<?php echo esc_url( $action_url ); ?>">
-						<div class="form-field form-required name-wrap">
-							<label for="relationship_name"><?php echo esc_html_x( 'Relationship Name', 'field name', 'wp-relationships' ); ?></label>
-							<input type="text" class="regular-text" name="relationship_name" id="relationship_name" value="">
-							<p><?php esc_html_e( 'Name of relationship, to make it easy to identify.', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required content-wrap">
-							<label for="relationship_content"><?php echo esc_html_x( 'Relationship Description', 'field name', 'wp-relationships' ); ?></label>
-							<textarea class="regular-text" name="relationship_content" id="relationship_content"></textarea>
-							<p><?php esc_html_e( 'Describe this relationship, Totally optional...', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required type-wrap">
-							<label for="relationship_type"><?php echo esc_html_x( 'Type', 'field name', 'wp-relationships' ); ?></label>
-							<select name="relationship_type" id="relationship_type"><?php
-
-								$types = wp_relationships_get_types();
-
-								// Loop throug sites
-								foreach ( $types as $type ) :
-
-									// Loop through sites
-									?><option value="<?php echo esc_attr( $type->type_id ); ?>"><?php echo esc_html( $type->type_name ); ?></option><?php
-
-								endforeach;
-
-							?></select>
-							<p><?php esc_html_e( 'What types of objects are related to each other.', 'wp-relationships' ); ?></p>
-						</div>
-						<div class="form-field form-required status-wrap">
-							<label for="relationship_status"><?php echo esc_html_x( 'Status', 'field name', 'wp-relationships' ); ?></label>
-							<select name="relationship_status" id="relationship_status"><?php
-
-								$statuses = wp_relationships_get_statuses();
-
-								// Loop throug sites
-								foreach ( $statuses as $status ) :
-
-									// Loop through sites
-									?><option value="<?php echo esc_attr( $status->status_id ); ?>"><?php echo esc_html( $status->status_name ); ?></option><?php
-
-								endforeach;
-
-							?></select>
-							<p><?php esc_html_e( 'Whether this relationship is currently active.', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required from-wrap">
-							<label for="relationship_from_id"><?php echo esc_html_x( 'From', 'field name', 'wp-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="relationship_from_id" id="relationship_from_id" value="">
-							<p><?php esc_html_e( 'ID of object to relate to.', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required to-wrap">
-							<label for="relationship_to_id"><?php echo esc_html_x( 'To', 'field name', 'wp-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="relationship_to_id" id="relationship_to_id" value="">
-							<p><?php esc_html_e( 'ID of object relating to.', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required parent-wrap">
-							<label for="relationship_parent"><?php echo esc_html_x( 'Relationship Parent', 'field name', 'wp-relationships' ); ?></label>
-							<input type="text" class="regular-text code" name="relationship_parent" id="relationship_parent" value="0">
-							<p><?php esc_html_e( 'Relationships can have a hierarchy. You might have a Post relationship, and under that have child relationships for other objects. Totally optional..', 'wp-relationships' ); ?></p>
-						</div>
-
-						<div class="form-field form-required order-wrap">
-							<label for="relationship_order"><?php echo esc_html_x( 'Relationship Order', 'field name', 'wp-relationships' ); ?></label>
-							<input type="number" class="regular-text code" name="relationship_order" id="relationship_order" value="0">
-							<p><?php esc_html_e( 'Relationships can have an order. You might want one relationship to appear before or after another. Totally optional..', 'wp-relationships' ); ?></p>
-						</div>
-
-						<input type="hidden" name="relationship_author" value="<?php echo get_current_user_id(); ?>">
-						<input type="hidden" name="action" value="add"><?php
-
-						wp_nonce_field( 'relationship_add' );
-
-						submit_button( esc_html__( 'Add New Relationship', 'wp-relationships' ) );
-
-					?></form>
-				</div>
-			</div>
-		</div>
+	<div class="form-wrap">
+		<form method="post" action="<?php echo esc_url( $form_url ); ?>">
+			<?php $wp_list_table->display(); ?>
+		</form>
 	</div><?php
 
 	// Footer
@@ -587,4 +383,55 @@ function wp_relationships_output_admin_notices() {
 
 	// Output the buffer
 	ob_end_flush();
+}
+
+/**
+ * Display the relationship edit page.
+ *
+ * @since 0.1.0
+ */
+function wp_relationships_output_edit_page() {
+
+	// Vars
+	$relationship_id = wp_relationships_sanitize_relationship_ids( true );
+	$relationship    = WP_Relationship::get_instance( $relationship_id );
+	$action          = ! empty( $relationship ) ? 'edit' : 'add';
+
+	// Reset a bunch of global values
+	wp_reset_vars( array( 'action', 'relationship_id', 'wp_http_referer' ) );
+
+	// Remove possible query arguments
+	$request_url = remove_query_arg( array( 'action', 'error', 'updated' ), $_SERVER['REQUEST_URI'] );
+
+	// Setup form action URL
+	$form_action_url = add_query_arg( array(
+		'action' => $action
+	), $request_url );
+
+	// Header
+	wp_relationships_output_page_header(); ?>
+
+	<form action="<?php echo esc_url( $form_action_url ); ?>" id="wp-relationships-form" method="post" novalidate="novalidate" <?php do_action( 'relationships_form_tag' ); ?>>
+		<div id="poststuff">
+			<div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
+				<div id="postbox-container-1" class="postbox-container">
+					<?php do_meta_boxes( get_current_screen()->id, 'side', $relationship ); ?>
+				</div>
+
+				<div id="postbox-container-2" class="postbox-container">
+					<?php do_meta_boxes( get_current_screen()->id, 'normal',   $relationship ); ?>
+					<?php do_meta_boxes( get_current_screen()->id, 'advanced', $relationship ); ?>
+				</div>
+			</div>
+		</div><?php
+
+		// Nonce fields
+		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+		wp_nonce_field( 'meta-box-order',  'meta-box-order-nonce', false );
+		wp_nonce_field( 'update-relationship_' . $relationship->relationship_id );
+
+	?></form><?php
+
+	// Footer
+	wp_relationships_output_page_footer();
 }

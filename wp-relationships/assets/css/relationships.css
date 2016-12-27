@@ -1,7 +1,13 @@
-@media screen and ( min-width: 786px ) {
-	.wp-list-table.sites .column-lastupdated,
-	.wp-list-table.sites .column-registered,
-	.wp-list-table.sites .column-relationships {
-		width: 14%;
+@media screen and ( min-width: 780px ) {
+	.wp-list-table.relationships .column-from,
+	.wp-list-table.relationships .column-to {
+		width: 12%;
+	}
+	.wp-list-table.relationships .column-status,
+	.wp-list-table.relationships .column-type {
+		width: 15%;
+	}
+	#titlediv {
+		margin-top: 12px;
 	}
 }

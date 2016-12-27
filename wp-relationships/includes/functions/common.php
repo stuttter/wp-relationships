@@ -136,7 +136,7 @@ function wp_relationships_get_statuses() {
  *
  * @since 0.1.0
  *
- * @param bool $single
+ * @param bool $single To get a single relationship ID
  * @return mixed
  */
 function wp_relationships_sanitize_relationship_ids( $single = false ) {

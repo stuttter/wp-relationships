@@ -203,6 +203,11 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Output additional table filter UI
+	 *
+	 * @since 0.1.0
+	 * @access protected
+	 *
 	 * @param string $which
 	 */
 	protected function extra_tablenav( $which ) {
@@ -234,10 +239,10 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 				echo $output;
 				submit_button( esc_html__( 'Filter', 'wp-relationships' ), '', 'filter_action', false, array( 'id' => 'relationship-query-submit' ) );
 			}
-		} ?>
+		}
 
-		</div>
-<?php
+		?></div><?php
+
 		/**
 		 * Fires immediately following the closing "actions" div in the tablenav for the posts
 		 * list table.
