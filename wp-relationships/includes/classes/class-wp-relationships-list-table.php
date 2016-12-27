@@ -83,6 +83,18 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get a list of CSS classes for the WP_List_Table table tag.
+	 *
+	 * @since 0.1.0
+	 * @access protected
+	 *
+	 * @return array List of CSS classes for the table tag.
+	 */
+	protected function get_table_classes() {
+		return array( 'relationships', 'widefat', 'fixed', 'striped', $this->_args['plural'] );
+	}
+
+	/**
 	 * Display the bulk actions dropdown.
 	 *
 	 * @since 0.1.0
