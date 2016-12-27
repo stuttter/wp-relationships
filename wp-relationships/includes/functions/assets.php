@@ -16,6 +16,11 @@ defined( 'ABSPATH' ) || exit;
  */
 function wp_relationships_admin_enqueue_scripts() {
 
+	// Enqueue core scripts
+	wp_enqueue_script( 'jquery-ui-sortable' );
+	wp_enqueue_script( 'postbox' );
+	wp_enqueue_script( 'dashboard' );
+
 	// Set location & version for scripts & styles
 	$src = wp_relationships_get_plugin_url();
 	$ver = wp_relationships_get_asset_version();
