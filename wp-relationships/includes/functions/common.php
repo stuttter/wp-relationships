@@ -25,7 +25,7 @@ function wp_relationships_admin_url( $args = array() ) {
 	) );
 
 	// Location
-	$admin_url = admin_url( 'index.php' );
+	$admin_url = admin_url( 'admin.php' );
 
 	// Add query args
 	$url = add_query_arg( $r, $admin_url );

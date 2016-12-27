@@ -66,6 +66,101 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Helper to create links to relationships page with params.
+	 *
+	 * @since 0.1.0
+	 * @access protected
+	 *
+	 * @param array  $args  URL parameters for the link.
+	 * @param string $label Link text.
+	 * @param string $class Optional. Class attribute. Default empty string.
+	 *
+	 * @return string The formatted link string.
+	 */
+	protected function get_edit_link( $args, $label, $class = '' ) {
+
+		// URL
+		$url = wp_relationships_admin_url( $args );
+
+		// Class
+		$class_html = '';
+		if ( ! empty( $class ) ) {
+			 $class_html = sprintf(
+				' class="%s"',
+				esc_attr( $class )
+			);
+		}
+
+		// Link
+		return sprintf(
+			'<a href="%s"%s>%s</a>',
+			esc_url( $url ),
+			$class_html,
+			$label
+		);
+	}
+
+	/**
+	 * @since 0.1.0
+	 *
+	 * @global array $locked_post_status This seems to be deprecated.
+	 * @global array $avail_post_stati
+	 * @return array
+	 */
+	protected function get_views() {
+
+		// Vars
+		$current      = $this->current_status();
+		$status_links = array();
+		$num_rels     = wp_count_relationships();
+		$total_rels   = array_sum( (array) $num_rels );
+		$all_args     = array( 'relationship_status' => '' );
+		$class        = ( $this->is_base_request() || empty( $current ) )
+			? 'current'
+			: '';
+
+		// All statuses
+		$status_links['all'] = $this->get_edit_link( $all_args, sprintf(
+			_nx(
+				'All <span class="count">(%s)</span>',
+				'All <span class="count">(%s)</span>',
+				$total_rels,
+				'rels'
+			),
+			number_format_i18n( $total_rels )
+		), $class );
+
+		// Loop through statuses
+		foreach ( wp_relationships_get_statuses() as $status ) {
+			$class       = '';
+			$status_name = $status->status_id;
+
+			// Current
+			if ( ! empty( $current ) && ( $current === $status_name ) ) {
+				$class = 'current';
+			}
+
+			// Args
+			$status_args = array(
+				'relationship_status' => $status_name
+			);
+
+			// Link
+			$status_links[ $status_name ] = $this->get_edit_link( $status_args, sprintf(
+				_nx(
+					$status->status_name . ' <span class="count">(%s)</span>',
+					$status->status_name . ' <span class="count">(%s)</span>',
+					$num_rels->$status_name,
+					'rels'
+				),
+				number_format_i18n( $num_rels->$status_name )
+			), $class );
+		}
+
+		return $status_links;
+	}
+
+	/**
 	 * Get columns for the table
 	 *
 	 * @since 0.1.0
@@ -170,7 +265,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get the current type selected from the type dropdown.
+	 * Get the current type
 	 *
 	 * @since 0.1.0
 	 *
@@ -179,6 +274,19 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	public function current_type() {
 		return ! empty( $_REQUEST['relationship_type'] )
 			? sanitize_key( $_REQUEST['relationship_type'] )
+			: false;
+	}
+
+	/**
+	 * Get the current status
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return string|bool The type or False if no status was selected
+	 */
+	public function current_status() {
+		return ! empty( $_REQUEST['relationship_status'] )
+			? sanitize_key( $_REQUEST['relationship_status'] )
 			: false;
 	}
 
@@ -219,20 +327,6 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 			$this->types_dropdown();
 
-			/**
-			 * Fires before the Filter button on the Posts and Pages list tables.
-			 *
-			 * The Filter button allows sorting by date and/or category on the
-			 * Posts list table, and sorting by date on the Pages list table.
-			 *
-			 * @since 0.1.0
-			 *
-			 * @param string $post_type The post type slug.
-			 * @param string $which     The location of the extra table nav markup:
-			 *                          'top' or 'bottom'.
-			 */
-			do_action( 'restrict_manage_posts', $this->screen->post_type, $which );
-
 			$output = ob_get_clean();
 
 			if ( ! empty( $output ) ) {
@@ -262,8 +356,13 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	 */
 	private function types_dropdown() {
 
-		// Get types
-		$types  = wp_relationships_get_types();
+		// Bail if no types
+		$types = wp_relationships_get_types();
+		if ( empty( $types ) ) {
+			return;
+		}
+
+		// Current type
 		$filter = $this->current_type(); ?>
 
 		<label class="screen-reader-text" for="relationship_type"><?php esc_html_e( 'Filter by type', 'wp-relationships' ); ?></label>

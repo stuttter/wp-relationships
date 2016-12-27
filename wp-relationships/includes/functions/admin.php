@@ -283,6 +283,58 @@ function wp_relationships_handle_actions() {
 }
 
 /**
+ * Count number of relationships by status.
+ *
+ * This function provides an efficient method of finding the amount of
+ * relationships a site has.
+ *
+ * @since 0.1.0
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ *
+ * @return object Number of relationships for each status.
+ */
+function wp_count_relationships() {
+	global $wpdb;
+
+	// Check cache
+	$counts = wp_cache_get( 'relationships', 'counts' );
+
+	// Query if no cache exists
+	if ( false === $counts ) {
+
+		// Query
+		$query   = "SELECT relationship_status, COUNT( * ) AS num_posts FROM {$wpdb->relationships} GROUP BY relationship_status";
+		$results = (array) $wpdb->get_results( $query, ARRAY_A );
+
+		// Strings
+		$statuses = wp_filter_object_list( wp_relationships_get_statuses(), array(), 'and', 'status_id' );
+		$counts   = array_fill_keys( $statuses, 0 );
+
+		// Set counts
+		foreach ( $results as $row ) {
+			$counts[ $row['relationship_status'] ] = $row['num_posts'];
+		}
+
+		// Cast as object
+		$counts = (object) $counts;
+
+		// Set cache
+		wp_cache_set( 'relationships', $counts, 'counts' );
+	}
+
+	/**
+	 * Modify returned post counts by status for the current post type.
+	 *
+	 * @since 3.7.0
+	 *
+	 * @param object $counts An object containing the current post_type's post
+	 *                       counts by status.
+	 */
+	return apply_filters( 'wp_count_relationships', $counts );
+}
+
+/**
  * Output relationship editing page
  *
  * @since 0.1.0
@@ -298,7 +350,9 @@ function wp_relationships_output_list_page() {
 	$form_url = $action_url = wp_relationships_admin_url();
 
 	// Output header, maybe with tabs
-	wp_relationships_output_page_header(); ?>
+	wp_relationships_output_page_header();
+
+	$wp_list_table->views(); ?>
 
 	<form class="search-form wp-clearfix" method="get" action="<?php echo esc_url( $form_url ); ?>">
 		<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>" />
