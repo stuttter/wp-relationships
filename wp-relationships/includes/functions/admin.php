@@ -22,8 +22,8 @@ function wp_relationships_add_menu_item() {
 	}
 
 	// Add pages
-	$list = add_menu_page( esc_html__( 'Relationships', 'wp-relationships' ), esc_html__( 'Relationships', 'wp-relationships' ), 'manage_relationships', 'manage_relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
-	$edit = add_submenu_page( 'manage_relationships', esc_html__( 'Add New', 'wp-relationships' ), esc_html__( 'Add New', 'wp-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
+	$list = add_menu_page( esc_html__( 'Relationships', 'wp-relationships' ), esc_html__( 'Relationships', 'wp-relationships' ), 'manage_relationships', 'relationships', 'wp_relationships_output_list_page', 'dashicons-networking', 30 );
+	$edit = add_submenu_page( 'relationships', esc_html__( 'Add New', 'wp-relationships' ), esc_html__( 'Add New', 'wp-relationships' ), 'edit_relationships', 'relationship_edit', 'wp_relationships_output_edit_page' );
 
 	// Additional per-page actions
 	add_action( "load-{$edit}", 'wp_relationships_add_meta_boxes'       );
@@ -137,8 +137,7 @@ function wp_relationships_handle_actions() {
 	// Redirect args
 	$args = array(
 		'relationship_ids' => $relationship_ids,
-		'did_action'       => $action,
-		'page'             => 'manage_relationships'
+		'did_action'       => $action
 	);
 
 	// What's the action?
@@ -293,7 +292,7 @@ function wp_relationships_output_list_page() {
 
 	// Get site ID being requested
 	$search  = isset( $_GET['s']    ) ? $_GET['s']                    : '';
-	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'manage_relationships';
+	$page    = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : 'relationships';
 
 	// Action URLs
 	$form_url = $action_url = wp_relationships_admin_url();

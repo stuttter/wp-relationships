@@ -21,7 +21,7 @@ function wp_relationships_admin_url( $args = array() ) {
 
 	// Parse args
 	$r = wp_parse_args( $args, array(
-		'page' => 'manage_relationships',
+		'page' => 'relationships',
 	) );
 
 	// Location
