@@ -21,7 +21,7 @@ function wp_relationships_author_metabox( $relationship = null ) {
 
 	<table class="form-table">
 		<tr class="relationship-author-wrap">
-			<th><label for="relationship_author"><?php esc_html_e( 'Author', 'wp-relationships' ); ?></label></th>
+			<th><label for="relationship_author"><?php esc_html_e( 'User', 'wp-relationships' ); ?></label></th>
 			<td><?php
 
 				wp_dropdown_users( array(
