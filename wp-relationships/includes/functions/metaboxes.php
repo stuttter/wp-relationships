@@ -105,6 +105,17 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 		$relationship
 	);
 
+	// Author
+	add_meta_box(
+		'author',
+		_x( 'Author', 'users user-admin edit screen', 'wp-relationships' ),
+		'wp_relationships_author_metabox',
+		$screen,
+		'side',
+		'low',
+		$relationship
+	);
+
 	// Position
 	add_meta_box(
 		'position',
