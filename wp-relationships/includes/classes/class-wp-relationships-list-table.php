@@ -15,6 +15,29 @@ defined( 'ABSPATH' ) || exit;
 final class WP_Relationships_List_Table extends WP_List_Table {
 
 	/**
+	 * Array of relationship types
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var array
+	 */
+	public $types = array();
+
+	/**
+	 * Set object properties
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $args
+	 */
+	public function __construct( $args = array() ) {
+		parent::__construct( $args );
+
+		// Get the type
+		$this->types = wp_relationships_get_types();
+	}
+
+	/**
 	 * Prepare items for the list table
 	 *
 	 * @since 0.1.0
@@ -55,6 +78,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$columns = array(
 			'cb'        => '<input type="checkbox" />',
 			'name'      => _x( 'Name',     'object relationship', 'wp-relationships' ),
+			'type'      => _x( 'Type',     'object relationship', 'wp-relationships' ),
 			'status'    => _x( 'Status',   'object relationship', 'wp-relationships' ),
 			'from'      => _x( 'From',     'object relationship', 'wp-relationships' ),
 			'to'        => _x( 'To',       'object relationship', 'wp-relationships' ),
@@ -146,6 +170,19 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get the current type selected from the type dropdown.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return string|bool The type or False if no type was selected
+	 */
+	public function current_type() {
+		return ! empty( $_REQUEST['relationship_type'] )
+			? sanitize_key( $_REQUEST['relationship_type'] )
+			: false;
+	}
+
+	/**
 	 * Get the current action selected from the bulk actions dropdown.
 	 *
 	 * @since 0.1.0
@@ -163,6 +200,80 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param string $which
+	 */
+	protected function extra_tablenav( $which ) {
+
+		?><div class="alignleft actions"><?php
+
+		if ( 'top' === $which ) {
+			ob_start();
+
+			$this->types_dropdown();
+
+			/**
+			 * Fires before the Filter button on the Posts and Pages list tables.
+			 *
+			 * The Filter button allows sorting by date and/or category on the
+			 * Posts list table, and sorting by date on the Pages list table.
+			 *
+			 * @since 0.1.0
+			 *
+			 * @param string $post_type The post type slug.
+			 * @param string $which     The location of the extra table nav markup:
+			 *                          'top' or 'bottom'.
+			 */
+			do_action( 'restrict_manage_posts', $this->screen->post_type, $which );
+
+			$output = ob_get_clean();
+
+			if ( ! empty( $output ) ) {
+				echo $output;
+				submit_button( esc_html__( 'Filter', 'wp-relationships' ), '', 'filter_action', false, array( 'id' => 'relationship-query-submit' ) );
+			}
+		} ?>
+
+		</div>
+<?php
+		/**
+		 * Fires immediately following the closing "actions" div in the tablenav for the posts
+		 * list table.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string $which The location of the extra table nav markup: 'top' or 'bottom'.
+		 */
+		do_action( 'manage_relationships_extra_tablenav', $which );
+	}
+
+	/**
+	 * Output the types dropdown
+	 *
+	 * @since 0.1.0
+	 * @access private
+	 */
+	private function types_dropdown() {
+
+		// Get types
+		$types  = wp_relationships_get_types();
+		$filter = $this->current_type(); ?>
+
+		<label class="screen-reader-text" for="relationship_type"><?php esc_html_e( 'Filter by type', 'wp-relationships' ); ?></label>
+		<select name="relationship_type" id="type">
+			<option value=""><?php esc_html_e( 'All Types', 'wp-relationships' ); ?></option><?php
+
+			// Loop throug sites
+			foreach ( $types as $type ) :
+
+				// Loop through sites
+				?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php selected( $filter, $type->type_id ); ?>><?php echo esc_html( $type->type_name ); ?></option><?php
+
+			endforeach;
+
+		?></select><?php
 	}
 
 	/**
@@ -247,6 +358,28 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		$action_html = $this->row_actions( $actions, false );
 
 		return '<strong>' . esc_html( $relationship->relationship_name ) . '</strong>' . $action_html;
+	}
+
+	/**
+	 * Get value for the status column
+	 *
+	 * @since 0.1.0
+	 * @access protected
+	 *
+	 * @param WP_Relationship $relationship Current relationship item
+	 * @return string HTML for the cell
+	 */
+	protected function column_type( $relationship ) {
+
+		// Get types
+		$type = wp_filter_object_list( $this->types, array(
+			'type_id' => $relationship->relationship_type
+		), 'and', 'type_name' );
+
+		// Return the type name
+		return ! empty( $type )
+			? reset( $type )
+			: esc_html__( 'Unknown', 'wp-relationships' );
 	}
 
 	/**
