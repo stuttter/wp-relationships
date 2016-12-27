@@ -20,7 +20,10 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 
 	// Dropdown data
 	$types    = wp_relationships_get_types();
-	$statuses = wp_relationships_get_statuses(); ?>
+	$statuses = wp_relationships_get_statuses();
+	$action   = ! empty( $relationship->relationship_id )
+		? 'edit'
+		: 'add'; ?>
 
 	<div class="submitbox">
 		<div id="minor-publishing">
@@ -70,10 +73,22 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 		</div>
 
 		<div id="major-publishing-actions">
-			<div id="publishing-action">
-				<?php submit_button( esc_html__( 'Update', 'wp-relationships' ), 'primary', 'save', false ); ?>
-				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="user_id" id="user_id" value="<?php echo esc_attr( $relationship->ID ); ?>" />
+			<div id="publishing-action"><?php
+
+				// Add
+				if ( 'add' === $action ) {
+					wp_nonce_field( 'relationship_add' );
+					$submit_text = esc_html__( 'Add Relationship', 'wp-relationships' );
+
+				// Edit
+				} else {
+					wp_nonce_field( "relationship_edit-{$relationship->relationship_id}" );
+					$submit_text = esc_html__( 'Save Relationship', 'wp-relationships' );
+				}
+
+				submit_button( $submit_text, 'primary', 'save', false ); ?>
+				<input type="hidden" name="action"           value="<?php echo esc_attr( $action                        ); ?>">
+				<input type="hidden" name="relationship_ids" value="<?php echo esc_attr( $relationship->relationship_id ); ?>">
 			</div>
 			<div class="clear"></div>
 		</div>
