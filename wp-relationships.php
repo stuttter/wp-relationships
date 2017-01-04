@@ -47,6 +47,7 @@ require_once $plugin_path . 'includes/functions/hooks.php';
 // Metaboxes
 require_once $plugin_path . 'includes/metaboxes/author.php';
 require_once $plugin_path . 'includes/metaboxes/content.php';
+require_once $plugin_path . 'includes/metaboxes/connection.php';
 require_once $plugin_path . 'includes/metaboxes/position.php';
 require_once $plugin_path . 'includes/metaboxes/name.php';
 require_once $plugin_path . 'includes/metaboxes/relationship.php';
