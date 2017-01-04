@@ -131,27 +131,27 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		// Loop through statuses
 		foreach ( wp_relationships_get_statuses() as $status ) {
 			$class       = '';
-			$status_name = $status->status_id;
+			$name = $status->id;
 
 			// Current
-			if ( ! empty( $current ) && ( $current === $status_name ) ) {
+			if ( ! empty( $current ) && ( $current === $name ) ) {
 				$class = 'current';
 			}
 
 			// Args
 			$status_args = array(
-				'relationship_status' => $status_name
+				'relationship_status' => $name
 			);
 
 			// Link
-			$status_links[ $status_name ] = $this->get_edit_link( $status_args, sprintf(
+			$status_links[ $name ] = $this->get_edit_link( $status_args, sprintf(
 				_nx(
-					$status->status_name . ' <span class="count">(%s)</span>',
-					$status->status_name . ' <span class="count">(%s)</span>',
-					$num_rels->$status_name,
+					$status->name . ' <span class="count">(%s)</span>',
+					$status->name . ' <span class="count">(%s)</span>',
+					$num_rels->$name,
 					'rels'
 				),
-				number_format_i18n( $num_rels->$status_name )
+				number_format_i18n( $num_rels->$name )
 			), $class );
 		}
 
@@ -172,7 +172,6 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			'cb'        => '<input type="checkbox" />',
 			'name'      => _x( 'Name',     'object relationship', 'wp-relationships' ),
 			'type'      => _x( 'Type',     'object relationship', 'wp-relationships' ),
-			'status'    => _x( 'Status',   'object relationship', 'wp-relationships' ),
 			'from'      => _x( 'From',     'object relationship', 'wp-relationships' ),
 			'to'        => _x( 'To',       'object relationship', 'wp-relationships' ),
 			'activity'  => _x( 'Activity', 'object relationship', 'wp-relationships' )
@@ -426,7 +425,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 			foreach ( $types as $type ) :
 
 				// Output type
-				?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php selected( $filter, $type->type_id, true ); ?>><?php echo esc_html( $type->type_name ); ?></option><?php
+				?><option value="<?php echo esc_attr( $type->id ); ?>" <?php selected( $filter, $type->id, true ); ?>><?php echo esc_html( $type->name ); ?></option><?php
 
 			endforeach;
 
@@ -530,28 +529,13 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Get types
 		$type = wp_filter_object_list( $this->types, array(
-			'type_id' => $relationship->relationship_type
-		), 'and', 'type_name' );
+			'id' => $relationship->relationship_type
+		), 'and', 'name' );
 
 		// Return the type name
 		return ! empty( $type )
 			? reset( $type )
 			: esc_html__( 'Unknown', 'wp-relationships' );
-	}
-
-	/**
-	 * Get value for the status column
-	 *
-	 * @since 0.1.0
-	 * @access protected
-	 *
-	 * @param WP_Relationship $relationship Current relationship item
-	 * @return string HTML for the cell
-	 */
-	protected function column_status( $relationship ) {
-		return ( 'active' === $relationship->relationship_status )
-			? esc_html_x( 'Active',   'object relationship', 'wp-relationships' )
-			: esc_html_x( 'Inactive', 'object relationship', 'wp-relationships' );
 	}
 
 	/**
