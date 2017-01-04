@@ -89,7 +89,7 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 				submit_button( $submit_text, 'primary', 'submit', false ); ?>
 				<input type="hidden" name="action"          value="<?php echo esc_attr( $action                        ); ?>">
 				<input type="hidden" name="relationship_id" value="<?php echo esc_attr( $relationship->relationship_id ); ?>">
-				<?php wp_nonce_field( "relationship_{$action}" ); ?>
+				<?php wp_nonce_field( "{$action}_relationship", "relationship_{$action}" ); ?>
 			</div>
 			<div class="clear"></div>
 		</div>
