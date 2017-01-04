@@ -14,6 +14,13 @@
 }
 
 /* Metabox */
+#connections .inside,
+#connections ul.new-relationship,
+#connections li.add-new-relationship {
+	padding: 0;
+	margin: 0;
+}
+
 li.add-new-relationship.ui-sortable-handle {
 	cursor: move;
 }
@@ -22,21 +29,23 @@ li.add-new-relationship.ui-sortable-placeholder {
 	visibility: visible !important;
 }
 
-ul.new-relationship li.add-new-relationship {
-	border: 1px solid #e0e0e0;
-	background-color: #f4f4f4;
+#connections li.add-new-relationship {
+	background-color: #fff;
 	vertical-align: middle;
 	padding: 10px;
 	list-style: none;
 }
 
-ul.new-relationship:last-child,
-ul.new-relationship li.add-new-relationship:last-child {
-	margin-bottom: 0;
+#connections li.add-new-relationship:not(:last-child) {
+	border-bottom: 1px solid #eee;
 }
 
-ul.new-relationship li.add-new-relationship.ui-sortable-placeholder {
-	border: 1px dashed #e0e0e0;
+#connections li.add-new-relationship.ui-sortable-helper {
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+}
+
+#connections li.add-new-relationship.ui-sortable-placeholder {
 	background-color: #fafafa;
 }
 
