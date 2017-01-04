@@ -27,5 +27,5 @@ function wp_relationships_admin_enqueue_scripts() {
 
 	// Styles
 	wp_enqueue_style( 'wp-relationships', $src . 'assets/css/relationships.css', array(), $ver );
-	wp_enqueue_script( 'wp-relationships', $src . 'assets/js/relationships.js' , array(), $ver, true );
+	wp_enqueue_script( 'wp-relationships', $src . 'assets/js/relationships.js' , array( 'jquery' ), $ver, true );
 }
