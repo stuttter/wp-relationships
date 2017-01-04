@@ -23,7 +23,7 @@ final class WP_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $relationship_id = 0;
+	public $relationship_id;
 
 	/**
 	 * Relationship author.
