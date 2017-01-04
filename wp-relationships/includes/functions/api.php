@@ -1,174 +1,123 @@
 <?php
 
 /**
+ * Relationships API
+ *
+ * @package Plugins/Relationships/API
+ */
+
+// Exit if accessed directly
+defined( 'ABSPATH' ) || exit;
+
+/**
  * Register a relationship type.
  *
+ * @since 0.1.0
+ *
  * @param array $args
- * @return bool|object False on failure, P2P_Connection_Type instance on success.
+ * @return WP_Relationship_Type|bool False on failure, object on success.
  */
-function wp_register_relationship_type( $args ) {
+function wp_register_relationship_type( $args = array() ) {
 
-	$ctype = P2P_Connection_Type_Factory::register( $args );
+	$type = false;
 
-	do_action( 'wp_relationships_registered_relationship_type', $ctype, $args );
+	do_action( 'wp_register_relationship_type', $type, $args );
 
-	return $ctype;
+	return $type;
 }
 
 /**
- * Get a connection type.
+ * Get a relationship type.
  *
  * @param string $type
  *
- * @return bool|object False if connection type not found, instance on success.
+ * @return WP_Relationship_Type|bool False if no relationship, instance on success.
  */
 function wp_get_relationship_type( $type = '' ) {
-	return P2P_Connection_Type_Factory::get_instance( $type );
+	$types = wp_relationships_get_types();
+	$type  = wp_list_filter( $types, array( 'id' => $type ) );
+	return reset( $type );
 }
 
 /**
- * Check if a certain connection exists.
+ * Create a relationship
  *
- * @param string $type A valid connection type.
- * @param array $args Query args.
+ * @since 0.1.0
  *
- * @return bool
+ * @param array $args Relationship information.
+ * @param array $meta Relationship metadata.
+ *
+ * @return WP_Relationship|bool False on failure, object on success.
  */
-function wp_relationship_exists( $type, $args = array() ) {
-	$args['fields'] = 'count';
+function wp_create_relationship( $args = array(), $meta = array() ) {
 
-	$r = wp_get_relationships( $type, $args );
+	// Try to create a relationship
+	$relationship = WP_Relationship::create( $args );
 
-	return (bool) $r;
-}
-
-/**
- * Create a connection
- *
- * @param int $type A valid connection type.
- * @param array $args Connection information.
- *
- * @return bool|int False on failure, wp_relationships_id on success.
- */
-function wp_create_relationship( $type, $args ) {
-	global $wpdb;
-
-	$args = wp_parse_args( $args, array(
-		'direction' => 'from',
-		'from'      => false,
-		'to'        => false,
-		'meta'      => array()
-	) );
-
-	list( $from ) = _wp_relationships_normalize( $args['from'] );
-	list( $to   ) = _wp_relationships_normalize( $args['to'] );
-
-	if ( empty( $from ) || empty( $to ) ) {
+	// Bail if no relationship was created
+	if ( empty( $relationship ) || is_wp_error( $relationship ) ) {
 		return false;
 	}
 
-	$dirs = array( $from, $to );
-
-	if ( 'to' === $args['direction'] ) {
-		$dirs = array_reverse( $dirs );
+	// Maybe add metadata
+	foreach ( $meta as $key => $value ) {
+		add_relationship_meta( $relationship->relationship_id, $key, $value );
 	}
 
-	$wpdb->insert( $wpdb->p2p, array(
-		'wp_relationships_type' => $type,
-		'wp_relationships_from' => $dirs[0],
-		'wp_relationships_to'   => $dirs[1]
-	) );
+	do_action( 'wp_created_relationship', $relationship, $args, $meta );
 
-	$relationship_id = $wpdb->insert_id;
-
-	foreach ( $args['meta'] as $key => $value ) {
-		wp_relationships_add_meta( $relationship_id, $key, $value );
-	}
-
-	do_action( 'wp_relationships_created_connection', $relationship_id );
-
-	return $relationship_id;
+	return $relationship;
 }
 
 /**
- * Delete one or more connections.
+ * Delete relationship using relationship IDs.
  *
- * @param int $type A valid connection type.
- * @param array $args Connection information.
+ * @since 0.1.0
  *
- * @return int Number of connections deleted
+ * @param int|array $relationship_ids Relationship IDs
+ *
+ * @return int Number of relationships deleted
  */
-function wp_relationships_delete_relationships( $type, $args = array() ) {
-	$args['fields'] = 'wp_relationships_id';
+function wp_delete_relationship( $relationship_ids = '' ) {
 
-	return wp_relationships_delete_relationship( wp_get_relationships( $type, $args ) );
-}
+	// Default count
+	$count = 0;
 
-/**
- * Delete connections using wp_relationships_ids.
- *
- * @param int|array $relationship_id Connection ids
- *
- * @return int Number of connections deleted
- */
-function wp_delete_relationship( $relationship_id ) {
-	global $wpdb;
-
-	if ( empty( $relationship_id ) ) {
-		return 0;
+	// Bail if no relationship
+	if ( empty( $relationship_ids ) ) {
+		return $count;
 	}
 
-	$relationship_ids = array_map( 'absint', (array) $relationship_id );
+	// Map to int
+	$relationship_ids = array_map( 'absint', (array) $relationship_ids );
 
-	do_action( 'wp_relationships_delete_connections', $relationship_ids );
+	do_action( 'wp_delete_relationships', $relationship_ids );
 
-	$where = "WHERE wp_relationships_id IN (" . implode( ',', $relationship_ids ) . ")";
+	// Delete relationships
+	foreach ( $relationship_ids as $relationship_id ) {
+		$relationship = WP_Relationship::get_instance( $relationship_id );
+		$deleted      = $relationship->delete();
 
-	$count = $wpdb->query( "DELETE FROM $wpdb->p2p $where" );
-	$wpdb->query( "DELETE FROM $wpdb->p2pmeta $where" );
+		// Bump count
+		if ( ! empty( $deleted ) && !is_wp_error( $deleted ) ) {
+			++$count;
+		}
+	}
+
+	do_action( 'wp_deleted_relationships', $relationship_ids );
 
 	return $count;
 }
 
 /**
- * List some items.
+ * Delete relationships. Alias of wp_delete_relationship().
  *
- * @param object|array A P2P_List instance, a WP_Query instance, or a list of post objects
- * @param array $args (optional)
- */
-function wp_relationships_list_posts( $posts, $args = array() ) {
-	if ( is_a( $posts, 'P2P_List' ) ) {
-		$list = $posts;
-	} else {
-		if ( is_a( $posts, 'WP_Query' ) ) {
-			$posts = $posts->posts;
-		}
-
-		$list = new P2P_List( $posts, 'P2P_Item_Post' );
-	}
-
-	return P2P_List_Renderer::render( $list, $args );
-}
-
-/**
- * Given a list of objects and another list of connected items,
- * distribute each connected item to it's respective counterpart.
+ * @since 0.1.0
  *
- * @param array List of objects
- * @param array List of connected objects
- * @param string Name of connected array property
+ * @param int|array $relationship_ids Relationship IDs
+ *
+ * @return int Number of relationships deleted
  */
-function wp_relationships_distribute_connected( $items, $connected, $prop_name ) {
-	$indexed_list = array();
-
-	foreach ( $items as $item ) {
-		$item->$prop_name = array();
-		$indexed_list[ $item->ID ] = $item;
-	}
-
-	$groups = scb_list_group_by( $connected, '_wp_relationships_get_other_id' );
-
-	foreach ( $groups as $outer_item_id => $connected_items ) {
-		$indexed_list[ $outer_item_id ]->$prop_name = $connected_items;
-	}
+function wp_delete_relationships( $relationship_ids = array() ) {
+	return wp_delete_relationship( $relationship_ids );
 }
