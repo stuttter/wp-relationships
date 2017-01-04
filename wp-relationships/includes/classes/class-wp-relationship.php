@@ -131,7 +131,7 @@ final class WP_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $relationship_from_id = 0;
+	public $relationship_from_id;
 
 	/**
 	 * To ID.
@@ -140,7 +140,7 @@ final class WP_Relationship {
 	 * @access public
 	 * @var int
 	 */
-	public $relationship_to_id = 0;
+	public $relationship_to_id;
 
 	/**
 	 * Creates a new WP_Relationship object.

@@ -66,8 +66,8 @@ function wp_relationships_connection_metabox( $object = false ) {
 
 				?></select>
 
-				<input type="hidden" name="relationship_from_id[]" class="relationship-from-id" value="<?php echo esc_attr( $object->id ); ?>" />
 				<input type="text"   name="relationship_to_id[]" class="relationship-to-id" value="<?php echo esc_attr( $_object->relationship_to_id ); ?>" />
+				<input type="hidden" name="relationship_from_id[]" class="relationship-from-id" value="<?php echo esc_attr( $object->id ); ?>" />
 				<input type="hidden" name="relationship_id[]" class="relationship-id" value="<?php echo esc_attr( $_object->relationship_id ); ?>" />
 			</li>
 

@@ -16,7 +16,7 @@ jQuery( document ).ready( function( $ ) {
 	// Delegate add/remove clicks
 	$( 'ul.new-relationship' ).on( 'click', 'a', function( e ) {
 		var row  = $( this ).parents( 'li' ),
-			rows = $( this ).parents( 'ul.new-relationship' ).children().length - 1;
+			rows = $( this ).parents( 'ul.new-relationship' ).children().length;
 
 		// Add
 		if ( $( this ).hasClass( 'add-relationship' ) ) {
