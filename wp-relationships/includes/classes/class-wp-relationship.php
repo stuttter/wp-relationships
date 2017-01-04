@@ -527,7 +527,14 @@ final class WP_Relationship {
 		}
 
 		// Remove keys that definitely don't belong, but might be part of submissions
-		unset( $r['action'], $r['_wpnonce'], $r['_wp_http_referer'], $r['submit'] );
+		unset(
+			$r['action'],
+			$r['_wpnonce'],
+			$r['_wp_http_referer'],
+			$r['submit'],
+			$r['closedpostboxesnonce'],
+			$r['meta-box-order-nonce']
+		);
 
 		return $r;
 	}
