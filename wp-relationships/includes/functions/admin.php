@@ -243,7 +243,7 @@ function wp_relationships_handle_actions() {
 
 		// Single Add
 		case 'add' :
-//			check_admin_referer( 'relationship_add' );
+			check_admin_referer( 'add_relationship', 'relationship_add' );
 
 			// Add
 			$relationship = WP_Relationship::create( wp_unslash( $_POST ) );
@@ -260,7 +260,7 @@ function wp_relationships_handle_actions() {
 
 		// Single Edit
 		case 'edit' :
-			check_admin_referer( 'relationship_edit' );
+			check_admin_referer( 'edit_relationship', 'relationship_edit' );
 
 			// Check that the parameters are correct first
 			$relationship_id = $relationship_ids[0];
