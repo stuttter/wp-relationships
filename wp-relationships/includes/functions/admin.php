@@ -27,6 +27,7 @@ function wp_relationships_add_menu_item() {
 
 	// Additional per-page actions
 	add_action( "load-{$edit}", 'wp_relationships_add_meta_boxes'       );
+	add_action( "load-{$edit}", 'wp_relationships_handle_actions'       );
 	add_action( "load-{$list}", 'wp_relationships_handle_actions'       );
 	add_action( "load-{$list}", 'wp_relationships_load_site_list_table' );
 
@@ -242,7 +243,7 @@ function wp_relationships_handle_actions() {
 
 		// Single Add
 		case 'add' :
-			check_admin_referer( 'relationship_add' );
+//			check_admin_referer( 'relationship_add' );
 
 			// Add
 			$relationship = WP_Relationship::create( wp_unslash( $_POST ) );
@@ -327,7 +328,7 @@ function wp_count_relationships() {
 		$results = (array) $wpdb->get_results( $query, ARRAY_A );
 
 		// Strings
-		$statuses = wp_filter_object_list( wp_relationships_get_statuses(), array(), 'and', 'status_id' );
+		$statuses = wp_filter_object_list( wp_relationships_get_statuses(), array(), 'and', 'id' );
 		$counts   = array_fill_keys( $statuses, 0 );
 
 		// Set counts
