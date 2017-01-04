@@ -37,11 +37,11 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 
 							// Maybe selected
 							$selected = ! empty( $relationship )
-								? selected( $type->type_id, $relationship->relationship_type )
+								? selected( $type->id, $relationship->relationship_type )
 								: '';
 
 							// Loop through sites
-							?><option value="<?php echo esc_attr( $type->type_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->type_name ); ?></option><?php
+							?><option value="<?php echo esc_attr( $type->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $type->name ); ?></option><?php
 
 						endforeach;
 
@@ -57,11 +57,11 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 
 							// Maybe selected
 							$selected = ! empty( $relationship )
-								? selected( $status->status_id, $relationship->relationship_status )
+								? selected( $status->id, $relationship->relationship_status )
 								: '';
 
 							// Loop through sites
-							?><option value="<?php echo esc_attr( $status->status_id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->status_name ); ?></option><?php
+							?><option value="<?php echo esc_attr( $status->id ); ?>" <?php echo $selected; ?>><?php echo esc_html( $status->name ); ?></option><?php
 
 						endforeach;
 
@@ -86,9 +86,10 @@ function wp_relationships_publish_metabox( $relationship = null ) {
 					$submit_text = esc_html__( 'Save Relationship', 'wp-relationships' );
 				}
 
-				submit_button( $submit_text, 'primary', 'save', false ); ?>
+				submit_button( $submit_text, 'primary', 'submit', false ); ?>
 				<input type="hidden" name="action"           value="<?php echo esc_attr( $action                        ); ?>">
 				<input type="hidden" name="relationship_ids" value="<?php echo esc_attr( $relationship->relationship_id ); ?>">
+				<?php wp_nonce_field( "relationship_{$action}" ); ?>
 			</div>
 			<div class="clear"></div>
 		</div>
