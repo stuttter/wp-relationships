@@ -122,12 +122,35 @@ class WP_Relationship_Query {
 	 *     @type int          $ID                   An relationship ID to only return that relationship. Default empty.
 	 *     @type array        $relationship__in     Array of relationship IDs to include. Default empty.
 	 *     @type array        $relationship__not_in Array of relationship IDs to exclude. Default empty.
-	 *     @type int          $site_id              A site ID to only return that site. Default empty.
-	 *     @type array        $site__in             Array of site IDs to include. Default empty.
-	 *     @type array        $site__not_in         Array of site IDs to exclude. Default empty.
+	 *     @type int          $author_id            A author ID to only return that author. Default empty.
+	 *     @type array        $author__in           Array of author IDs to include. Default empty.
+	 *     @type array        $author__not_in       Array of author IDs to exclude. Default empty.
+	 *     @type string       $type                 Limit results to those affiliated with a given path.
+	 *                                                Default empty.
+	 *     @type array        $type__in             Array of paths to include affiliated relationships for. Default empty.
+	 *     @type array        $type__not_in         Array of paths to exclude affiliated relationships for. Default empty.
+	 *     @type string       $status               Limit results to those affiliated with a given path.
+	 *                                              Default empty.
+	 *     @type array        $status__in           Array of paths to include affiliated relationships for. Default empty.
+	 *     @type array        $status__not_in       Array of paths to exclude affiliated relationships for. Default empty.
+	 *     @type string       $slug                 Limit results to those affiliated with a given path.
+	 *                                                Default empty.
+	 *     @type array        $slug__in             Array of paths to include affiliated relationships for. Default empty.
+	 *     @type array        $slug__not_in         Array of paths to exclude affiliated relationships for. Default empty.
+	 *     @type int          $parent_id            A parent ID to only return that parent. Default empty.
+	 *     @type array        $parent__in           Array of parent IDs to include. Default empty.
+	 *     @type array        $parent__not_in       Array of parent IDs to exclude. Default empty.
+	 *     @type int          $from_id              A from ID to only return that from. Default empty.
+	 *     @type array        $from__in             Array of from IDs to include. Default empty.
+	 *     @type array        $from__not_in         Array of from IDs to exclude. Default empty.
+	 *     @type int          $to_id                A to ID to only return that to. Default empty.
+	 *     @type array        $to__in               Array of to IDs to include. Default empty.
+	 *     @type array        $to__not_in           Array of to IDs to exclude. Default empty.
 	 *     @type bool         $count                Whether to return a relationship count (true) or array of relationship objects.
 	 *                                              Default false.
 	 *     @type array        $date_query           Date query clauses to limit relationships by. See WP_Date_Query.
+	 *                                              Default null.
+	 *     @type array        $meta_query           Meta query clauses to limit relationships by. See WP_Meta_Query.
 	 *                                              Default null.
 	 *     @type string       $fields               Site fields to return. Accepts 'ids' (returns an array of relationship IDs)
 	 *                                              or empty (returns an array of complete relationship objects). Default empty.
@@ -140,14 +163,6 @@ class WP_Relationship_Query {
 	 *                                              an empty array, or 'none' to disable `ORDER BY` clause.
 	 *                                              Default 'id'.
 	 *     @type string       $order                How to order retrieved relationships. Accepts 'ASC', 'DESC'. Default 'ASC'.
-	 *     @type string       $domain               Limit results to those affiliated with a given domain.
-	 *                                              Default empty.
-	 *     @type array        $domain__in           Array of domains to include affiliated relationships for. Default empty.
-	 *     @type array        $domain__not_in       Array of domains to exclude affiliated relationships for. Default empty.
-	 *     @type string       $status               Limit results to those affiliated with a given path.
-	 *                                              Default empty.
-	 *     @type array        $status__in           Array of paths to include affiliated relationships for. Default empty.
-	 *     @type array        $status__not_in       Array of paths to exclude affiliated relationships for. Default empty.
 	 *     @type string       $search               Search term(s) to retrieve matching relationships for. Default empty.
 	 *     @type array        $search_columns       Array of column names to be searched. Accepts 'domain' and 'status'.
 	 *                                              Default empty array.
