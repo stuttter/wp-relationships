@@ -97,7 +97,7 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 	// Status
 	add_meta_box(
 		'submitdiv',
-		_x( 'Status', 'users user-admin edit screen', 'wp-relationships' ),
+		_x( 'Status', 'relationships edit screen', 'wp-relationships' ),
 		'wp_relationships_publish_metabox',
 		$screen,
 		'side',
@@ -108,7 +108,7 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 	// Author
 	add_meta_box(
 		'author',
-		_x( 'Author', 'users user-admin edit screen', 'wp-relationships' ),
+		_x( 'Author', 'relationships edit screen', 'wp-relationships' ),
 		'wp_relationships_author_metabox',
 		$screen,
 		'side',
@@ -119,7 +119,7 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 	// Position
 	add_meta_box(
 		'position',
-		_x( 'Position', 'users user-admin edit screen', 'wp-relationships' ),
+		_x( 'Position', 'relationships edit screen', 'wp-relationships' ),
 		'wp_relationships_position_metabox',
 		$screen,
 		'side',
@@ -130,11 +130,32 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 	// Slug
 	add_meta_box(
 		'slug',
-		_x( 'Slug', 'users user-admin edit screen', 'wp-relationships' ),
+		_x( 'Slug', 'relationships edit screen', 'wp-relationships' ),
 		'wp_relationships_slug_metabox',
 		$screen,
 		'side',
 		'low',
 		$relationship
 	);
+}
+
+/**
+ * Temporary function to test post object metabox
+ *
+ * @since 0.1.0
+ *
+ * @param mixed $object The object being added/edited
+ */
+function wp_relatationships_add_object_metaboxes( $object ) {
+	//foreach ( wp_relationships_get_types() as $type ) {
+		add_meta_box(
+			'slug',
+			_x( 'Relationships', 'posts edit screen', 'wp-relationships' ),
+			'wp_relationships_connection_metabox',
+			'post',
+			'normal',
+			'low',
+			$object
+		);
+	//}
 }

@@ -36,6 +36,7 @@ require_once $plugin_path . 'includes/classes/class-wp-relationships-db-table.ph
 
 // Required Files
 require_once $plugin_path . 'includes/functions/admin.php';
+require_once $plugin_path . 'includes/functions/api.php';
 require_once $plugin_path . 'includes/functions/assets.php';
 require_once $plugin_path . 'includes/functions/cache.php';
 require_once $plugin_path . 'includes/functions/capabilities.php';

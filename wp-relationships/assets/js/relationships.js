@@ -6,7 +6,7 @@ jQuery( document ).ready( function( $ ) {
 		items:     'li.add-new-relationship',
 		cursor:    'move',
 		axis:      'y',
-		cancel:    'a, input',
+		cancel:    'a, input, select',
 		distance:  2,
 		opacity:   0.9,
 		tolerance: 'pointer',

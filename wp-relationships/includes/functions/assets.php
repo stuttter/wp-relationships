@@ -19,7 +19,11 @@ function wp_relationships_admin_enqueue_scripts() {
 	// Enqueue core scripts
 	wp_enqueue_script( 'jquery-ui-sortable' );
 	wp_enqueue_script( 'postbox' );
-	wp_enqueue_script( 'dashboard' );
+
+	// Only if not generally enqueing
+	if ( 'admin_enqueue_scripts' !== current_action() ) {
+		wp_enqueue_script( 'dashboard' );
+	}
 
 	// Set location & version for scripts & styles
 	$src = wp_relationships_get_plugin_url();

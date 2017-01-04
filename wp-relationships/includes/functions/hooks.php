@@ -20,3 +20,9 @@ add_action( 'wp_relationships_admin_notices', 'wp_relationships_output_admin_not
 
 // Add metaboxes
 add_action( 'wp_relationships_add_meta_boxes', 'wp_relationships_register_metaboxes', 10, 2 );
+
+// Always enqueue scripts
+add_action( 'admin_enqueue_scripts', 'wp_relationships_admin_enqueue_scripts' );
+
+// Temporary posts
+add_action( 'add_meta_boxes', 'wp_relatationships_add_object_metaboxes' );

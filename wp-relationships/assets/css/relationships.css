@@ -1,4 +1,5 @@
-@media screen and ( min-width: 780px ) {
+/* List Table */
+@media only screen and ( min-width: 780px ) {
 	.wp-list-table.relationships .column-from,
 	.wp-list-table.relationships .column-to {
 		width: 12%;
@@ -10,4 +11,58 @@
 	#titlediv {
 		margin-top: 12px;
 	}
+}
+
+/* Metabox */
+li.add-new-relationship.ui-sortable-handle {
+	cursor: move;
+}
+
+li.add-new-relationship.ui-sortable-placeholder {
+	visibility: visible !important;
+}
+
+ul.new-relationship li.add-new-relationship {
+	border: 1px solid #e0e0e0;
+	background-color: #f4f4f4;
+	vertical-align: middle;
+	padding: 10px;
+	list-style: none;
+}
+
+ul.new-relationship:last-child,
+ul.new-relationship li.add-new-relationship:last-child {
+	margin-bottom: 0;
+}
+
+ul.new-relationship li.add-new-relationship.ui-sortable-placeholder {
+	border: 1px dashed #e0e0e0;
+	background-color: #fafafa;
+}
+
+li.add-new-relationship div.actions {
+	display: inline-block;
+	vertical-align: middle;
+	width: 75px;
+}
+
+ul.new-relationship li.add-new-relationship label {
+	text-align: right;
+	width: 100%;
+	float: left;
+}
+
+ul.new-relationship li.add-new-relationship label span {
+	font-weight: 600;
+}
+
+ul.new-relationship input[type=text] {
+	width: 30%;
+}
+
+ul.new-relationship .actions i {
+	color: #ccc;
+}
+ul.new-relationship a.remove-relationship {
+	color: #e63946;
 }
