@@ -287,9 +287,9 @@ final class WP_Relationship {
 		}
 
 		$relationship_id = $this->relationship_id;
-		$where        = array( 'relationship_id' => $relationship_id );
-		$where_format = array( '%d' );
-		$result       = $wpdb->update( $wpdb->relationships, $fields, $where, self::format(), $where_format );
+		$where           = array( 'relationship_id' => $relationship_id );
+		$where_format    = array( '%d' );
+		$result          = $wpdb->update( $wpdb->relationships, $fields, $where, self::format(), $where_format );
 
 		if ( empty( $result ) && ! empty( $wpdb->last_error ) ) {
 			return new WP_Error( 'update_failed' );
@@ -533,7 +533,9 @@ final class WP_Relationship {
 			$r['_wp_http_referer'],
 			$r['submit'],
 			$r['closedpostboxesnonce'],
-			$r['meta-box-order-nonce']
+			$r['meta-box-order-nonce'],
+			$r['relationship_edit'],
+			$r['relationship_add']
 		);
 
 		return $r;
