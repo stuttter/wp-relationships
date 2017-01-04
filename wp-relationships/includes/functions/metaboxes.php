@@ -149,7 +149,7 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
 function wp_relatationships_add_object_metaboxes( $object ) {
 	//foreach ( wp_relationships_get_types() as $type ) {
 		add_meta_box(
-			'slug',
+			'connections',
 			_x( 'Relationships', 'posts edit screen', 'wp-relationships' ),
 			'wp_relationships_connection_metabox',
 			'post',
