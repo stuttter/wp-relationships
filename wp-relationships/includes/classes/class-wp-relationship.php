@@ -263,6 +263,7 @@ final class WP_Relationship {
 	 */
 	public function set_status( $status = 'active' ) {
 		return $this->update( array(
+			'relationship_id'     => $this->relationship_id,
 			'relationship_status' => $status,
 		) );
 	}
