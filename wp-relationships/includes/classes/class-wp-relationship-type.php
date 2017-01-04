@@ -23,7 +23,7 @@ final class WP_Relationship_Type {
 	 * @access public
 	 * @var string
 	 */
-	public $type_id;
+	public $id = '';
 
 	/**
 	 * Name.
@@ -32,7 +32,34 @@ final class WP_Relationship_Type {
 	 * @access public
 	 * @var string
 	 */
-	public $type_name;
+	public $name = '';
+
+	/**
+	 * Public.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $type_public = false;
+
+	/**
+	 * Name of query class for relationship_from_id.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $from_query_class = '';
+
+	/**
+	 * Name of query class for relationship_to_id.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $to_query_class = '';
 
 	/**
 	 * Creates a new WP_Relationship_Type object.
@@ -83,11 +110,8 @@ final class WP_Relationship_Type {
 	 */
 	public function __get( $key = '' ) {
 		switch ( $key ) {
-			case 'id':
-			case 'type_id':
-				return sanitize_key( $this->type_id );
-			case 'type_name':
-				return $this->type_name;
+			case 'id' :
+				return sanitize_key( $this->id );
 			default :
 				return isset( $this->{$key} )
 					? $this->{$key}
@@ -109,7 +133,6 @@ final class WP_Relationship_Type {
 	public function __isset( $key = '' ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'type_id' :
 				return true;
 			default :
 				return isset( $this->{$key} );
@@ -130,8 +153,7 @@ final class WP_Relationship_Type {
 	public function __set( $key, $value ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'type_id' :
-				$this->type_id = sanitize_key( $value );
+				$this->id = sanitize_key( $value );
 				break;
 			default:
 				$this->{$key} = $value;

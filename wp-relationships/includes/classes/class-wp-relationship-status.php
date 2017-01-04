@@ -23,7 +23,7 @@ final class WP_Relationship_Status {
 	 * @access public
 	 * @var string
 	 */
-	public $status_id;
+	public $id;
 
 	/**
 	 * Name.
@@ -32,7 +32,7 @@ final class WP_Relationship_Status {
 	 * @access public
 	 * @var string
 	 */
-	public $status_name;
+	public $name;
 
 	/**
 	 * Creates a new WP_Relationship_Status object.
@@ -84,10 +84,9 @@ final class WP_Relationship_Status {
 	public function __get( $key = '' ) {
 		switch ( $key ) {
 			case 'id':
-			case 'status_id':
-				return sanitize_key( $this->status_id );
-			case 'status_name':
-				return $this->status_name;
+				return sanitize_key( $this->id );
+			case 'name':
+				return $this->name;
 			default :
 				return isset( $this->{$key} )
 					? $this->{$key}
@@ -109,7 +108,6 @@ final class WP_Relationship_Status {
 	public function __isset( $key = '' ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'status_id' :
 				return true;
 			default :
 				return isset( $this->{$key} );
@@ -130,8 +128,7 @@ final class WP_Relationship_Status {
 	public function __set( $key, $value ) {
 		switch ( $key ) {
 			case 'id' :
-			case 'status_id' :
-				$this->status_id = sanitize_key( $value );
+				$this->id = sanitize_key( $value );
 				break;
 			default:
 				$this->{$key} = $value;

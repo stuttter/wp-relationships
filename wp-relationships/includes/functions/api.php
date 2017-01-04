@@ -8,45 +8,6 @@
  */
 function wp_register_relationship_type( $args ) {
 
-	if ( ! did_action( 'init' ) ) {
-		trigger_error( 'Connection types should not be registered before the "init" hook.' );
-	}
-
-	$argv = func_get_args();
-
-	if ( count( $argv ) > 1 ) {
-		$args = array();
-		foreach ( array( 'from', 'to', 'reciprocal' ) as $i => $key ) {
-			if ( isset( $argv[ $i ] ) ) {
-				$args[ $key ] = $argv[ $i ];
-			}
-		}
-	} else {
-		$args = $argv[0];
-	}
-
-	if ( isset( $args['id'] ) ) {
-		$args['name'] = _wp_relationships_pluck( $args, 'id' );
-	}
-
-	if ( isset( $args['prevent_duplicates'] ) ) {
-		$args['duplicate_connections'] = ! $args['prevent_duplicates'];
-	}
-
-	if ( isset( $args['show_ui'] ) ) {
-		$args['admin_box'] = array(
-			'show' => _wp_relationships_pluck( $args, 'show_ui' )
-		);
-
-		if ( isset( $args['context'] ) ) {
-			$args['admin_box']['context'] = _wp_relationships_pluck( $args, 'context' );
-		}
-	}
-
-	if ( ! isset( $args['admin_box'] ) ) {
-		$args['admin_box'] = 'any';
-	}
-
 	$ctype = P2P_Connection_Type_Factory::register( $args );
 
 	do_action( 'wp_relationships_registered_relationship_type', $ctype, $args );
