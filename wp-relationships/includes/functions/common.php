@@ -146,6 +146,11 @@ function wp_relationships_sanitize_relationship_ids( $single = false ) {
 		? array_map( 'absint', (array) $_REQUEST['relationship_ids'] )
 		: array();
 
+	// Map ID to integer
+	if ( empty( $retval ) && isset( $_REQUEST['relationship_id'] ) ) {
+		$retval = array_map( 'absint', (array) $_REQUEST['relationship_id'] );
+	}
+
 	// Return the first item
 	if ( true === $single ) {
 		$retval = reset( $retval );
