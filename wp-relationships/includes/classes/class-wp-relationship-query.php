@@ -190,7 +190,7 @@ class WP_Relationship_Query {
 			'status'                    => '',
 			'status__in'                => '',
 			'status__not_in'            => '',
-			'parent'                    => '',
+			'parent_id'                 => '',
 			'parent__in'                => '',
 			'parent__not_in'            => '',
 			'from_id'                   => '',
@@ -483,6 +483,66 @@ class WP_Relationship_Query {
 			$this->sql_clauses['where']['status__not_in'] = "relationship_status NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['status__not_in'] ) ) . "' )";
 		}
 
+		// PARENT
+		if ( ! empty( $this->query_vars['parent_id'] ) ) {
+			$this->sql_clauses['where']['parent_id'] = $this->db->prepare( 'relationship_parent_id = %d', $this->query_vars['parent_id'] );
+		}
+
+		// Parse relationship parent_id for an IN clause.
+		if ( is_array( $this->query_vars['parent__in'] ) ) {
+			$this->sql_clauses['where']['parent__in'] = "relationship_parent_id IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['parent__in'] ) ) . "' )";
+		}
+
+		// Parse relationship parent_id for a NOT IN clause.
+		if ( is_array( $this->query_vars['parent__not_in'] ) ) {
+			$this->sql_clauses['where']['parent__not_in'] = "relationship_parent_id NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['parent__not_in'] ) ) . "' )";
+		}
+
+		// AUTHOR
+		if ( ! empty( $this->query_vars['author_id'] ) ) {
+			$this->sql_clauses['where']['author_id'] = $this->db->prepare( 'relationship_author_id = %d', $this->query_vars['author_id'] );
+		}
+
+		// Parse relationship author_id for an IN clause.
+		if ( is_array( $this->query_vars['author__in'] ) ) {
+			$this->sql_clauses['where']['author__in'] = "relationship_author_id IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['author__in'] ) ) . "' )";
+		}
+
+		// Parse relationship author_id for a NOT IN clause.
+		if ( is_array( $this->query_vars['author__not_in'] ) ) {
+			$this->sql_clauses['where']['author__not_in'] = "relationship_author_id NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['author__not_in'] ) ) . "' )";
+		}
+
+		// TO
+		if ( ! empty( $this->query_vars['to_id'] ) ) {
+			$this->sql_clauses['where']['to_id'] = $this->db->prepare( 'relationship_to_id = %d', $this->query_vars['to_id'] );
+		}
+
+		// Parse relationship to_id for an IN clause.
+		if ( is_array( $this->query_vars['to__in'] ) ) {
+			$this->sql_clauses['where']['to__in'] = "relationship_to_id IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['to__in'] ) ) . "' )";
+		}
+
+		// Parse relationship to_id for a NOT IN clause.
+		if ( is_array( $this->query_vars['to__not_in'] ) ) {
+			$this->sql_clauses['where']['to__not_in'] = "relationship_to_id NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['to__not_in'] ) ) . "' )";
+		}
+
+		// FROM
+		if ( ! empty( $this->query_vars['from_id'] ) ) {
+			$this->sql_clauses['where']['from_id'] = $this->db->prepare( 'relationship_from_id = %d', $this->query_vars['from_id'] );
+		}
+
+		// Parse relationship from_id for an IN clause.
+		if ( is_array( $this->query_vars['from__in'] ) ) {
+			$this->sql_clauses['where']['from__in'] = "relationship_from_id IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['from__in'] ) ) . "' )";
+		}
+
+		// Parse relationship from_id for a NOT IN clause.
+		if ( is_array( $this->query_vars['from__not_in'] ) ) {
+			$this->sql_clauses['where']['from__not_in'] = "relationship_from_id NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['from__not_in'] ) ) . "' )";
+		}
+
 		// Falsey search strings are ignored.
 		if ( strlen( $this->query_vars['search'] ) ) {
 			$search_columns = array();
@@ -562,7 +622,7 @@ class WP_Relationship_Query {
 		$this->sql_clauses['limits']  = $limits;
 
 		$this->request = "{$this->sql_clauses['select']} {$this->sql_clauses['from']} {$where} {$this->sql_clauses['groupby']} {$this->sql_clauses['orderby']} {$this->sql_clauses['limits']}";
-
+var_dump( $this->request );
 		if ( $this->query_vars['count'] ) {
 			return intval( $this->db->get_var( $this->request ) );
 		}
