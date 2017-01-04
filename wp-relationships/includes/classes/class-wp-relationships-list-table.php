@@ -462,9 +462,14 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		// Default empty actions
 		$actions = array();
 
-		// Strip www.
+		// Get ID & Status
 		$relationship_id = $relationship->relationship_id;
 		$status          = $relationship->relationship_status;
+
+		// Name
+		$relationship_name = ! empty( $relationship->relationship_name )
+			? esc_html( $relationship->relationship_name )
+			: esc_html__( '(no name)', 'wp-relationships' );
 
 		// Edit
 		$edit_link = wp_relationships_admin_url( array(
@@ -497,6 +502,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 
 		// Edit
 		if ( current_user_can( 'edit_relationship', $relationship_id ) ) {
+			$relationship_name = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), $relationship_name );
 			$actions['edit'] = sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'wp-relationships' ) );
 		}
 
@@ -513,7 +519,7 @@ final class WP_Relationships_List_Table extends WP_List_Table {
 		// Get HTML from actions
 		$action_html = $this->row_actions( $actions, false );
 
-		return '<strong>' . esc_html( $relationship->relationship_name ) . '</strong>' . $action_html;
+		return '<strong>' . $relationship_name . '</strong>' . $action_html;
 	}
 
 	/**
