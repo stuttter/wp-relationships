@@ -176,15 +176,16 @@ final class WP_Relationships_DB {
 			relationship_modified datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_updated datetime NOT NULL default '0000-00-00 00:00:00',
 			relationship_from_id bigint(20) NOT NULL,
+			relationship_from_type varchar(20) NOT NULL default 'active',
 			relationship_to_id bigint(20) NOT NULL,
+			relationship_to_type varchar(20) NOT NULL default 'active',
 			PRIMARY KEY (relationship_id),
-			KEY relationship_id (relationship_id),
 			KEY relationship_slug (relationship_slug),
-			KEY type_status_created_activity (relationship_type(20),relationship_status(20),relationship_created,relationship_updated,relationship_id),
+			KEY type_status_created_activity (relationship_type,relationship_status,relationship_created,relationship_updated,relationship_id),
 			KEY relationship_parent (relationship_parent),
 			KEY relationship_author (relationship_author),
-			KEY relationship_from_id (relationship_from_id),
-			KEY relationship_to_id (relationship_to_id)
+			KEY relationship_from_id (relationship_from_type,relationship_from_id),
+			KEY relationship_to_id (relationship_to_type,relationship_to_id)
 		) {$charset_collate};";
 
 		// Relationship meta
