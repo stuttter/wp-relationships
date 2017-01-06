@@ -24,7 +24,7 @@ final class WP_Relationships_DB {
 	/**
 	 * @var string Database version
 	 */
-	public $db_version = 201609070030;
+	public $db_version = 201701060001;
 
 	/**
 	 * @var string Database version key
