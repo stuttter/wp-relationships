@@ -51,35 +51,35 @@ function wp_relationships_get_objects( $id = '' ) {
 		$objects = array();
 
 		// User
-		$objects[] = new WP_Relationship_Type( array(
+		$objects[] = new WP_Relationship_Object( array(
 			'id'     => 'user',
 			'name'   => _x( 'User', 'object relationships', 'wp-relationships' ),
 			'object' => 'WP_User',
-			'query'  => 'WP_User_Query',
+			'query'  => 'WP_User_Query'
 		) );
 
 		// Post
-		$objects[] = new WP_Relationship_Type( array(
+		$objects[] = new WP_Relationship_Object( array(
 			'id'     => 'post',
 			'name'   => _x( 'Post', 'object relationships', 'wp-relationships' ),
 			'object' => 'WP_Post',
-			'query'  => 'WP_Query',
+			'query'  => 'WP_Query'
 		) );
 
 		// Term
-		$objects[] = new WP_Relationship_Type( array(
+		$objects[] = new WP_Relationship_Object( array(
 			'id'     => 'term',
 			'name'   => _x( 'Term', 'object relationships', 'wp-relationships' ),
 			'object' => 'WP_Term',
-			'query'  => 'WP_Term_Query',
+			'query'  => 'WP_Term_Query'
 		) );
 
 		// Comment
-		$objects[] = new WP_Relationship_Type( array(
+		$objects[] = new WP_Relationship_Object( array(
 			'id'     => 'comment',
 			'name'   => _x( 'Comment', 'object relationships', 'wp-relationships' ),
 			'object' => 'WP_Comment',
-			'query'  => 'WP_Comment_Query',
+			'query'  => 'WP_Comment_Query'
 		) );
 	}
 
