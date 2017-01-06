@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * relationship Class
+ * Relationship Type Class
  *
  * @since 0.1.0
  */
@@ -35,31 +35,22 @@ final class WP_Relationship_Type {
 	public $name = '';
 
 	/**
-	 * Public.
+	 * Object containing "from" properties
 	 *
 	 * @since 0.1.0
 	 * @access public
-	 * @var string
+	 * @var WP_Relationship_Object
 	 */
-	public $type_public = false;
+	public $from;
 
 	/**
-	 * Name of query class for relationship_from_id.
+	 * Object containing "to" properties
 	 *
 	 * @since 0.1.0
 	 * @access public
-	 * @var string
+	 * @var WP_Relationship_Object
 	 */
-	public $from_query_class = '';
-
-	/**
-	 * Name of query class for relationship_to_id.
-	 *
-	 * @since 0.1.0
-	 * @access public
-	 * @var string
-	 */
-	public $to_query_class = '';
+	public $to;
 
 	/**
 	 * Creates a new WP_Relationship_Type object.
