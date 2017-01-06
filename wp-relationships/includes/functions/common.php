@@ -35,13 +35,73 @@ function wp_relationships_admin_url( $args = array() ) {
 }
 
 /**
- * Get all available relationship statuses
+ * Get relationship objects
  *
  * @since 0.1.0
  *
+ * @param string $id ID to get an object by
+ *
  * @return array
  */
-function wp_relationships_get_types() {
+function wp_relationships_get_objects( $id = '' ) {
+	static $objects = null;
+
+	// Register types
+	if ( null === $objects ) {
+		$objects = array();
+
+		// User
+		$objects[] = new WP_Relationship_Type( array(
+			'id'     => 'user',
+			'name'   => _x( 'User', 'object relationships', 'wp-relationships' ),
+			'object' => 'WP_User',
+			'query'  => 'WP_User_Query',
+		) );
+
+		// Post
+		$objects[] = new WP_Relationship_Type( array(
+			'id'     => 'post',
+			'name'   => _x( 'Post', 'object relationships', 'wp-relationships' ),
+			'object' => 'WP_Post',
+			'query'  => 'WP_Query',
+		) );
+
+		// Term
+		$objects[] = new WP_Relationship_Type( array(
+			'id'     => 'term',
+			'name'   => _x( 'Term', 'object relationships', 'wp-relationships' ),
+			'object' => 'WP_Term',
+			'query'  => 'WP_Term_Query',
+		) );
+
+		// Comment
+		$objects[] = new WP_Relationship_Type( array(
+			'id'     => 'comment',
+			'name'   => _x( 'Comment', 'object relationships', 'wp-relationships' ),
+			'object' => 'WP_Comment',
+			'query'  => 'WP_Comment_Query',
+		) );
+	}
+
+	// Get by ID
+	$retval = ! empty( $id )
+		? reset( wp_list_filter( $objects, array( 'id' => $id ) ) )
+		: $objects;
+
+	// Filter & return
+	return apply_filters( 'wp_relationships_get_object', $retval, $objects, $id );
+}
+
+/**
+ * Get relationship statuses
+ *
+ * @since 0.1.0
+ *
+ * @param string $id ID to get a type by
+ *
+ * @return array
+ */
+function wp_relationships_get_types( $id = '' ) {
 	static $types = null;
 
 	// Register types
@@ -51,7 +111,7 @@ function wp_relationships_get_types() {
 		// Post/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'post_post',
-			'name' => _x( 'Post to Post', 'object relationships', 'wp-relationships' )
+			'name' => _x( 'Post to Post', 'object relationships', 'wp-relationships' ),
 		) );
 
 		// Term/Post
@@ -97,18 +157,25 @@ function wp_relationships_get_types() {
 		) );
 	}
 
+	// Get by ID
+	$retval = ! empty( $id )
+		? reset( wp_list_filter( $types, array( 'id' => $id ) ) )
+		: $types;
+
 	// Filter & return
-	return apply_filters( 'wp_relationships_get_types', $types );
+	return apply_filters( 'wp_relationships_get_types', $retval, $types, $id );
 }
 
 /**
- * Get all available relationship statuses
+ * Get relationship statuses
  *
  * @since 0.1.0
  *
+ * @param string $id ID to get a type by
+ *
  * @return array
  */
-function wp_relationships_get_statuses() {
+function wp_relationships_get_statuses( $id = '' ) {
 	static $statuses = null;
 
 	if ( is_null( $statuses ) ) {
@@ -127,8 +194,13 @@ function wp_relationships_get_statuses() {
 		) );
 	}
 
+	// Get by ID
+	$retval = ! empty( $id )
+		? reset( wp_list_filter( $statuses, array( 'id' => $id ) ) )
+		: $statuses;
+
 	// Filter & return
-	return apply_filters( 'wp_relationships_get_statuses', $statuses );
+	return apply_filters( 'wp_relationships_get_statuses', $retval, $statuses, $id );
 }
 
 /**
