@@ -29,6 +29,7 @@ $plugin_path = wp_relationships_get_plugin_path();
 
 // Classes
 require_once $plugin_path . 'includes/classes/class-wp-relationship.php';
+require_once $plugin_path . 'includes/classes/class-wp-relationship-object.php';
 require_once $plugin_path . 'includes/classes/class-wp-relationship-type.php';
 require_once $plugin_path . 'includes/classes/class-wp-relationship-status.php';
 require_once $plugin_path . 'includes/classes/class-wp-relationship-query.php';
