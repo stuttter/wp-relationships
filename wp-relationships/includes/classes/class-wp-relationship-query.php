@@ -763,6 +763,8 @@ class WP_Relationship_Query {
 			case 'from_id' :
 			case 'to_id' :
 			case 'type' :
+			case 'from_type' :
+			case 'to_type' :
 			case 'slug' :
 			case 'author' :
 			case 'status' :
