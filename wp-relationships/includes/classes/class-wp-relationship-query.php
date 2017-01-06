@@ -125,10 +125,10 @@ class WP_Relationship_Query {
 	 *     @type int          $author_id            A author ID to only return that author. Default empty.
 	 *     @type array        $author__in           Array of author IDs to include. Default empty.
 	 *     @type array        $author__not_in       Array of author IDs to exclude. Default empty.
-	 *     @type string       $type                 Limit results to those affiliated with a given path.
+	 *     @type string       $type                 Limit results to those affiliated with a given type.
 	 *                                                Default empty.
-	 *     @type array        $type__in             Array of paths to include affiliated relationships for. Default empty.
-	 *     @type array        $type__not_in         Array of paths to exclude affiliated relationships for. Default empty.
+	 *     @type array        $type__in             Array of types to include relationships for. Default empty.
+	 *     @type array        $type__not_in         Array of types to exclude relationships for. Default empty.
 	 *     @type string       $status               Limit results to those affiliated with a given path.
 	 *                                              Default empty.
 	 *     @type array        $status__in           Array of paths to include affiliated relationships for. Default empty.
@@ -140,9 +140,17 @@ class WP_Relationship_Query {
 	 *     @type int          $parent_id            A parent ID to only return that parent. Default empty.
 	 *     @type array        $parent__in           Array of parent IDs to include. Default empty.
 	 *     @type array        $parent__not_in       Array of parent IDs to exclude. Default empty.
+	 *     @type string       $from_type            Limit results to those affiliated with a given path.
+	 *                                                Default empty.
+	 *     @type array        $from_type__in        Array of types to include relationships for. Default empty.
+	 *     @type array        $from_type__not_in    Array of types to exclude relationships for. Default empty.
 	 *     @type int          $from_id              A from ID to only return that from. Default empty.
 	 *     @type array        $from__in             Array of from IDs to include. Default empty.
 	 *     @type array        $from__not_in         Array of from IDs to exclude. Default empty.
+	 *     @type string       $to_type              Limit results to those affiliated with a given path.
+	 *                                                Default empty.
+	 *     @type array        $to_type__in          Array of types to include relationships for. Default empty.
+	 *     @type array        $to_type__not_in      Array of types to exclude relationships for. Default empty.
 	 *     @type int          $to_id                A to ID to only return that to. Default empty.
 	 *     @type array        $to__in               Array of to IDs to include. Default empty.
 	 *     @type array        $to__not_in           Array of to IDs to exclude. Default empty.
@@ -193,9 +201,15 @@ class WP_Relationship_Query {
 			'parent_id'                 => '',
 			'parent__in'                => '',
 			'parent__not_in'            => '',
+			'from_type'                 => '',
+			'from_type__in'             => '',
+			'from_type__not_in'         => '',
 			'from_id'                   => '',
 			'from__in'                  => '',
 			'from__not_in'              => '',
+			'to_type'                   => '',
+			'to_type__in'               => '',
+			'to_type__not_in'           => '',
 			'to_id'                     => '',
 			'to__in'                    => '',
 			'to__not_in'                => '',
@@ -441,6 +455,7 @@ class WP_Relationship_Query {
 			$this->sql_clauses['where']['relationship__not_in'] = "relationship_id NOT IN ( " . implode( ',', wp_parse_id_list( $this->query_vars['site__not_in'] ) ) . ' )';
 		}
 
+		// TYPE
 		if ( ! empty( $this->query_vars['type'] ) ) {
 			$this->sql_clauses['where']['type'] = $this->db->prepare( 'relationship_type = %s', $this->query_vars['type'] );
 		}
@@ -514,6 +529,21 @@ class WP_Relationship_Query {
 		}
 
 		// TO
+		if ( ! empty( $this->query_vars['to_type'] ) ) {
+			$this->sql_clauses['where']['to_type'] = $this->db->prepare( 'relationship_to_type = %s', $this->query_vars['to_type'] );
+		}
+
+		// Parse relationship type for an IN clause.
+		if ( is_array( $this->query_vars['to_type__in'] ) ) {
+			$this->sql_clauses['where']['to_type__in'] = "relationship_to_type IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['to_type__in'] ) ) . "' )";
+		}
+
+		// Parse relationship type for a NOT IN clause.
+		if ( is_array( $this->query_vars['to_type__not_in'] ) ) {
+			$this->sql_clauses['where']['to_type__not_in'] = "relationship_to_type NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['to_type__not_in'] ) ) . "' )";
+		}
+
+		// TO
 		if ( ! empty( $this->query_vars['to_id'] ) ) {
 			$this->sql_clauses['where']['to_id'] = $this->db->prepare( 'relationship_to_id = %d', $this->query_vars['to_id'] );
 		}
@@ -526,6 +556,21 @@ class WP_Relationship_Query {
 		// Parse relationship to_id for a NOT IN clause.
 		if ( is_array( $this->query_vars['to__not_in'] ) ) {
 			$this->sql_clauses['where']['to__not_in'] = "relationship_to_id NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['to__not_in'] ) ) . "' )";
+		}
+
+		// FROM
+		if ( ! empty( $this->query_vars['from_type'] ) ) {
+			$this->sql_clauses['where']['from_type'] = $this->db->prepare( 'relationship_from_type = %s', $this->query_vars['from_type'] );
+		}
+
+		// Parse relationship type for an IN clause.
+		if ( is_array( $this->query_vars['from_type__in'] ) ) {
+			$this->sql_clauses['where']['from_type__in'] = "relationship_from_type IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['from_type__in'] ) ) . "' )";
+		}
+
+		// Parse relationship type for a NOT IN clause.
+		if ( is_array( $this->query_vars['from_type__not_in'] ) ) {
+			$this->sql_clauses['where']['from_type__not_in'] = "relationship_from_type NOT IN ( '" . implode( "', '", $this->db->_escape( $this->query_vars['from_type__not_in'] ) ) . "' )";
 		}
 
 		// FROM
