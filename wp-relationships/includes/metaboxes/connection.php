@@ -21,6 +21,16 @@ function wp_relationships_connection_metabox( $object = false ) {
 		return;
 	}
 
+	// Get object
+	$relationship_object = wp_relationships_get_objects( array(
+		'object' => get_class( $object )
+	) );
+
+	// Bail if no objects for object
+	if ( empty( $relationship_object ) ) {
+		return;
+	}
+
 	// Relationship query
 	$connections = new WP_Relationship_Query( array(
 		'type'    => 'post_post',

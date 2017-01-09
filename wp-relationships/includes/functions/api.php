@@ -31,21 +31,27 @@ function wp_register_relationship_type( $args = array() ) {
  *
  * @since 0.1.0
  *
- * @param string $name
+ * @param string $id
  *
  * @return WP_Relationship_Type|bool False if no relationship, instance on success.
  */
-function wp_get_relationships_of_type( $name = '' ) {
-	$_types = array();
-	$types  = wp_relationships_get_types();
+function wp_get_relationships_of_type( $id = '' ) {
 
-	foreach ( $types as $type ) {
-		if ( strstr( $type->id, $name ) ) {
-			$_types[] = $type;
-		}
+	// Get object
+	$object = wp_relationships_get_objects( array( 'id' => $id ) );
+
+	// Bail if no object
+	if ( empty( $object ) ) {
+		return false;
 	}
 
-	return $_types;
+	// Get types
+	$types = wp_relationships_get_types( array(
+		'to'   => $object,
+		'from' => $object
+	), 'OR' );
+
+	return $types;
 }
 
 /**

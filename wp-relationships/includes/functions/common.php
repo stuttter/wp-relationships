@@ -39,11 +39,12 @@ function wp_relationships_admin_url( $args = array() ) {
  *
  * @since 0.1.0
  *
- * @param string $id ID to get an object by
+ * @param array  $args     Array of arguments to filter by
+ * @param string $operator AND or OR
  *
  * @return array
  */
-function wp_relationships_get_objects( $id = '' ) {
+function wp_relationships_get_objects( $args = array(), $operator = 'AND' ) {
 	static $objects = null;
 
 	// Register types
@@ -84,12 +85,12 @@ function wp_relationships_get_objects( $id = '' ) {
 	}
 
 	// Get by ID
-	$retval = ! empty( $id )
-		? wp_list_filter( $objects, array( 'id' => $id ) )
+	$retval = ! empty( $args )
+		? wp_list_filter( $objects, $args, $operator )
 		: $objects;
 
 	// Filter & return
-	return apply_filters( 'wp_relationships_get_object', $retval, $objects, $id );
+	return apply_filters( 'wp_relationships_get_object', $retval, $objects, $args );
 }
 
 /**
@@ -97,11 +98,12 @@ function wp_relationships_get_objects( $id = '' ) {
  *
  * @since 0.1.0
  *
- * @param string $id ID to get a type by
+ * @param array  $args     Array of arguments to filter by
+ * @param string $operator AND or OR
  *
  * @return array
  */
-function wp_relationships_get_types( $id = '' ) {
+function wp_relationships_get_types( $args = array(), $operator = 'AND' ) {
 	static $types = null;
 
 	// Register types
@@ -112,72 +114,74 @@ function wp_relationships_get_types( $id = '' ) {
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'post_post',
 			'name' => _x( 'Post to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'post' ),
-			'from' => wp_relationships_get_objects( 'post' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'post' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'post' ) )
 		) );
 
 		// Term/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'term_post',
 			'name' => _x( 'Term to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'term' ),
-			'from' => wp_relationships_get_objects( 'post' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'term' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'post' ) )
 		) );
 
 		// Comment/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'comment_post',
-			'name' => _x( 'Comment to Post', 'object relationships', 'wp-relationships' )
+			'name' => _x( 'Comment to Post', 'object relationships', 'wp-relationships' ),
+			'to'   => wp_relationships_get_objects( array( 'id' => 'comment' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'post'    ) )
 		) );
 
 		// User/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_post',
 			'name' => _x( 'User to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'user' ),
-			'from' => wp_relationships_get_objects( 'post' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'user' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'post' ) )
 		) );
 
 		// User/Comment
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_comment',
 			'name' => _x( 'User to Comment', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'user' ),
-			'from' => wp_relationships_get_objects( 'comment' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'user'    ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'comment' ) )
 		) );
 
 		// Term/Term
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'term_term',
 			'name' => _x( 'Term to Term', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'term' ),
-			'from' => wp_relationships_get_objects( 'term' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'term' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'term' ) )
 		) );
 
 		// User/Term
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_term',
 			'name' => _x( 'User to Term', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'user' ),
-			'from' => wp_relationships_get_objects( 'term' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'user' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'term' ) )
 		) );
 
 		// User/User
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_user',
 			'name' => _x( 'User to User', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_objects( 'user' ),
-			'from' => wp_relationships_get_objects( 'user' )
+			'to'   => wp_relationships_get_objects( array( 'id' => 'user' ) ),
+			'from' => wp_relationships_get_objects( array( 'id' => 'user' ) )
 		) );
 	}
 
 	// Get by ID
-	$retval = ! empty( $id )
-		? wp_list_filter( $types, array( 'id' => $id ) )
+	$retval = ! empty( $args )
+		? wp_list_filter( $types, $args, $operator )
 		: $types;
 
 	// Filter & return
-	return apply_filters( 'wp_relationships_get_types', $retval, $types, $id );
+	return apply_filters( 'wp_relationships_get_types', $retval, $types, $args );
 }
 
 /**
@@ -185,11 +189,12 @@ function wp_relationships_get_types( $id = '' ) {
  *
  * @since 0.1.0
  *
- * @param string $id ID to get a type by
+ * @param array  $args     Array of arguments to filter by
+ * @param string $operator AND or OR
  *
  * @return array
  */
-function wp_relationships_get_statuses( $id = '' ) {
+function wp_relationships_get_statuses( $args = array(), $operator = 'AND' ) {
 	static $statuses = null;
 
 	if ( is_null( $statuses ) ) {
@@ -209,12 +214,12 @@ function wp_relationships_get_statuses( $id = '' ) {
 	}
 
 	// Get by ID
-	$retval = ! empty( $id )
-		? wp_list_filter( $statuses, array( 'id' => $id ) )
+	$retval = ! empty( $args )
+		? wp_list_filter( $statuses, $args, $operator )
 		: $statuses;
 
 	// Filter & return
-	return apply_filters( 'wp_relationships_get_statuses', $retval, $statuses, $id );
+	return apply_filters( 'wp_relationships_get_statuses', $retval, $statuses, $args );
 }
 
 /**
