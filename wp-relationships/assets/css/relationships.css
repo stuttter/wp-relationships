@@ -48,7 +48,7 @@ li.relationship.ui-sortable-placeholder {
 }
 
 #connections li.no-relationships div.row-wrapper {
-	padding: 15px;
+	padding: 13px 15px 17px;
 }
 
 #connections li.relationship:not(:last-child) {

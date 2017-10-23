@@ -101,5 +101,5 @@ function wp_relationships_get_plugin_url() {
  * @return int
  */
 function wp_relationships_get_asset_version() {
-	return 201701090006;
+	return 201701090007;
 }
