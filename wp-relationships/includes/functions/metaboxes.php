@@ -147,6 +147,7 @@ function wp_relationships_register_metaboxes( $screen = '', $relationship = null
  * @param mixed $object The object being added/edited
  */
 function wp_relatationships_add_object_metaboxes( $object ) {
+
 	//foreach ( wp_relationships_get_types() as $type ) {
 		add_meta_box(
 			'connections',
@@ -155,7 +156,25 @@ function wp_relatationships_add_object_metaboxes( $object ) {
 			'post',
 			'normal',
 			'low',
-			$object
+			$object,
+			array(
+				'type'      => 'post',
+				'type_type' => 'post_post'
+			)
+		);
+
+		add_meta_box(
+			'connections',
+			_x( 'Relationships', 'posts edit screen', 'wp-relationships' ),
+			'wp_relationships_connection_metabox',
+			'comment',
+			'normal',
+			'low',
+			$object,
+			array(
+				'type'      => 'comment',
+				'type_type' => 'comment_comment'
+			)
 		);
 	//}
 }

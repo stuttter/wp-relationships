@@ -21,31 +21,19 @@ function wp_relationships_connection_metabox( $object = false ) {
 		return;
 	}
 
-	// Get object
-	$relationship_object = wp_relationships_get_objects( array(
+	// Relationship types
+	$types = wp_get_types_from_relationship_object( array(
 		'object' => get_class( $object )
 	) );
 
-	// Bail if no objects for object
-	if ( empty( $relationship_object ) ) {
-		return;
-	}
-
-	// Types (post only for now)
-	$type      = 'post';
-	$type_type = 'post_post';
-
 	// Relationship query
 	$connections = new WP_Relationship_Query( array(
-		'type'    => $type_type,
-		'from_id' => $object->ID
+		'type__in' => wp_list_pluck( $types, 'id' ),
+		'from_id'  => $object->ID
 	) );
 
-	// Relationship types
-	$types = wp_get_relationships_of_type( $type );
-
 	// Setup relationships
-	$objects = ! empty( $connections->relationships )
+	$relationships = ! empty( $connections->relationships )
 		? $connections->relationships
 		: array( WP_Relationship::get_instance() );
 
@@ -55,16 +43,18 @@ function wp_relationships_connection_metabox( $object = false ) {
 	<ul class="new-relationship">
 		<li class="no-relationships">
 			<div class="row-wrapper">
-				<a href="" class="add-relationship"><?php esc_html_e( 'Add Relationship', 'wp-relationship' ); ?></a>
+				<span><?php esc_html_e( 'No relationships.', 'wp-relationship' ); ?></span>
+				<a href="" class="add-relationship"><?php esc_html_e( 'Add New', 'wp-relationship' ); ?></a>
 			</div>
 		</li>
+
 		<?php
-		
+
 		// Output the template row
 		wp_relationships_connection_metabox_row( $object, null, $types );
 
 		// Output any actual relationship rows
-		foreach ( $objects as $relationship ) {
+		foreach ( $relationships as $relationship ) {
 			wp_relationships_connection_metabox_row( $object, $relationship, $types );
 		}
 
@@ -77,11 +67,24 @@ function wp_relationships_connection_metabox( $object = false ) {
 	echo ob_get_clean();
 }
 
+/**
+ * DRY method for getting meta-box rows
+ *
+ * @since 0.1.0
+ *
+ * @param object $object
+ * @param object $relationship
+ * @param array  $types
+ */
 function wp_relationships_connection_metabox_row( $object = null, $relationship = null, $types = array() ) {
+
+	// Null is the "Add New" row
 	$class = ( null === $relationship )
 		? 'add-new-relationship'
-		: 'relationship'; ?>
+		: 'relationship';
 
+	// Start an output buffer
+	ob_start(); ?>
 
 	<li class="<?php echo esc_attr( $class ); ?>">
 		<div class="row-wrapper">
@@ -106,7 +109,7 @@ function wp_relationships_connection_metabox_row( $object = null, $relationship 
 				foreach ( $types as $type ) :
 
 					// Output type
-					?><option value="<?php echo esc_attr( $type->id ); ?>" <?php selected( $type->id, $relationship->relationship_type, true ); ?>><?php echo esc_html( $type->to->name ); ?></option><?php
+					?><option value="<?php echo esc_attr( $type->id ); ?>" <?php selected( $type->id, $relationship->relationship_type, true ); ?>><?php echo esc_html( wp_relationships_get_object( array( 'id' => $type->to ) )->name ); ?></option><?php
 
 				endforeach;
 
@@ -119,4 +122,7 @@ function wp_relationships_connection_metabox_row( $object = null, $relationship 
 	</li>
 
 	<?php
+
+	// Output the row
+	echo ob_get_clean();
 }

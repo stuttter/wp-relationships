@@ -134,6 +134,15 @@ final class WP_Relationship {
 	public $relationship_from_id;
 
 	/**
+	 * Type of ID from.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $relationship_from_type = '';
+
+	/**
 	 * To ID.
 	 *
 	 * @since 0.1.0
@@ -141,6 +150,15 @@ final class WP_Relationship {
 	 * @var int
 	 */
 	public $relationship_to_id;
+
+	/**
+	 * Type of ID to.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public $relationship_to_type = '';
 
 	/**
 	 * Creates a new WP_Relationship object.
@@ -495,37 +513,45 @@ final class WP_Relationship {
 
 		// Parse the arguments
 		$r = wp_parse_args( $args, array(
-			'relationship_id'       => 0,
-			'relationship_author'   => get_current_user_id(),
-			'relationship_name'     => '',
-			'relationship_slug'     => '',
-			'relationship_content'  => '',
-			'relationship_type'     => '',
-			'relationship_status'   => 'active',
-			'relationship_created'  => $now,
-			'relationship_modified' => $now,
-			'relationship_updated'  => $now,
-			'relationship_parent'   => 0,
-			'relationship_order'    => 0,
-			'relationship_from_id'  => 0,
-			'relationship_to_id'    => 0
+			'relationship_id'        => 0,
+			'relationship_author'    => get_current_user_id(),
+			'relationship_name'      => '',
+			'relationship_slug'      => '',
+			'relationship_content'   => '',
+			'relationship_type'      => '',
+			'relationship_status'    => 'active',
+			'relationship_created'   => $now,
+			'relationship_modified'  => $now,
+			'relationship_updated'   => $now,
+			'relationship_parent'    => 0,
+			'relationship_order'     => 0,
+			'relationship_from_id'   => 0,
+			'relationship_from_type' => '',
+			'relationship_to_id'     => 0,
+			'relationship_to_type'   => '',
 		) );
 
 		// Sanitize
-		$r['relationship_id']       = (int) $r['relationship_id'];
-		$r['relationship_author']   = (int) $r['relationship_author'];
-		$r['relationship_name']     = wp_kses_data( $r['relationship_name'] );
-		$r['relationship_slug']     = sanitize_title_with_dashes( $r['relationship_name'] );
-		$r['relationship_content']  = wp_kses_data( $r['relationship_content'] );
-		$r['relationship_type']     = sanitize_key( $r['relationship_type'] );
-		$r['relationship_status']   = sanitize_key( $r['relationship_status'] );
-		$r['relationship_created']  = gmdate( 'Y-m-d H:i:s', $r['relationship_created'] );
-		$r['relationship_modified'] = gmdate( 'Y-m-d H:i:s', $r['relationship_modified'] );
-		$r['relationship_updated']  = gmdate( 'Y-m-d H:i:s', $r['relationship_updated'] );
-		$r['relationship_parent']   = (int) $r['relationship_parent'];
-		$r['relationship_order']    = (int) $r['relationship_order'];
-		$r['relationship_from_id']  = (int) $r['relationship_from_id'];
-		$r['relationship_to_id']    = (int) $r['relationship_to_id'];
+		$r['relationship_id']        = (int) $r['relationship_id'];
+		$r['relationship_author']    = (int) $r['relationship_author'];
+		$r['relationship_name']      = wp_kses_data( $r['relationship_name'] );
+		$r['relationship_slug']      = sanitize_title_with_dashes( $r['relationship_name'] );
+		$r['relationship_content']   = wp_kses_data( $r['relationship_content'] );
+		$r['relationship_type']      = sanitize_key( $r['relationship_type'] );
+		$r['relationship_status']    = sanitize_key( $r['relationship_status'] );
+		$r['relationship_created']   = gmdate( 'Y-m-d H:i:s', $r['relationship_created'] );
+		$r['relationship_modified']  = gmdate( 'Y-m-d H:i:s', $r['relationship_modified'] );
+		$r['relationship_updated']   = gmdate( 'Y-m-d H:i:s', $r['relationship_updated'] );
+		$r['relationship_parent']    = (int) $r['relationship_parent'];
+		$r['relationship_order']     = (int) $r['relationship_order'];
+
+		// From
+		$r['relationship_from_id']   = (int) $r['relationship_from_id'];
+		$r['relationship_from_type'] = sanitize_key( $r['relationship_from_type'] );
+
+		// To
+		$r['relationship_to_id']     = (int) $r['relationship_to_id'];
+		$r['relationship_to_type']   = sanitize_key( $r['relationship_to_type'] );
 
 		// Validate status
 		if ( ! in_array( $r['relationship_status'], array( 'active', 'inactive' ), true ) ) {
@@ -569,7 +595,9 @@ final class WP_Relationship {
 			'%d', // Parent
 			'%d', // Order
 			'%d', // From ID
+			'%s', // From type
 			'%d', // To ID
+			'%s', // To type
 		);
 	}
 }

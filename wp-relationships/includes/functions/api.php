@@ -27,18 +27,18 @@ function wp_register_relationship_type( $args = array() ) {
 }
 
 /**
- * Get all relationships whose ID matches a string.
+ * Get all types from some relationship objects
  *
  * @since 0.1.0
  *
- * @param string $id
+ * @param array $args
  *
  * @return WP_Relationship_Type|bool False if no relationship, instance on success.
  */
-function wp_get_relationships_of_type( $id = '' ) {
+function wp_get_types_from_relationship_object( $args = array() ) {
 
 	// Get object
-	$object = wp_relationships_get_object( array( 'id' => $id ) );
+	$object = wp_relationships_get_object( $args );
 
 	// Bail if no object
 	if ( empty( $object ) ) {
@@ -47,8 +47,34 @@ function wp_get_relationships_of_type( $id = '' ) {
 
 	// Get types
 	$types = wp_relationships_get_types( array(
-		'to'   => $object,
-		'from' => $object
+		'from' => $object->id
+	), 'OR' );
+
+	return $types;
+}
+
+/**
+ * Get all types to some relationship objects
+ *
+ * @since 0.1.0
+ *
+ * @param array $args
+ *
+ * @return WP_Relationship_Type|bool False if no relationship, instance on success.
+ */
+function wp_get_types_to_relationship_object( $args = array() ) {
+
+	// Get object
+	$object = wp_relationships_get_object( $args );
+
+	// Bail if no object
+	if ( empty( $object ) ) {
+		return false;
+	}
+
+	// Get types
+	$types = wp_relationships_get_types( array(
+		'to' => $object->id
 	), 'OR' );
 
 	return $types;

@@ -108,7 +108,21 @@ function wp_relationships_get_objects( $args = array(), $operator = 'AND' ) {
 }
 
 /**
- * Get relationship statuses
+ * Get a relationship type
+ *
+ * @since 0.1.0
+ *
+ * @param array  $args     Array of arguments to filter by
+ * @param string $operator AND or OR
+ *
+ * @return array
+ */
+function wp_relationships_get_type( $args = array(), $operator = 'AND' ) {
+	return reset( wp_relationships_get_types( $args, $operator ) );
+}
+
+/**
+ * Get relationship types
  *
  * @since 0.1.0
  *
@@ -128,64 +142,64 @@ function wp_relationships_get_types( $args = array(), $operator = 'AND' ) {
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'post_post',
 			'name' => _x( 'Post to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'post' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'post' ) )
+			'to'   => 'post',
+			'from' => 'post'
 		) );
 
 		// Term/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'term_post',
 			'name' => _x( 'Term to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'term' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'post' ) )
+			'to'   => 'term',
+			'from' => 'post'
 		) );
 
 		// Comment/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'comment_post',
 			'name' => _x( 'Comment to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'comment' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'post'    ) )
+			'to'   => 'comment',
+			'from' => 'post'
 		) );
 
 		// User/Post
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_post',
 			'name' => _x( 'User to Post', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'user' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'post' ) )
+			'to'   => 'user',
+			'from' => 'post'
 		) );
 
 		// User/Comment
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_comment',
 			'name' => _x( 'User to Comment', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'user'    ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'comment' ) )
+			'to'   => 'user',
+			'from' => 'comment'
 		) );
 
 		// Term/Term
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'term_term',
 			'name' => _x( 'Term to Term', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'term' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'term' ) )
+			'to'   => 'term',
+			'from' => 'term'
 		) );
 
 		// User/Term
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_term',
 			'name' => _x( 'User to Term', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'user' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'term' ) )
+			'to'   => 'user',
+			'from' => 'term'
 		) );
 
 		// User/User
 		$types[] = new WP_Relationship_Type( array(
 			'id'   => 'user_user',
 			'name' => _x( 'User to User', 'object relationships', 'wp-relationships' ),
-			'to'   => wp_relationships_get_object( array( 'id' => 'user' ) ),
-			'from' => wp_relationships_get_object( array( 'id' => 'user' ) )
+			'to'   => 'user',
+			'from' => 'user'
 		) );
 	}
 
