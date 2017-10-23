@@ -378,13 +378,18 @@ final class WP_Relationship {
 
 		// No cached relationship
 		if ( false === $_relationship ) {
-			$_relationship = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->relationships} WHERE relationship_id = %d LIMIT 1", $relationship_id ) );
+			$query         = "SELECT * FROM {$wpdb->relationships} WHERE relationship_id = %d LIMIT 1";
+			$prepared      = $wpdb->prepare( $query, $relationship_id );
+			$_relationship = $wpdb->get_row( $prepared );
+
+			// Nullify relationship if erroneous
+			if ( empty( $_relationship ) || is_wp_error( $_relationship ) ) {
+				$_relationship = null;
+			}
 
 			// Add relationship to cache
-			if ( ! empty( $_relationship ) && ! is_wp_error( $_relationship ) ) {
-				wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
-				wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
-			}
+			wp_cache_add( $relationship_id, $_relationship, 'object-relationships' );
+			wp_cache_set( 'last_changed', microtime(), 'object-relationships' );
 		}
 
 		// Return relationship object

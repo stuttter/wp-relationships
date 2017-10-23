@@ -38,7 +38,7 @@ function wp_register_relationship_type( $args = array() ) {
 function wp_get_relationships_of_type( $id = '' ) {
 
 	// Get object
-	$object = wp_relationships_get_objects( array( 'id' => $id ) );
+	$object = wp_relationships_get_object( array( 'id' => $id ) );
 
 	// Bail if no object
 	if ( empty( $object ) ) {
