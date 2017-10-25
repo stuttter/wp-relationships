@@ -35,6 +35,12 @@ Arguably, this is the responsibility of the application to determine, but it's i
 
 The problem with taxonomy terms is that IDs between object types (users/posts/comments/terms) are not unique, so there is no way to tell the difference between post ID 5 and user ID 5, especially if you want to connect those 2 IDs together in multiple ways.
 
+See: https://core.trac.wordpress.org/ticket/37686
+
+Also, term relationships cannot currently have meta-data associated with them:
+
+See: https://core.trac.wordpress.org/ticket/38265
+
 # FAQ
 
 ### Does this create new database tables?
