@@ -251,7 +251,7 @@ function wp_relationships_handle_actions() {
 			// Bail if an error occurred
 			if ( is_wp_error( $relationship ) ) {
 				$args['did_action'] = $relationship->get_error_code();
-				continue;
+				break;
 			}
 
 			$processed[] = $relationship->id;
@@ -269,7 +269,7 @@ function wp_relationships_handle_actions() {
 			// Error messages
 			if ( is_wp_error( $relationship ) ) {
 				$args['did_action'] = $relationship->get_error_code();
-				continue;
+				break;
 			}
 
 			// Update
@@ -278,7 +278,7 @@ function wp_relationships_handle_actions() {
 			// Error messages
 			if ( is_wp_error( $result ) ) {
 				$args['did_action'] = $result->get_error_code();
-				continue;
+				break;
 			}
 
 			$processed[] = $relationship_id;
