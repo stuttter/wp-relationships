@@ -215,7 +215,7 @@ final class WP_Relationship {
 				return ! empty( $this->relationship_name )
 					? $this->relationship_name
 					: 'No name';
-			case 'status';
+			case 'status':
 			case 'relationship_status':
 				return ! empty( $this->relationship_status )
 					? $this->relationship_status

@@ -45,7 +45,9 @@ function wp_relationships_admin_url( $args = array() ) {
  * @return array
  */
 function wp_relationships_get_object( $args = array(), $operator = 'AND' ) {
-	return reset( wp_relationships_get_objects( $args, $operator ) );
+	$objects = wp_relationships_get_objects( $args, $operator );
+
+	return reset( $objects );
 }
 
 /**
@@ -118,7 +120,9 @@ function wp_relationships_get_objects( $args = array(), $operator = 'AND' ) {
  * @return array
  */
 function wp_relationships_get_type( $args = array(), $operator = 'AND' ) {
-	return reset( wp_relationships_get_types( $args, $operator ) );
+	$types = wp_relationships_get_types( $args, $operator );
+
+	return reset( $types );
 }
 
 /**
